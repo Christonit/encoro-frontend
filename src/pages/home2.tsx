@@ -33,6 +33,8 @@ import { useRouter } from "next/router";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 dayjs.locale("es-do");
 
+type FeeFilter = "all" | "free" | "paid";
+
 export const getServerSideProps: GetServerSideProps = async () => {
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -65,7 +67,7 @@ export default function Home(
   const [isLoadingEvents, toggleLoadingEvents] = useState<boolean>(false);
 
   const [displayType, setDisplayType] = useState<"grid" | "card">();
-  const [priceFilter, setPriceFilter] = useState<"all" | "pay" | "free">("all");
+  const [priceFilter, setPriceFilter] = useState<FeeFilter>("all");
   const { data: session } = useSession();
   const { windowWidth, resolution, isInViewport, scrollDirection } =
     useWindow();
@@ -450,47 +452,41 @@ export default function Home(
             <div className="event-fee-filter-container px-[16px] ml-auto">
               <ToggleGroup
                 type="single"
-                // defaultValue="all"
-                // name="fee-type-toggle"
-                // onChange={setPriceFilter}
+                value={priceFilter}
+                data-togle-name="fee-type-toggle"
+                onValueChange={(val) => setPriceFilter(val as FeeFilter)}
               >
-                <ToggleGroupItem
-                  id="tbg-check-1"
-                  className="text-sm toggle"
-                  value="all"
-                >
+                <ToggleGroupItem className="text-sm toggle" value="all">
                   Todos
                 </ToggleGroupItem>
-                <ToggleGroupItem
-                  id="tbg-check-2"
-                  className="text-sm toggle"
-                  value="free"
-                >
+                <ToggleGroupItem className="text-sm toggle" value="free">
                   Gratis
                 </ToggleGroupItem>
-                <ToggleGroupItem
-                  id="tbg-check-3"
-                  className="text-sm toggle"
-                  value="pay"
-                >
+                <ToggleGroupItem className="text-sm toggle" value="pay">
                   Pago
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>
 
             <div className="grid-type-filter-container  ml-auto">
-              <span className="font-medium">Modo de visualización</span>
-              <ToggleGroup type="single">
+              <span className="font-medium">
+                Modo de visualización {displayType}
+              </span>
+              <ToggleGroup
+                type="single"
+                value={displayType ?? "grid"}
+                onValueChange={(visilityType) => {
+                  console.log(visilityType);
+                  setDisplayType(visilityType === "" ? "grid" : "card");
+                }}
+              >
                 {["grid", "card"].map((type) => (
                   <ToggleGroupItem
-                    key={type}
+                    value={type}
                     id={`view-toggle-check-${type}`}
                     className="rounded-0 text-slate-900"
-                    value={type}
-                    // type="radio"
-                    // checked={displayType === type}
-                    onChange={() => setDisplayType(type as "grid" | "card")}
                   >
+                    {type}
                     {type === "grid" ? (
                       <BsFillGrid1X2Fill />
                     ) : (
