@@ -1,0 +1,154 @@
+.filter-header {
+  display: flex;
+  padding: 16px 0;
+  background-color: white;
+  top: 0;
+  z-index: 5;
+  @include breakpoint(md) {
+    position: sticky;
+  }
+  transition: all 200ms ease-in-out;
+
+  &.is-scrolling {
+    top: 64px;
+  }
+}
+
+.filter-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1432px;
+  margin: 0 auto;
+  padding: 0 16px;
+  overflow: hidden;
+
+  @include breakpoint(xxl) {
+    padding: 0;
+  }
+}
+
+.grid-type-filter-container {
+  display: none;
+  align-items: center;
+  column-gap: 12px;
+  white-space: nowrap;
+
+  label {
+    color: $slate-900;
+  }
+
+  .btn-check + .btn {
+    color: $slate-900;
+    border: unset;
+    padding: 8px 8px;
+    background-color: transparent;
+  }
+  .btn-check:checked + .btn {
+    color: $slate-900;
+    background-color: rgba($slate-100, $alpha: 1);
+  }
+
+  @include breakpoint(lg) {
+    display: flex;
+  }
+}
+
+.categories-container {
+  overflow-x: auto;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  overflow-x: auto;
+  height: calc(100% + 24px);
+  position: relative;
+  column-gap: 12px;
+  bottom: -1px;
+  .btn {
+    white-space: nowrap;
+  }
+
+  @include breakpoint(lg) {
+    max-width: 500px;
+  }
+  @include breakpoint(xl) {
+    max-width: 660px;
+  }
+  @include breakpoint(xxl) {
+    max-width: 870px;
+  }
+}
+
+.event-fee-filter-container {
+  .btn {
+    height: 32px;
+    padding: 4px 8px;
+    width: 72px;
+    line-height: 1.5;
+    &:first-child {
+      border-top-left-radius: 16px;
+      border-bottom-left-radius: 16px;
+    }
+  }
+  .btn-group > .btn:nth-child(2) {
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+  }
+  .btn-group > .btn:nth-child(6) {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+}
+
+.header-location-input .encoro-select__control {
+  background-color: transparent;
+  border: unset;
+}
+.top-bar-main-actions {
+  border: 1px solid $slate-200;
+  border-radius: 8px;
+
+  @include breakpoint(lg) {
+    position: relative;
+  }
+  @include breakpoint(xxxl) {
+    // position: absolute;
+  }
+
+  .input-group-text {
+    background-color: transparent;
+    border: unset;
+  }
+
+  .form-control {
+    border: unset;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  padding-right: 4px;
+}
+
+.top-bar-location-picker {
+  display: flex;
+  width: 100%;
+  min-width: 240px;
+  max-width: 290px;
+  align-items: center;
+  .encoro-select__indicator {
+    padding: 0 0;
+  }
+  .encoro-select__indicator-separator {
+    display: none;
+  }
+  .encoro-select__value-container {
+    padding: 0;
+  }
+  .header-location-input {
+    width: 100%;
+    @include breakpoint(xl) {
+      max-width: 240px;
+    }
+  }
+}

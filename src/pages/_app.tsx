@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import "@/styles/app.scss";
 import type { AppProps } from "next/app";
 
 import { SessionProvider } from "next-auth/react";
@@ -7,6 +8,7 @@ import { HistoryProvider } from "@/context/history";
 // pages/_app.js
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
+import Layout from "@/components/layout/layout";
 
 if (typeof window !== "undefined") {
   // checks that we are client-side
@@ -27,11 +29,12 @@ export default function App({ Component, pageProps }: AppProps) {
       <SessionProvider session={pageProps.session}>
         <EventsProvider>
           <HistoryProvider>
-            {" "}
-            <Component {...pageProps} />{" "}
-          </HistoryProvider>{" "}
-        </EventsProvider>{" "}
-      </SessionProvider>{" "}
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </HistoryProvider>
+        </EventsProvider>
+      </SessionProvider>
     </PostHogProvider>
   );
 }
