@@ -1,18 +1,19 @@
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-import Nav from "react-bootstrap/Nav";
-import Dropdown from "react-bootstrap/Dropdown";
-import Button from "react-bootstrap/Button";
-import Offcanvas from "react-bootstrap/Offcanvas";
-import OnHoverDropdown from "./cards/OnHoverDropdown";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { Button } from "@/components/ui/button";
+import OnHoverDropdown from "@/components/cards/OnHoverDropdown";
 import logo from "../../public/logo.svg";
 import logoM from "../../public/images/logo-m.svg";
 import Image from "next/image";
@@ -24,6 +25,8 @@ import {
   AiOutlineSearch,
 } from "react-icons/ai";
 
+import { Drawer, DrawerContent, DrawerHeader } from "@/components/ui/drawer";
+
 import Link from "next/link";
 import DateLocationFilter from "./DateAndLocationDesktop";
 import { useRouter } from "next/router";
@@ -34,10 +37,11 @@ import {
   UserNotificationType,
   userI,
   EventSearchResultType,
-} from "../../src/interfaces";
+} from "@/interfaces";
 import dayjs from "dayjs";
-import { useBackend, useWindow } from "../hooks";
-import cx from "classnames";
+import { useBackend, useWindow } from "@/hooks";
+
+import { cn } from "@/lib/utils";
 import NotificationItem from "./notifications/NotificationItem";
 import SearchResultItem from "./SearchResultItem";
 
@@ -298,7 +302,7 @@ const Header = () => {
 
   return (
     <header
-      className={cx("top-bar", {
+      className={cn("top-bar", {
         "is-scrolling": scrollDirectionValue === "down",
         "bg-white border-b border-slate-100":
           scrollPos >= 10 || !isOnTopScrollOnHome,
@@ -366,15 +370,18 @@ const Header = () => {
           {windowWidth >= resolution.xl && (
             <div className="top-bar-aside">
               <NavigationMenu>
-                <NavigationMenuList className="nav-links">
-                  <NavigationMenuItem>
-                    <Link href="/" className="nav-link">
-                      Actividades
-                    </Link>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
+                <NavigationMenuItem>
+                  <Link href="/docs" legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={navigationMenuTriggerStyle()}
+                    >
+                      Documentation
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
               </NavigationMenu>
-              <Nav>
+
+              <nav>
                 <Link href="/" className="nav-link">
                   Actividades
                 </Link>
@@ -414,7 +421,7 @@ const Header = () => {
                     Mis eventos
                   </Link>
                 )}
-              </Nav>
+              </nav>
 
               {session && user && (
                 <>
@@ -422,7 +429,7 @@ const Header = () => {
                     onMouseLeave={updateNotifications}
                     parent={
                       <button
-                        className={cx(
+                        className={cn(
                           "ml-[-8px] w-[36px] h-[36px] relative flex align-items-center rounded-full notification-btn",
                           {
                             "new-notifications": has_new_notifs,
@@ -455,9 +462,8 @@ const Header = () => {
                     </Link>
                   ) : null}
 
-                  <Dropdown className="border-0 outline-0">
-                    <Dropdown.Toggle
-                      variant="success"
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
                       id="dropdown-basic"
                       className="overflow-hidden  bg-none p-0 border-0 outline-0 rounded-[32px] "
                     >
@@ -470,42 +476,43 @@ const Header = () => {
                         className="w-[32px] h-[32px] min-w-[32px] min-h-[32px] object-cover rounded-full"
                         alt=""
                       />
-                    </Dropdown.Toggle>
+                    </DropdownMenuTrigger>
 
-                    <Dropdown.Menu className="z-[9] text-right !top-[4px]">
+                    <DropdownMenuContent className="z-[9] text-right !top-[4px]">
                       {!user.is_business && (
-                        <Dropdown.Item
-                          as="button"
-                          onClick={() => push("/user/create-business-profile/")}
-                          className=" hover:bg-transparent"
-                        >
-                          <span className="bg-blue-500 hover:bg-blue-700 mt-[0px] inline-block px-[8px] py-[8px] text-white font-semibold rounded-[4px]">
-                            Actualizar a Negocio
-                          </span>
-                        </Dropdown.Item>
+                        <DropdownMenuItem>
+                          <Button
+                            onClick={() =>
+                              push("/user/create-business-profile/")
+                            }
+                            className=" hover:bg-transparent"
+                          >
+                            <span className="bg-blue-500 hover:bg-blue-700 mt-[0px] inline-block px-[8px] py-[8px] text-white font-semibold rounded-[4px]">
+                              Actualizar a Negocio
+                            </span>
+                          </Button>
+                        </DropdownMenuItem>
                       )}
 
-                      <Dropdown.Item
-                        className="py-[8px]"
-                        as="button"
-                        onClick={() => push("/user/settings/")}
-                      >
-                        Configuracion
-                      </Dropdown.Item>
-                      <Dropdown.Item
-                        className="py-[8px]"
-                        as="button"
-                        onClick={() => signOut()}
-                      >
-                        Cerrar sesion
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
+                      <DropdownMenuItem>
+                        <Button
+                          className="py-[8px]"
+                          onClick={() => push("/user/settings/")}
+                        >
+                          Configuracion
+                        </Button>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Button className="py-[8px]" onClick={() => signOut()}>
+                          Cerrar sesion
+                        </Button>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               )}
               {!session && (
                 <Button
-                  variant="primary"
                   onClick={(e) => {
                     e.preventDefault();
                     signIn();
@@ -521,7 +528,7 @@ const Header = () => {
       ) : session ? (
         <button
           onClick={() => toggleNotificationsModal(true)}
-          className={cx(
+          className={cn(
             " w-[32px] h-[32px] ml-auto  lg:right-0 relative xl:hidden flex align-items-center justify-center notification-btn",
             {
               "new-notifications": has_new_notifs,
@@ -532,7 +539,6 @@ const Header = () => {
         </button>
       ) : (
         <Button
-          variant="primary"
           onClick={(e) => {
             e.preventDefault();
             signIn();
@@ -543,25 +549,19 @@ const Header = () => {
         </Button>
       )}
 
-      {/* <Offcanvas
-        show={notifications_modal}
-        placement="end"
-        name="notifications"
-        className="fullscreen-dialog"
-      >
-        <Offcanvas.Header className="bg-white border-slate-100 border-b">
-          <div className="flex px-[16px] w-full gap-[12px]">
-            <button
-              className="flex items-center justify-center h-[32px] w-[32px]"
-              onClick={() => closeNotificationsModal()}
-            >
-              <AiOutlineArrowLeft size={24} className="text-slate-900" />
-            </button>
-            <h3 className="text-xl font-semibold mb-0">Notificaciones</h3>
-          </div>
-        </Offcanvas.Header>
-
-        <Offcanvas.Body className="p-0">
+      <Drawer open={notifications_modal} direction="top">
+        <DrawerContent className="p-0 fullscreen-dialog" id="notifications">
+          <DrawerHeader className="bg-white border-slate-100 border-b">
+            <div className="flex px-[16px] w-full gap-[12px]">
+              <button
+                className="flex items-center justify-center h-[32px] w-[32px]"
+                onClick={() => closeNotificationsModal()}
+              >
+                <AiOutlineArrowLeft size={24} className="text-slate-900" />
+              </button>
+              <h3 className="text-xl font-semibold mb-0">Notificaciones</h3>
+            </div>
+          </DrawerHeader>
           {user_notifications.length > 0 ? (
             user_notifications.map((n: UserNotificationType) => (
               <NotificationItem
@@ -577,37 +577,32 @@ const Header = () => {
               </span>
             </div>
           )}
-        </Offcanvas.Body>
-      </Offcanvas>
-      <Offcanvas
-        show={search_mobile}
-        placement="bottom"
-        name="search-box"
-        className="fullscreen-dialog"
-      >
-        <Offcanvas.Header className="bg-white border-slate-100 border-b h-[64px]">
-          <div className="flex px-[16px] w-full gap-[16px]">
-            <button
-              className="flex items-center justify-center "
-              onClick={() => handleSearchClose()}
-            >
-              Cerrar
-            </button>
+        </DrawerContent>
+      </Drawer>
+      <Drawer open={search_mobile} direction="bottom">
+        <DrawerContent className="fullscreen-dialog">
+          <DrawerHeader className="bg-white border-slate-100 border-b h-[64px]">
+            <div className="flex px-[16px] w-full gap-[16px]">
+              <button
+                className="flex items-center justify-center "
+                onClick={() => handleSearchClose()}
+              >
+                Cerrar
+              </button>
 
-            <div className="flex flex-row gap-[8px] items-center border border-slate-200 rounded-[8px] py-[4px] px-[8px]">
-              <AiOutlineSearch size={24} className="text-slate-900" />
-              <input
-                ref={searchInput}
-                type="text"
-                className="text-base text-slate-900 w-full border-0 focus:outline-none"
-                placeholder="Que buscas hoy?"
-                onChange={handleInputSearchChange}
-              />
+              <div className="flex flex-row gap-[8px] items-center border border-slate-200 rounded-[8px] py-[4px] px-[8px]">
+                <AiOutlineSearch size={24} className="text-slate-900" />
+                <input
+                  ref={searchInput}
+                  type="text"
+                  className="text-base text-slate-900 w-full border-0 focus:outline-none"
+                  placeholder="Que buscas hoy?"
+                  onChange={handleInputSearchChange}
+                />
+              </div>
             </div>
-          </div>
-        </Offcanvas.Header>
+          </DrawerHeader>
 
-        <Offcanvas.Body className="p-0">
           {search_results &&
             (search_results.length > 0 ? (
               search_results.map((event, index) => (
@@ -622,10 +617,10 @@ const Header = () => {
                 No se encontraron resultados.
               </span>
             ))}
-        </Offcanvas.Body>
-      </Offcanvas>
+        </DrawerContent>
+      </Drawer>
 
-      <Offcanvas show={showMobileNav} onHide={toggleMobileNav}>
+      <Drawer open={showMobileNav} onOpenChange={toggleMobileNav}>
         <div className="px-[20px] py-[32px] h-full relative flex flex-col">
           {session && user ? (
             <span className="overflow-hidden    p-[4px] outline-0 rounded-[32px] flex items-center gap-[12px]">
@@ -652,10 +647,9 @@ const Header = () => {
             </Button>
           )}
 
-          <Nav className="flex mt-[32px]  gap-[16px] flex-column">
+          <nav className="flex mt-[32px]  gap-[16px] flex-column">
             <Button
               role="link"
-              variant=""
               onClick={() => mobileButtonHandler("/")}
               className="mobile-link nav-link px-0"
             >
@@ -666,7 +660,6 @@ const Header = () => {
               <>
                 <Button
                   role="link"
-                  variant=""
                   onClick={() => mobileButtonHandler("/user/my-schedule/")}
                   className="mobile-link nav-link px-0"
                 >
@@ -674,7 +667,6 @@ const Header = () => {
                 </Button>
                 <Button
                   role="link"
-                  variant=""
                   onClick={() => mobileButtonHandler("/user/followed/")}
                   className="mobile-link nav-link px-0"
                 >
@@ -688,7 +680,6 @@ const Header = () => {
                 <>
                   <Button
                     role="link"
-                    variant=""
                     onClick={() => mobileButtonHandler("/user/my-events/")}
                     className="mobile-link nav-link px-0"
                   >
@@ -698,7 +689,6 @@ const Header = () => {
               ) : (
                 <Button
                   role="link"
-                  variant=""
                   onClick={() =>
                     mobileButtonHandler("/user/create-business-profile/")
                   }
@@ -710,7 +700,6 @@ const Header = () => {
 
             {user && user.is_business && windowWidth < resolution.xl && (
               <Button
-                role=""
                 variant="outline-secondary"
                 onClick={() => mobileButtonHandler("/activity/create/")}
                 className="py-[8px] flex  px-[12px] min-w-[160px] bg-slate-50 text-center justify-center"
@@ -722,7 +711,6 @@ const Header = () => {
               <>
                 <Button
                   role="link"
-                  variant=""
                   onClick={() => mobileButtonHandler("/user/settings/")}
                   className="py-[8px] w-full  px-[12px] bg-slate-50 flex min-w-[160px] gap-[8px] justify-center"
                 >
@@ -732,12 +720,11 @@ const Header = () => {
                 </Button>
               </>
             )}
-          </Nav>
+          </nav>
 
           {!session && (
             <Button
               role="link"
-              variant="primary"
               onClick={(e) => {
                 e.preventDefault();
                 signIn();
@@ -757,7 +744,7 @@ const Header = () => {
             </Button>
           )}
         </div>
-      </Offcanvas> */}
+      </Drawer>
     </header>
   );
 };

@@ -431,7 +431,7 @@ export default function Home(
       {/* <HeroBanner /> */}
       {/* <CategoriesSection /> */}
 
-      <Container className="py-4 bg-white border-y border-slate-100">
+      <Container className="bg-white border-y border-slate-100" variant="sm">
         <TitleH1 className="text-left mb-0">Sucediendo cerca de ti</TitleH1>
       </Container>
 
@@ -469,9 +469,7 @@ export default function Home(
             </div>
 
             <div className="grid-type-filter-container  ml-auto">
-              <span className="font-medium">
-                Modo de visualización {displayType}
-              </span>
+              <span className="font-medium">Modo de visualización</span>
               <ToggleGroup
                 type="single"
                 value={displayType ?? "grid"}
@@ -486,7 +484,6 @@ export default function Home(
                     id={`view-toggle-check-${type}`}
                     className="rounded-0 text-slate-900"
                   >
-                    {type}
                     {type === "grid" ? (
                       <BsFillGrid1X2Fill />
                     ) : (

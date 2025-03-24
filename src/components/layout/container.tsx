@@ -2,10 +2,11 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
-const containerVariants = cva("mx-auto lg:py-16", {
+const containerVariants = cva("w-full mx-auto ", {
   variants: {
     variant: {
-      default: "w-full py-12",
+      default: "py-12 lg:py-16",
+      sm: "py-4 ",
     },
   },
   defaultVariants: {

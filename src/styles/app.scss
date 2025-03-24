@@ -116,11 +116,11 @@ body {
 }
 
 @mixin primary-font {
-  font-family: var(--text-font-primary);
+  font-family: var(--font-outfit);
 }
 
 @mixin secondary-font {
-  font-family: var(--text-font-secondary);
+  font-family: var(--text-cabin);
 }
 
 @mixin primary-bold {
@@ -1012,20 +1012,15 @@ img.image-block {
   }
 }
 
-.subtitle {
-  font-size: 36px;
-  color: var(--colors-black-800);
-}
-
 .heading {
   @include secondary-bold;
-  font-size: var(--text-sizes-heading);
+  font-size: var(--text-4xl);
   line-height: 1;
   text-transform: capitalize;
 }
 
 .subtitle {
-  font-size: var(--text-sizes-subtitle);
+  font-size: var(--text-xl);
   @include primary-bold;
   line-height: 1.15;
 }

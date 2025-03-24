@@ -38,6 +38,12 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+  --font-outfit: "Outfit", sans-serif;
+  --font-cabin: "Cabin", sans-serif;
+  --colors-black-100: #F0F1F4;
+  --colors-black-500: #646B87;
+  --colors-black-800: #1C2540;
+  --colors-black-900: #0F1429;
 }
 
 @theme inline {
@@ -136,3 +142,23 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+
+/* Font Sizes variables */
+/* --text-xs: 12px;
+--text-xs--line-height: 16px;
+--text-sm: 14px;
+--text-sm--line-height: 20px;
+--text-base: 16px;
+--text-base--line-height: 24px;
+--text-lg: 18px;
+--text-lg--line-height: 28px;
+--text-xl: 20px;
+--text-xl--line-height: 28px;
+--text-2xl: 24px;
+--text-2xl--line-height: 32px;
+--text-3xl: 30px;
+--text-3xl--line-height: 36px;
+--text-4xl: 36px;
+--text-4xl--line-height: 40px; */
