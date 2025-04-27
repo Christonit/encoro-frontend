@@ -1,15 +1,15 @@
 import SearchForCity from "./location/SearchCity";
-import { DatePicker } from "./DatePicker";
+import { DatePicker } from "@/components/DatePicker";
 import { forwardRef, ForwardedRef, useState, useEffect, useRef } from "react";
 import { useEvents } from "../context/events";
-import { All_PLACES } from "../../utils";
+import { All_PLACES } from "@/lib/utils";
 import { AiOutlineSearch, AiOutlineArrowLeft } from "react-icons/ai";
-import { Button } from "react-bootstrap";
-import cx from "classnames";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
 import { EventSearchResultType } from "../interfaces";
 import debounce from "lodash/debounce";
-import SearchResultItem from "./SearchResultItem";
+import SearchResultItem from "@/components/ui/search-result-item";
 import { useWindow } from "@/hooks";
 
 dayjs.locale("es-do");
@@ -116,7 +116,7 @@ const DateLocationFilter = forwardRef(
     return (
       <div
         ref={ref}
-        className={cx(
+        className={cn(
           "top-bar-main-actions flex items-center lg:min-w-[516px] w-max  bg-white",
           {
             "border-slate-900": showSearch,

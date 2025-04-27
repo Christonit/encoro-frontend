@@ -14,8 +14,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import OnHoverDropdown from "@/components/cards/OnHoverDropdown";
-import logo from "../../public/logo.svg";
-import logoM from "../../public/images/logo-m.svg";
 import Image from "next/image";
 import {
   AiOutlineMenu,
@@ -28,11 +26,11 @@ import {
 import { Drawer, DrawerContent, DrawerHeader } from "@/components/ui/drawer";
 
 import Link from "next/link";
-import DateLocationFilter from "./DateAndLocationDesktop";
+import DateLocationFilter from "@/components/DateAndLocationDesktop";
 import { useRouter } from "next/router";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import { useEvents } from "../context/events";
+import { useEvents } from "@/context/events";
 import {
   UserNotificationType,
   userI,
@@ -42,8 +40,8 @@ import dayjs from "dayjs";
 import { useBackend, useWindow } from "@/hooks";
 
 import { cn } from "@/lib/utils";
-import NotificationItem from "./notifications/NotificationItem";
-import SearchResultItem from "./SearchResultItem";
+import NotificationItem from "@/components/notifications/NotificationItem";
+import SearchResultItem from "@/components/ui/search-result-item";
 
 const Header = () => {
   const { patch, get } = useBackend();
@@ -319,14 +317,22 @@ const Header = () => {
         href="/"
         className="branding hidden mx-auto md:ml-0 md:mr-0 lg:block"
       >
-        <Image src={logo} alt="Logo" className="branding-logo" />
+        <Image
+          src="/images/logo.svg"
+          alt="Logo"
+          className="branding-logo"
+          width={130}
+          height={30}
+        />
       </Link>
 
       <Link href="/" className="lg:hidden">
         <Image
-          src={logoM}
+          src="/images/logo-m.svg"
           alt="Logo"
           className="branding-logo min-w-[32px] h-[32px] object-fit"
+          width={32}
+          height={32}
         />
       </Link>
 
@@ -369,22 +375,17 @@ const Header = () => {
 
           {windowWidth >= resolution.xl && (
             <div className="top-bar-aside">
-              <NavigationMenu>
-                <NavigationMenuItem>
-                  <Link href="/docs" legacyBehavior passHref>
-                    <NavigationMenuLink
-                      className={navigationMenuTriggerStyle()}
-                    >
-                      Documentation
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              </NavigationMenu>
-
               <nav>
-                <Link href="/" className="nav-link">
-                  Actividades
-                </Link>
+                <NavigationMenu>
+                  <NavigationMenuItem>
+                    <Link href="/" legacyBehavior passHref>
+                      <NavigationMenuLink className="nav-link">
+                        Actividades
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                </NavigationMenu>
+
                 {session && user && (
                   <div
                     ref={customDropdown}
@@ -620,130 +621,144 @@ const Header = () => {
         </DrawerContent>
       </Drawer>
 
-      <Drawer open={showMobileNav} onOpenChange={toggleMobileNav}>
-        <div className="px-[20px] py-[32px] h-full relative flex flex-col">
-          {session && user ? (
-            <span className="overflow-hidden    p-[4px] outline-0 rounded-[32px] flex items-center gap-[12px]">
-              <img
-                src={
-                  user?.business_picture
-                    ? user?.business_picture
-                    : user!.image ?? ""
-                }
-                className="w-[40px] h-[40px] rounded-[40px] object-cover border border-slate-100"
-                alt=""
-              />
+      <Drawer
+        open={showMobileNav}
+        onOpenChange={(val) => {
+          console.log({ val });
+          // toggleMobileNav()
+        }}
+      >
+        <DrawerContent className="fullscreen-dialog">
+          <div className="px-[20px] py-[32px] h-full relative flex flex-col">
+            {session && user ? (
+              <span className="overflow-hidden    p-[4px] outline-0 rounded-[32px] flex items-center gap-[12px]">
+                <img
+                  src={
+                    user?.business_picture
+                      ? user?.business_picture
+                      : user!.image ?? ""
+                  }
+                  className="w-[40px] h-[40px] rounded-[40px] object-cover border border-slate-100"
+                  alt=""
+                />
 
-              <h3 className="text-xl font-semibold mb-0">{user.name}</h3>
-            </span>
-          ) : (
-            <Button
-              role="link"
-              variant="light"
-              onClick={() => mobileButtonHandler("/")}
-              className="mobile-link branding  block bg-transparent"
-            >
-              <Image src={logo} alt="Logo" className="branding-logo" />
-            </Button>
-          )}
-
-          <nav className="flex mt-[32px]  gap-[16px] flex-column">
-            <Button
-              role="link"
-              onClick={() => mobileButtonHandler("/")}
-              className="mobile-link nav-link px-0"
-            >
-              Actividades
-            </Button>
-
-            {user && (
-              <>
-                <Button
-                  role="link"
-                  onClick={() => mobileButtonHandler("/user/my-schedule/")}
-                  className="mobile-link nav-link px-0"
-                >
-                  Mi calendario
-                </Button>
-                <Button
-                  role="link"
-                  onClick={() => mobileButtonHandler("/user/followed/")}
-                  className="mobile-link nav-link px-0"
-                >
-                  Perfiles seguidos
-                </Button>
-              </>
+                <h3 className="text-xl font-semibold mb-0">{user.name}</h3>
+              </span>
+            ) : (
+              <Button
+                role="link"
+                variant="light"
+                onClick={() => mobileButtonHandler("/")}
+                className="mobile-link branding  block bg-transparent"
+              >
+                <Image
+                  src="/images/logo.svg"
+                  alt="Logo"
+                  className="branding-logo"
+                  width={100}
+                  height={100}
+                />
+              </Button>
             )}
 
-            {user &&
-              (user.is_business ? (
+            <nav className="flex mt-[32px]  gap-[16px] flex-column">
+              <Button
+                role="link"
+                onClick={() => mobileButtonHandler("/")}
+                className="mobile-link nav-link px-0"
+              >
+                Actividades
+              </Button>
+
+              {user && (
                 <>
                   <Button
                     role="link"
-                    onClick={() => mobileButtonHandler("/user/my-events/")}
+                    onClick={() => mobileButtonHandler("/user/my-schedule/")}
                     className="mobile-link nav-link px-0"
                   >
-                    Mis eventos
+                    Mi calendario
+                  </Button>
+                  <Button
+                    role="link"
+                    onClick={() => mobileButtonHandler("/user/followed/")}
+                    className="mobile-link nav-link px-0"
+                  >
+                    Perfiles seguidos
                   </Button>
                 </>
-              ) : (
-                <Button
-                  role="link"
-                  onClick={() =>
-                    mobileButtonHandler("/user/create-business-profile/")
-                  }
-                  className="  btn-primary !hover:bg-[#2489FF] !border-[#096ADC] border-[2px] py-[2px] !bg-[#2489FF]"
-                >
-                  Actualiza a Perfil de Negocios
-                </Button>
-              ))}
+              )}
 
-            {user && user.is_business && windowWidth < resolution.xl && (
+              {user &&
+                (user.is_business ? (
+                  <>
+                    <Button
+                      role="link"
+                      onClick={() => mobileButtonHandler("/user/my-events/")}
+                      className="mobile-link nav-link px-0"
+                    >
+                      Mis eventos
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    role="link"
+                    onClick={() =>
+                      mobileButtonHandler("/user/create-business-profile/")
+                    }
+                    className="  btn-primary !hover:bg-[#2489FF] !border-[#096ADC] border-[2px] py-[2px] !bg-[#2489FF]"
+                  >
+                    Actualiza a Perfil de Negocios
+                  </Button>
+                ))}
+
+              {user && user.is_business && windowWidth < resolution.xl && (
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => mobileButtonHandler("/activity/create/")}
+                  className="py-[8px] flex  px-[12px] min-w-[160px] bg-slate-50 text-center justify-center"
+                >
+                  Publicar evento
+                </Button>
+              )}
+              {session && user && (
+                <>
+                  <Button
+                    role="link"
+                    onClick={() => mobileButtonHandler("/user/settings/")}
+                    className="py-[8px] w-full  px-[12px] bg-slate-50 flex min-w-[160px] gap-[8px] justify-center"
+                  >
+                    <AiOutlineSetting size={24} />
+
+                    <span className="font-semibold ">Configuracion</span>
+                  </Button>
+                </>
+              )}
+            </nav>
+
+            {!session && (
               <Button
-                variant="outline-secondary"
-                onClick={() => mobileButtonHandler("/activity/create/")}
-                className="py-[8px] flex  px-[12px] min-w-[160px] bg-slate-50 text-center justify-center"
+                role="link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  signIn();
+                }}
+                className="mobile-link mr-auto whitespace-nowrap w-full mt-[32px]"
               >
-                Publicar evento
+                Login
               </Button>
             )}
             {session && user && (
-              <>
-                <Button
-                  role="link"
-                  onClick={() => mobileButtonHandler("/user/settings/")}
-                  className="py-[8px] w-full  px-[12px] bg-slate-50 flex min-w-[160px] gap-[8px] justify-center"
-                >
-                  <AiOutlineSetting size={24} />
-
-                  <span className="font-semibold ">Configuracion</span>
-                </Button>
-              </>
+              <Button
+                variant="outline-secondary"
+                className=" bottom-[32px] py-[12px] right-0 left-0 mx-auto w-full mt-auto"
+                onClick={() => signOut()}
+              >
+                Cerrar sesion
+              </Button>
             )}
-          </nav>
-
-          {!session && (
-            <Button
-              role="link"
-              onClick={(e) => {
-                e.preventDefault();
-                signIn();
-              }}
-              className="mobile-link mr-auto whitespace-nowrap w-full mt-[32px]"
-            >
-              Login
-            </Button>
-          )}
-          {session && user && (
-            <Button
-              variant="outline-secondary"
-              className=" bottom-[32px] py-[12px] right-0 left-0 mx-auto w-full mt-auto"
-              onClick={() => signOut()}
-            >
-              Cerrar sesion
-            </Button>
-          )}
-        </div>
+          </div>
+        </DrawerContent>
       </Drawer>
     </header>
   );

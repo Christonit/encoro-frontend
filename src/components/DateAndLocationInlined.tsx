@@ -1,15 +1,15 @@
 import SearchForCity from "./location/SearchCity";
-import { DatePicker } from "./DatePicker";
+import { DatePicker } from "@/components/DatePicker";
 import { forwardRef, ForwardedRef, useState, useEffect, useRef } from "react";
-import { useEvents } from "../context/events";
-import { All_PLACES } from "../../utils";
+import { useEvents } from "@/context/events";
+import { All_PLACES } from "@/lib/utils";
 
 import { LuSearch, LuArrowLeft } from "react-icons/lu";
-import cx from "classnames";
+import cn from "clsx";
 import dayjs from "dayjs";
 import { EventSearchResultType } from "../interfaces";
 import debounce from "lodash/debounce";
-import SearchResultItem from "./SearchResultItem";
+import SearchResultItem from "@/components/ui/search-result-item";
 import { useWindow } from "@/hooks";
 import { Button } from "./ui/button";
 import { useRouter } from "next/router";
@@ -118,7 +118,7 @@ const DateLocationSearchComponent = forwardRef(
     return (
       <div
         ref={ref}
-        className={cx(
+        className={cn(
           "flex flex-col lg:flex-row items-center gap-[12px] lg:!gap-0 max-w-xl w-full lg:min-w-xl border-slate-200 lg:border lg:bg-white relative rounded-[8px]"
         )}
       >

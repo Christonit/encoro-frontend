@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-// import { Header } from "./components/Navbar";
+import { Header } from "@/components/navigation/header";
 import { useRouter } from "next/router";
 import Head from "next/head";
 // import Footer from "./components/Footer";
@@ -23,7 +23,7 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
             "bg-slate-100": router.pathname === "/",
           })}
         >
-          {/* <Header /> */}
+          <Header />
 
           <main className="content-container">{children}</main>
 

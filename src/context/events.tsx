@@ -194,20 +194,7 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         },
       });
 
-      const aggregate_data: any = {};
-
-      data.forEach((element: any) => {
-        if (!aggregate_data[element.city]) {
-          aggregate_data[element.city] = {
-            city: element.city,
-            eventCount: 1,
-          };
-        } else {
-          aggregate_data[element.city].eventCount += Number(element.eventCount);
-        }
-      });
-
-      if (data) setAvailableCities(Object.values(aggregate_data));
+      if (data) setAvailableCities(data);
     } catch (e) {
       console.error("Error getting cities with events:", e);
     }
