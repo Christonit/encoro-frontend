@@ -1,12 +1,12 @@
 import { useRouter } from "next/router";
 import { AiOutlineClockCircle, AiOutlineWhatsApp } from "react-icons/ai";
-import Button from "react-bootstrap/Button";
+import { Button } from "@/components/ui/button";
 import ProfileSocialBtn from "../buttons/ProfileSocialLinkButton";
-import NoProfilePicBusiness from "../ilustrations/NoProfilePic";
+import NoProfilePicBusiness from "@/components/ilustrations/NoProfilePic";
 import dayjs from "dayjs";
-import cx from "classnames";
 import Link from "next/link";
-import { useBackend } from "../../hooks";
+import { useBackend } from "@/hooks";
+import { cn } from "@/lib/utils";
 
 dayjs.locale("es-do");
 
@@ -54,6 +54,7 @@ const BusinessProfileCard = ({
 }: BusinessProfile) => {
   const router = useRouter();
   const { destroy, post } = useBackend();
+  
   const unfollowProfile = async () => {
     const { status } = await destroy(`/api/organizer/follow/`, {
       data: {
@@ -80,26 +81,30 @@ const BusinessProfileCard = ({
   return (
     <div
       id="business-profile-card"
-      className="flex md:flex-row flex-col items-start gap-[20px]"
+      className="flex md:flex-row flex-col items-start gap-5"
     >
       {business_picture && username ? (
         <Link
           href={`/organizer/${username}/`}
-          className="business-profile-card-picture"
+          className="w-24 h-24 rounded-full overflow-hidden"
         >
-          <img src={business_picture} alt="" />
+          <img 
+            src={business_picture} 
+            alt={business_name || "Business profile"} 
+            className="w-full h-full object-cover"
+          />
         </Link>
       ) : (
-        <span className="business-profile-card-picture border-solid border-slate-100 border">
+        <span className="w-24 h-24 rounded-full border border-slate-100 flex items-center justify-center">
           <NoProfilePicBusiness />
         </span>
       )}
-      <div className="flex flex-col gap-[12px] min-w-[320px]">
-        <span className="inline-flex flex-start items-center font-semibold text-slate-900 no-underline">
+      <div className="flex flex-col gap-3 min-w-[320px]">
+        <span className="inline-flex items-center justify-between w-full font-semibold text-slate-900">
           {business_name && username ? (
             <Link
               href={`/organizer/${username}/`}
-              className="text-base no-underline hover:underline text-slate-900 hover:text-slate-600"
+              className="text-base hover:underline text-slate-900 hover:text-slate-600"
             >
               {business_name}
             </Link>
@@ -109,30 +114,31 @@ const BusinessProfileCard = ({
 
           {business_name && username && is_logged && (
             <Button
-              variant="outline-secondary"
+              variant={is_followed ? "outline" : "secondary"}
               onClick={is_followed ? unfollowProfile : followProfile}
-              className=" ml-auto size-[14px] px-[12px] py-[4px] font-semibold"
+              className="text-sm px-3 py-1 h-auto"
             >
               {is_followed ? "Dejar de seguir" : "Seguir"}
             </Button>
           )}
         </span>
 
-        {schedule && schedule && (
+        {schedule && schedule.length > 0 && (
           <div
-            className={`flex ${
-              schedule.length > 1 ? "items-start" : "items-center"
-            } text-slate-600 justify-start`}
+            className={cn("flex text-slate-600 justify-start", {
+              "items-start": schedule.length > 1,
+              "items-center": schedule.length === 1,
+            })}
           >
             <AiOutlineClockCircle
-              className={cx("mr-[12px]", {
-                "mt-[4px]": schedule.length > 1,
+              className={cn("mr-3", {
+                "mt-1": schedule.length > 1,
               })}
             />
 
-            <div className="flex flex-col gap-[12px] ">
+            <div className="flex flex-col gap-3">
               {schedule.map((schedule: any, i: number) => (
-                <span key={i}>
+                <span key={i} className="text-sm">
                   {schedule.start_day &&
                     schedule.start_day.length > 0 &&
                     schedule.start_day[0].toUpperCase()}{" "}
@@ -147,7 +153,7 @@ const BusinessProfileCard = ({
           </div>
         )}
 
-        <div className="flex gap-[12px]">
+        <div className="flex gap-3">
           {social_networks && social_networks.website && (
             <ProfileSocialBtn.Website link={social_networks.website} />
           )}
@@ -166,8 +172,9 @@ const BusinessProfileCard = ({
           )}
 
           {social_networks && social_networks.whatsapp && (
-            <button
-              className="max-w-[140px] inline-flex items-center gap-[8px] bg-[#25d366] text-base  border-[#128c7e] hover:bg-[#128c7e] hover:border-[#075e54] text-[#fff] hover:text-[#dcf8c6] px-[8px] py-[4px] rounded-[8px] text-sm font-medium"
+            <Button
+              variant="default"
+              className="bg-[#25d366] hover:bg-[#128c7e] text-white hover:text-[#dcf8c6] max-w-[140px] inline-flex items-center gap-2"
               onClick={() =>
                 window.open(
                   `https://api.whatsapp.com/send?phone=${social_networks.whatsapp}&text=Hola! Encontre este evento en Encoro. ${window.location.hostname}${router.asPath}/`,
@@ -177,7 +184,7 @@ const BusinessProfileCard = ({
             >
               <AiOutlineWhatsApp size={20} />
               Contactar
-            </button>
+            </Button>
           )}
         </div>
       </div>

@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import Link from "next/link";
-import { BUSINESS_ILUSTRATIONS } from "@/libs/variables";
+import { BUSINESS_ILUSTRATIONS } from "@/lib/variables";
 
 dayjs.locale("es-do");
 

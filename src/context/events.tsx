@@ -124,50 +124,56 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
-          // Handle the user's location
-          const userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
+          try {
+            // Handle the user's location
+            const userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
 
-          const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_API}`;
-          const { data, status } = await axios.get(apiUrl);
+            const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userLocation.lat},${userLocation.lng}&key=${process.env.NEXT_PUBLIC_GOOGLE_API}`;
+            const { data, status } = await axios.get(apiUrl);
 
-          type GeoCodingResult = {
-            address_components: {
-              long_name: string;
-              short_name: string;
+            type GeoCodingResult = {
+              address_components: {
+                long_name: string;
+                short_name: string;
+                types: string[];
+              }[];
+              formatted_address: string;
               types: string[];
-            }[];
-            formatted_address: string;
-            types: string[];
-            [key: string]: any;
-          };
+              [key: string]: any;
+            };
 
-          if (status === 200) {
-            const result: GeoCodingResult = data.results.find(
-              (item: GeoCodingResult) =>
-                item.types[0] === "administrative_area_level_1"
-            );
+            if (status === 200 && data?.results?.length > 0) {
+              const result: GeoCodingResult | undefined = data.results.find(
+                (item: GeoCodingResult) =>
+                  item.types?.[0] === "administrative_area_level_1"
+              );
 
-            console.log("LOCATION LOOKUP", { result });
-            const city =
-              result.address_components.length > 0 &&
-              result.address_components[0].long_name
-                ? result.address_components[0].long_name
-                : "";
-            const country =
-              result.address_components.length > 2 &&
-              result.address_components[2].long_name
-                ? result.address_components[2].long_name
-                : "";
+              if (result?.address_components) {
+                const city = result.address_components.find(
+                  (component) => component.types?.includes("locality")
+                )?.long_name || "";
 
-            const json = JSON.stringify({ city, country });
+                const country = result.address_components.find(
+                  (component) => component.types?.includes("country")
+                )?.long_name || "";
 
-            setLocation({ city, country });
-            // if (!localStorage.getItem("location")) {
-            localStorage.setItem("location", json);
-            // }
+                const locationData = { city, country };
+                setLocation(locationData);
+                localStorage.setItem("location", JSON.stringify(locationData));
+              } else {
+                console.warn("Could not find address components in geocoding result");
+                workaroundLocationLookup();
+              }
+            } else {
+              console.warn("No geocoding results found");
+              workaroundLocationLookup();
+            }
+          } catch (error) {
+            console.error("Error processing geocoding data:", error);
+            workaroundLocationLookup();
           }
         },
         (error) => {
@@ -176,7 +182,13 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
             workaroundLocationLookup();
           } else {
             console.error("Error getting user location:", error);
+            workaroundLocationLookup();
           }
+        },
+        {
+          timeout: 10000,
+          maximumAge: 0,
+          enableHighAccuracy: true
         }
       );
     } else {
