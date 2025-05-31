@@ -126,7 +126,7 @@ export const CategoriesRack = ({
             onClick={() => {
               onClickHandler(category.value);
             }}
-            className={`pill ${
+            className={`pill primary ${
               activeCategory === category.value ? "active" : ""
             }`}
             key={i}

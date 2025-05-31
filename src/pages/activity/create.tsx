@@ -1,18 +1,6 @@
 import Head from "next/head";
-import {
-  Container,
-  Row,
-  Col,
-  ToggleButtonGroup,
-  ToggleButton,
-  InputGroup,
-  Button,
-  ButtonGroup,
-  Badge,
-} from "react-bootstrap";
-import Form from "react-bootstrap/Form";
-import { DatePicker } from "../../src/components/DatePicker";
-import { AutoComplete as SearchDirection } from "../../src/index";
+import { DatePicker } from "@/components/DatePicker";
+import { AutoComplete as SearchDirection } from "@/components/location/AutoComplete";
 import { useFormik } from "formik";
 import { TimePicker } from "antd";
 import { AiOutlineClockCircle } from "react-icons/ai";
@@ -27,12 +15,16 @@ import {
   statusMessageType,
 } from "@/interfaces";
 import StatusModal from "@/components/messages/StatusModal";
-import EventMediaInputGroup from "@/components/forms/EventMediaInputGroup";
+import EventMediaInputGroup from "@/components/complex/EventMediaInputGroup";
 import { useRouter } from "next/router";
 import { $axios } from "@/lib/utils";
 import { CATEGORIES } from "@/lib/variables";
-import RequiredStar from "@/components/text/RequiredStar";
+import RequiredStar from "@/components/ui/required-star";
 import { useBackend } from "@/hooks";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Badge } from "@/components/ui/badge";
 
 export default function CreateEvent() {
   const [media, setMedia] = useState<IMediaToUpload>();
@@ -272,7 +264,7 @@ export default function CreateEvent() {
         <meta name="robots" content="noindex" />
       </Head>
 
-      <Container id="main-content" className=" xl:container">
+      <div className="xl:container">
         <form
           onSubmit={(props) => {
             if (!media) setDisplayRequiredMedia(true);
@@ -286,48 +278,47 @@ export default function CreateEvent() {
           }}
           className="mb-[32px] lg:my-[32px]"
         >
-          <Row className="gap-[32px]">
-            <Col className="heading-container flex items-center" lg={12}>
+          <div className="gap-[32px]">
+            <div className="heading-container flex items-center">
               <h1 className="text-3xl lg:text-5xl font-semibold mb-0">
                 Crea tu evento
               </h1>
 
-              <ButtonGroup className="ml-auto hidden lg:flex ">
+              <div className="ml-auto hidden lg:flex ">
                 {/* TODO: Create Preview Event Functionality */}
                 {/* <Button>Previzualizar</Button> */}
-                <Button type="submit" className="h-[40px]">
+                <button type="submit" className="h-[40px]">
                   Publicar evento
-                </Button>
-              </ButtonGroup>
-            </Col>
-          </Row>
+                </button>
+              </div>
+            </div>
+          </div>
 
-          <Row className="gap-[32px] lg:gap-[56px] grid grid-cols-1 lg:grid-cols-2 max-lg:pt-0 ">
-            <Col className="grid gap-y-[32px] md:gap-y-[52px] w-full">
-              <Form.Group>
-                <Form.Label>
+          <div className="gap-[32px] lg:gap-[56px] grid grid-cols-1 lg:grid-cols-2 max-lg:pt-0 ">
+            <div className="grid gap-y-[32px] md:gap-y-[52px] w-full">
+              <div className="mb-4">
+                <label className="block font-medium mb-1">
                   Titulo <RequiredStar />
-                </Form.Label>
-                <Form.Control
+                </label>
+                <Input
                   type="text"
                   {...formik.getFieldProps("title")}
                   placeholder="Digita tu titulo"
                 />
-
                 {formik.touched.title && formik.errors.title ? (
-                  <div style={{ color: "red" }}> {formik.errors.title}</div>
+                  <div className="text-red-500 text-sm mt-1">{formik.errors.title}</div>
                 ) : null}
-              </Form.Group>
-              <Form.Group controlId="exampleForm.ControlTextarea1">
-                <Form.Label>
+              </div>
+              <div className="mb-4">
+                <label className="block font-medium mb-1">
                   Categoria <RequiredStar />
-                </Form.Label>
-                <Form.Select
+                </label>
+                <select
                   {...formik.getFieldProps("category")}
                   aria-label="Selecciona una categoria"
+                  className="block w-full border border-slate-200 rounded-md px-3 py-2"
                 >
                   <option>Seleccione una categoría</option>
-
                   {CATEGORIES.map((cat) => {
                     if (cat.value !== "all")
                       return (
@@ -336,182 +327,110 @@ export default function CreateEvent() {
                         </option>
                       );
                   })}
-                </Form.Select>
-
+                </select>
                 {formik.touched.category && formik.errors.category ? (
-                  <div style={{ color: "red" }}> {formik.errors.category}</div>
+                  <div className="text-red-500 text-sm mt-1">{formik.errors.category}</div>
                 ) : null}
-              </Form.Group>
-
-              {/* TODO: Workout the secondary categories logic */}
-              {/* <Form.Group controlId="exampleForm.ControlTextarea1">
-                <Form.Label>Categoria secundaria</Form.Label>
-                <Form.Select aria-label="Default select example">
-                  <option>Open this select menu</option>
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                </Form.Select>
-              </Form.Group> */}
-              <Form.Group controlId="exampleForm.ControlTextarea1">
-                <Form.Label>
+              </div>
+              <div className="mb-4">
+                <label className="block font-medium mb-1">
                   Descripción <RequiredStar />
-                </Form.Label>
-                <Form.Control
-                  as="textarea"
+                </label>
+                <Textarea
                   {...formik.getFieldProps("description")}
                   name="description"
                   rows={3}
+                  placeholder="Describe tu evento"
                 />
                 {formik.touched.description && formik.errors.description ? (
-                  <div style={{ color: "red" }}>
-                    {formik.errors.description}
-                  </div>
+                  <div className="text-red-500 text-sm mt-1">{formik.errors.description}</div>
                 ) : null}
-              </Form.Group>
-
-              <Form.Group controlId="exampleForm.ControlTextarea1">
-                <Form.Label>Hashtags</Form.Label>
-                <Form.Control
+              </div>
+              <div className="mb-4">
+                <label className="block font-medium mb-1">Hashtags</label>
+                <Input
                   type="text"
                   onChange={(e) => {
                     if (e.target.value !== "") {
                       setHashtags(e.target.value.split(/[, ]+/));
                     }
                   }}
-                  placeholder="Normal text"
+                  placeholder="Ej: musica,arte,fiesta"
                 />
-
                 {hashtags && (
-                  <div className="flex  flex-wrap gap-x-[8px] gap-y-[8px] mt-[16px]">
+                  <div className="flex flex-wrap gap-2 mt-2">
                     {hashtags.map((hashtag, i) => (
-                      <Badge key={i} bg="secondary">
-                        {"#" + hashtag}
+                      <Badge key={i} variant="secondary">
+                        #{hashtag}
                       </Badge>
                     ))}
                   </div>
                 )}
-              </Form.Group>
-              <Form.Group controlId="exampleForm.ControlTextarea1">
-                <Form.Label>Tipo de asistencia</Form.Label>
-
-                <div className="flex gap-[24px] max-w-[400px]">
-                  <div>
-                    <ToggleButtonGroup
-                      type="radio"
-                      defaultValue="free"
-                      name="entrance_format"
-                    >
-                      <ToggleButton
-                        id="tbg-radio-1"
-                        value="free"
-                        onChange={(e) => setEntranceFormat(e.target.value)}
-                      >
-                        Gratis
-                      </ToggleButton>
-                      <ToggleButton
-                        id="tbg-radio-2"
-                        value="pay"
-                        onChange={(e) => setEntranceFormat(e.target.value)}
-                      >
-                        Pago
-                      </ToggleButton>
-                    </ToggleButtonGroup>
+              </div>
+              <div className="mb-4">
+                <label className="block font-medium mb-1">Tipo de asistencia</label>
+                <ToggleGroup
+                  type="single"
+                  value={entrance_format}
+                  onValueChange={setEntranceFormat}
+                  className="gap-2"
+                >
+                  <ToggleGroupItem value="free">Gratis</ToggleGroupItem>
+                  <ToggleGroupItem value="pay">Pago</ToggleGroupItem>
+                </ToggleGroup>
+                {entrance_format === "pay" && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-lg">$</span>
+                    <Input
+                      type="number"
+                      onChange={(e) => setEntranceFee(Number(e.target.value))}
+                      placeholder="Indique el precio"
+                      aria-label="Indique el precio"
+                      className="max-w-[120px]"
+                    />
+                    {displayRequiredFee && (
+                      <span className="text-red-500 text-xs ml-2">
+                        El precio debe ser un número o mayor a 0
+                      </span>
+                    )}
                   </div>
-                  {entrance_format === "pay" && (
-                    <>
-                      <InputGroup>
-                        <InputGroup.Text>$</InputGroup.Text>
-                        <Form.Control
-                          onChange={(e) =>
-                            setEntranceFee(Number(e.target.value))
-                          }
-                          placeholder="Indique el precio"
-                          aria-label="Indique el precio"
-                        />
-
-                        {displayRequiredFee && (
-                          <span className="requiered-warning">
-                            El precio debe ser un número o mayor a 0
-                          </span>
-                        )}
-                      </InputGroup>
-                    </>
-                  )}
-                </div>
-              </Form.Group>
-            </Col>
-            <Col className="flex flex-col gap-y-[32px] md:gap-y-[52px]">
-              <Form.Group
-                controlId="exampleForm.ControlTextarea1"
-                className="w-full"
-              >
-                <div className="flex">
-                  <Form.Label>
-                    Dirección <RequiredStar />
-                  </Form.Label>
-                  {/* TODO: Develop manual setup of the address instead of using
-                  Google Maps autocomplete */}
-                  {/* <div className="ml-auto">
-                    <ToggleButtonGroup
-                      type="radio"
-                      name="options"
-                      defaultValue={1}
-                    >
-                      <ToggleButton
-                        id="tbg-radio-1"
-                        className="w-[152px]"
-                        value={1}
-                      >
-                        Auto completar
-                      </ToggleButton>
-                      <ToggleButton
-                        id="tbg-radio-2"
-                        className="w-[152px]"
-                        value={fv2}
-                      >
-                        Manual
-                      </ToggleButton>
-                    </ToggleButtonGroup>
-                  </div> */}
-                </div>
-                <InputGroup className="flex-nowrap">
-                  <SearchDirection
-                    displayWarning={displayRequiredLocation}
-                    clearSearch={() => setDirection(undefined)}
-                    onChangeLocation={(value: any) => {
-                      setDirection({
-                        city: value.city,
-                        city_id: value.city_id,
-                        direction: value.location,
-                        place_id: value.id,
-                        address_terms: value.terms,
-                      });
-                    }}
-                  />
-                </InputGroup>
-              </Form.Group>
-              <Form.Group
-                controlId="exampleForm.ControlTextarea1"
-                className="relative"
-              >
-                <Form.Label>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col gap-y-[32px] md:gap-y-[52px]">
+              <div className="mb-4">
+                <label className="block font-medium mb-1">
+                  Dirección <RequiredStar />
+                </label>
+                <SearchDirection
+                  displayWarning={displayRequiredLocation}
+                  clearSearch={() => setDirection(undefined)}
+                  onChangeLocation={(value: any) => {
+                    setDirection({
+                      city: value.city,
+                      city_id: value.city_id,
+                      direction: value.location,
+                      place_id: value.id,
+                      address_terms: value.terms,
+                    });
+                  }}
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block font-medium mb-1">
                   Fecha <RequiredStar />
-                </Form.Label>
-
-                <div className="flex w-full flex-col md:flex-row gap-[16px]">
+                </label>
+                <div className="flex flex-col md:flex-row gap-4">
                   <DatePicker
-                    className="border-[1px] border-slate-200 flex items-center  rounded-[8px]  w-full md:max-w-[348px] relative h-[40px]"
+                    className="border border-slate-200 rounded-md w-full md:max-w-[348px] h-[40px]"
                     seletedDate={eventDate}
                     isForm
                     handleDateChange={setEventDate}
                   />
-
-                  <InputGroup className=" max-w-[172px] md:w-full flex-nowrap lg:w-[50%]">
-                    <InputGroup.Text id="basic-addon1">
+                  <div className="flex items-center gap-2 max-w-[172px] md:w-full lg:w-[50%]">
+                    <span className="text-slate-500">
                       <AiOutlineClockCircle />
-                    </InputGroup.Text>
-
+                    </span>
                     <TimePicker
                       use12Hours
                       placeholder="Hora del evento"
@@ -520,53 +439,45 @@ export default function CreateEvent() {
                       onOk={(val) => {
                         const minute: any = dayjs(val, "HH:mm").minute();
                         const hour: any = dayjs(val, "HH:mm").hour();
-
                         setEventTime(hour + ":" + minute + ":00");
                       }}
                     />
-                  </InputGroup>
+                  </div>
                 </div>
-
                 {displayRequiredDateTime && (
-                  <span className="requiered-warning">
+                  <span className="text-red-500 text-xs mt-1 block">
                     Indicar una hora y fecha es requerido.
                   </span>
                 )}
-              </Form.Group>
-
+              </div>
               <EventMediaInputGroup
                 id="create-event-media"
                 isRequired
                 displayWarning={displayRequiredMedia}
                 setImage={setMediaState}
               />
-
-              {/* TODO: Allow posted set specific social network links for new event */}
-              {/* Social networks deben agregarse del profile information en el post, no tener que indicarlo en la
-                    creacion del post */}
-
-              <Form.Group className="w-full">
-                <Form.Label>Enlace para adquirir o reservar</Form.Label>
-                <Form.Control
+              <div className="mb-4">
+                <label className="block font-medium mb-1">
+                  Enlace para adquirir o reservar
+                </label>
+                <Input
                   type="text"
                   placeholder="Indica el enlace para adquirir o reservar tu cupo"
                   onChange={(e) => setEventLink(e.target.value)}
                 />
-              </Form.Group>
-            </Col>
+              </div>
+            </div>
 
-            <Col>
-              <ButtonGroup className="ml-auto  lg:hidden justify-center flex">
-                {/* TODO: Create Preview Event Functionality */}
-                {/* <Button>Previzualizar</Button> */}
-                <Button type="submit" className="h-[40px] max-w-[400px]">
-                  Publicar evento
-                </Button>
-              </ButtonGroup>
-            </Col>
-          </Row>
+            <div className="ml-auto  lg:hidden justify-center flex">
+              {/* TODO: Create Preview Event Functionality */}
+              {/* <Button>Previzualizar</Button> */}
+              <button type="submit" className="h-[40px] max-w-[400px]">
+                Publicar evento
+              </button>
+            </div>
+          </div>
         </form>
-      </Container>
+      </div>
 
       {statusMessage.type && (
         <StatusModal

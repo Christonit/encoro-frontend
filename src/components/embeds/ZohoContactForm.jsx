@@ -1,4 +1,6 @@
-import { Button, Form } from "react-bootstrap";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export default function ContactForm() {
   return (
@@ -9,7 +11,7 @@ export default function ContactForm() {
       method='POST'
       accept-charset='UTF-8'
       className='max-w-[580px]'
-      enctype='multipart/form-data'
+      encType='multipart/form-data'
     >
       <input type='hidden' name='zf_referrer_name' value='' />
       {/* <!-- To Track referrals , place the referrer name within the " " in the above hidden input field --> */}
@@ -18,69 +20,59 @@ export default function ContactForm() {
       <input type='hidden' name='zc_gad' value='' />
       {/* <!-- If GCLID is enabled in Zoho CRM Integration, click details of AdWords Ads will be pushed to Zoho CRM --> */}
 
-      <div className='flex flex-col mb-[24px]'>
-        <Form.Label>
-          Nombre
-          <em>*</em>
-        </Form.Label>
-
-        <input
+      <div className='flex flex-col mb-6'>
+        <label className='mb-1 font-medium'>
+          Nombre <em className='text-red-500'>*</em>
+        </label>
+        <Input
           type='text'
-          maxlength='255'
+          maxLength={255}
           name='Name_First'
-          fieldType='7'
           placeholder='Primer Nombre'
-          className='form-control'
+          required
         />
       </div>
 
-      <div className='flex flex-col mb-[24px]'>
-        <Form.Label>
-          Apellido
-          <em>*</em>
-        </Form.Label>
-        <input
+      <div className='flex flex-col mb-6'>
+        <label className='mb-1 font-medium'>
+          Apellido <em className='text-red-500'>*</em>
+        </label>
+        <Input
           type='text'
-          maxlength='255'
+          maxLength={255}
           name='Name_Last'
-          fieldType='7'
-          className='form-control'
           placeholder='Apellido'
+          required
         />
       </div>
 
-      <div className='flex flex-col mb-[24px]'>
-        <Form.Label>
-          Email
-          <em>*</em>
-        </Form.Label>
-
-        <input
-          type='text'
-          maxlength='255'
+      <div className='flex flex-col mb-6'>
+        <label className='mb-1 font-medium'>
+          Email <em className='text-red-500'>*</em>
+        </label>
+        <Input
+          type='email'
+          maxLength={255}
           name='Email'
-          value=''
-          fieldType='9'
-          className='form-control'
           placeholder=''
+          required
         />
       </div>
 
-      <div className='flex flex-col mb-[24px]'>
-        <Form.Label>
-          Asunto
-          <em>*</em>
-        </Form.Label>
-        <textarea
+      <div className='flex flex-col mb-6'>
+        <label className='mb-1 font-medium'>
+          Asunto <em className='text-red-500'>*</em>
+        </label>
+        <Textarea
           name='MultiLine'
-          maxlength='65535'
+          maxLength={65535}
           placeholder=''
-          className='form-control'
-        ></textarea>
+          required
+        />
       </div>
 
-      <div className='my-[36px] flex gap-[24px]'>
-        <Button variant='primary' type='submit' className='py-[12px]'>
+      <div className='my-9 flex gap-6'>
+        <Button type='submit' className='py-3 w-full'>
           Contactar a Encoro
         </Button>
       </div>

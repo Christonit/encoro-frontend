@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
@@ -44,6 +45,7 @@
   --colors-black-500: #646B87;
   --colors-black-800: #1C2540;
   --colors-black-900: #0F1429;
+  --font-sans: var(--font-outfit);
 }
 
 @theme inline {
@@ -96,7 +98,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: 'Outfit', Arial, Helvetica, sans-serif; */
 }
 
 .dark {
@@ -139,7 +141,8 @@ body {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    /* font-family: 'Outfit', Arial, Helvetica, sans-serif; */
   }
 }
 

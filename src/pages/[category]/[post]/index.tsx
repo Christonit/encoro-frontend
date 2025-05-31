@@ -39,7 +39,7 @@ async function getEventData(category: string, postId: string) {
     } catch (error) {
       console.error('Error fetching location:', error);
       // Continue without location data
-    }
+  }
 
     const schemaMarkup = {
       "@context": "https://schema.org",

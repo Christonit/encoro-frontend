@@ -2,24 +2,19 @@ import Head from "next/head";
 import { useState, useEffect, useRef } from "react";
 import dayjs from "dayjs";
 import es from "dayjs/locale/es-do";
-import { cn, truncateText, imageLinkParser, All_PLACES } from "@/lib/utils";
+import { cn, truncateText, imageLinkParser } from "@/lib/utils";
 import Link from "next/link";
-
-import { CATEGORIES, CATEGORIES_DICT } from "@/lib/variables";
+import {  CATEGORIES_DICT } from "@/lib/variables";
 import { useEvents } from "@/context/events";
-
-import { BsFillGrid1X2Fill, BsFilter } from "react-icons/bs";
-import { RiLayoutGridFill } from "react-icons/ri";
+import {  BsFilter } from "react-icons/bs";
 // import Offcanvas from "react-bootstrap/Offcanvas";
 import { AiFillHeart, AiOutlineClose } from "react-icons/ai";
 import { StandardEventCard } from "@/components/cards";
-import { CategoriesRack } from "@/components/CategoriesRack";
 import { useSession } from "next-auth/react";
 import { userI } from "@/interfaces/index";
 import { useBackend, useWindow } from "@/hooks";
 // import { DatePicker } from "@";
 import { EventsHomeSkeleton } from "@/components/skeleton/SkeletonComponent";
-import SearchForCity from "@/components/location/SearchCity";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 // import HeroBanner from "@/components/compound/HeroBanner";
 // import CategoriesSection from "@/components/compound/CategoriesSection";
@@ -30,10 +25,10 @@ import { Badge } from "@/components/ui/badge";
 import { LuLoader } from "react-icons/lu";
 // import CallToAction from "@/components/compound/CallToAction";
 import { useRouter } from "next/router";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { FiltersProvider, useFilters } from "@/context/filters";
+import { FiltersContainer } from "@/components/complex/FiltersContainer";
 dayjs.locale("es-do");
 
-type FeeFilter = "all" | "free" | "paid";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const schemaMarkup = {
@@ -59,6 +54,20 @@ export const getServerSideProps: GetServerSideProps = async () => {
 export default function Home(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
+  return (
+    <FiltersProvider>
+      <HomeContent {...props} />
+    </FiltersProvider>
+  );
+}
+
+function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const {
+    priceFilter,
+    displayType,
+    setDisplayType,
+    eventsCategory,
+  } = useFilters();
   const [events, setEvents] = useState<any>();
   const [showFilters, toggleShowFilters] = useState<boolean>(false);
   const [isLoading, toggleLoading] = useState<boolean>(true);
@@ -66,28 +75,18 @@ export default function Home(
   // This is specifically for when clicking load more
   const [isLoadingEvents, toggleLoadingEvents] = useState<boolean>(false);
 
-  const [displayType, setDisplayType] = useState<"grid" | "card">();
-  const [priceFilter, setPriceFilter] = useState<FeeFilter>("all");
   const { data: session } = useSession();
-  const { windowWidth, resolution, isInViewport, scrollDirection } =
+  const { windowWidth, resolution, isInViewport, scrollDirection: useWindowScrollDirection } =
     useWindow();
   const userInfo: userI | undefined = session?.user;
   const loadMoreRef = useRef<HTMLElement | null>(null);
   const [loadMoreEvents, setLoadMore] = useState<boolean>(false);
   const [currentPage, incrementCurrentPage] = useState<number>(1);
   const {
-    eventsCategory,
-    handleCategoryPageNavigation,
     date_filter,
     followEventsIds,
-    setDateFilter,
     location,
-    setLocation,
-    showClearFilter,
-    toggleClearFilter,
-    clearLocation,
     setFollowedEventsIds,
-    availableCities,
   } = useEvents();
   const { get, destroy, post } = useBackend();
   const inRange = (x: number, min: number, max: number) => {
@@ -428,74 +427,14 @@ export default function Home(
           }}
         />
       </Head>
-      {/* <HeroBanner /> */}
+      <HeroBanner />
       {/* <CategoriesSection /> */}
 
       <Container className="bg-white border-y border-slate-100" variant="sm">
         <TitleH1 className="text-left mb-0">Sucediendo cerca de ti</TitleH1>
       </Container>
 
-      <div
-        id="filters"
-        className={cn("filter-header", {
-          "is-scrolling": scrollDirection === "up",
-        })}
-      >
-        <div className="filter-header-container">
-          <CategoriesRack
-            categories={CATEGORIES}
-            onClickHandler={handleCategoryPageNavigation}
-            activeCategory={eventsCategory}
-          />
-
-          <div className="hidden lg:flex ml-auto gap-[16px]">
-            <div className="event-fee-filter-container px-[16px] ml-auto">
-              <ToggleGroup
-                type="single"
-                value={priceFilter}
-                data-togle-name="fee-type-toggle"
-                onValueChange={(val) => setPriceFilter(val as FeeFilter)}
-              >
-                <ToggleGroupItem className="text-sm toggle" value="all">
-                  Todos
-                </ToggleGroupItem>
-                <ToggleGroupItem className="text-sm toggle" value="free">
-                  Gratis
-                </ToggleGroupItem>
-                <ToggleGroupItem className="text-sm toggle" value="pay">
-                  Pago
-                </ToggleGroupItem>
-              </ToggleGroup>
-            </div>
-
-            <div className="grid-type-filter-container  ml-auto">
-              <span className="font-medium">Modo de visualización</span>
-              <ToggleGroup
-                type="single"
-                value={displayType ?? "grid"}
-                onValueChange={(visilityType) => {
-                  console.log(visilityType);
-                  setDisplayType(visilityType === "" ? "grid" : "card");
-                }}
-              >
-                {["grid", "card"].map((type) => (
-                  <ToggleGroupItem
-                    value={type}
-                    id={`view-toggle-check-${type}`}
-                    className="rounded-0 text-slate-900"
-                  >
-                    {type === "grid" ? (
-                      <BsFillGrid1X2Fill />
-                    ) : (
-                      <RiLayoutGridFill />
-                    )}
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-            </div>
-          </div>
-        </div>
-      </div>
+      <FiltersContainer />
 
       <section className="events-container">
         <div className="container 2xl:px-0">

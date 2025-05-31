@@ -1,10 +1,10 @@
-import { ReactElement, useEffect, useRef } from 'react';
-import { AiOutlineCheckCircle, AiOutlineClose } from 'react-icons/ai';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { ReactElement } from "react";
+import { AiOutlineCheckCircle, AiOutlineClose } from "react-icons/ai";
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const StatusModal = ({
-  type = 'success',
+  type = "success",
   message,
   show,
   title,
@@ -12,7 +12,7 @@ const StatusModal = ({
   handleAction,
   handleActionText,
 }: {
-  type: 'success' | 'warning' | 'error';
+  type: "success" | "warning" | "error";
   message?: string;
   title?: string;
   handleActionText?: string;
@@ -20,85 +20,82 @@ const StatusModal = ({
   closeModal: () => void;
   handleAction?: () => void;
 }) => {
-  const modal = useRef<HTMLDivElement | null>(null);
-
   const heading = () => {
-    let message: ReactElement | undefined;
     switch (type) {
-      case 'success':
-        message = (
+      case "success":
+        return (
           <img
-            src='/images/illustration/success-1.svg'
-            alt='Evento Publicado Exitosamente Imagen'
-            className='w-full h-full object-cover max-w-[200px] mb-[24px]'
+            src="/images/illustration/success-1.svg"
+            alt="Evento Publicado Exitosamente Imagen"
+            className="w-full h-full object-cover max-w-[200px] mb-6"
           />
         );
-        break;
-      case 'warning':
-        message = <></>;
-        break;
-      case 'error':
-        message = <></>;
-        break;
+      case "warning":
+        return (
+          <AiOutlineClose className="text-yellow-500" size={64} />
+        );
+      case "error":
+        return (
+          <AiOutlineClose className="text-red-500" size={64} />
+        );
+      default:
+        return null;
     }
-
-    return message;
   };
+
   const footer = () => {
-    let button: ReactElement | undefined;
     switch (type) {
-      case 'success':
-      case 'warning':
-        button = (
-          <Button variant='primary' onClick={closeModal}>
+      case "success":
+      case "warning":
+        return (
+          <Button onClick={closeModal} className="w-full">
             Continuar
           </Button>
         );
-        break;
-      case 'error':
-        button = (
-          <>
-            <Button variant='secondary' onClick={closeModal}>
+      case "error":
+        return (
+          <div className="flex gap-2 w-full">
+            <Button variant="outline" onClick={closeModal} className="flex-1">
               Cerrar
             </Button>
             {handleAction && (
-              <Button variant='primary' onClick={handleAction}>
+              <Button onClick={handleAction} className="flex-1">
                 {handleActionText}
               </Button>
             )}
-          </>
+          </div>
         );
-        break;
+      default:
+        return null;
     }
-
-    return button;
   };
 
   return (
-    <Modal
-      centered
-      ref={modal}
-      show={show}
-      onHide={closeModal}
-      id='status-modal'
-    >
-      <Modal.Header closeButton></Modal.Header>
-      <Modal.Body>
-        <div className=' flex items-center flex-col'>
-          {heading()}
-          {title && <h3 className='mt-[20px]'>{title}</h3>}
-        </div>
-
+    <Dialog open={show} onOpenChange={closeModal}>
+      <DialogContent className="max-w-md w-full">
+        <DialogHeader>
+          <DialogClose asChild>
+            <button
+              className="absolute right-4 top-4 text-slate-400 hover:text-slate-900"
+              onClick={closeModal}
+              aria-label="Cerrar"
+            >
+              <AiOutlineClose size={24} />
+            </button>
+          </DialogClose>
+          <div className="flex flex-col items-center">
+            {heading()}
+            {title && <DialogTitle className="mt-5 text-center">{title}</DialogTitle>}
+          </div>
+        </DialogHeader>
         {message && (
-          <div className='text-center  px-[20px] lg:px-32px'>
-            <p className='text-md text-slate-700 mb-0 mt-[8px]'>{message}</p>
+          <div className="text-center px-5">
+            <p className="text-md text-slate-700 mb-0 mt-2">{message}</p>
           </div>
         )}
-      </Modal.Body>
-      <Modal.Footer className='justify-center py-[32px]'>
-        {footer()}
-      </Modal.Footer>
-    </Modal>
+        <DialogFooter className="justify-center py-8">{footer()}</DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

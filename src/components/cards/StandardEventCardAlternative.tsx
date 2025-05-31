@@ -1,6 +1,3 @@
-import Card from "react-bootstrap/Card";
-import Badge from "react-bootstrap/Badge";
-import Button from "react-bootstrap/Button";
 import { useRouter } from "next/router";
 import {
   AiTwotoneCalendar,
@@ -11,7 +8,7 @@ import { truncateText } from "@/lib/utils";
 import dayjs from "dayjs";
 import es from "dayjs/locale/es-do";
 import Link from "next/link";
-import { CATEGORIES_DICT } from "@/libs/variables";
+import { CATEGORIES_DICT } from "@/lib/variables";
 dayjs.locale("es-do");
 
 type AdminEventCardI = {
@@ -34,6 +31,22 @@ type AdminEventCardI = {
   onFollowAction?: () => void;
 };
 
+const Badge = ({
+  children,
+  className = "",
+  color = "bg-slate-900 text-white",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  color?: string;
+}) => (
+  <span
+    className={`inline-block px-3 py-1 rounded-2xl text-sm font-semibold ${color} ${className}`}
+  >
+    {children}
+  </span>
+);
+
 const OrganizerEventCard = ({
   index,
   id,
@@ -51,8 +64,8 @@ const OrganizerEventCard = ({
   const timeString = date?.split("T")[0] + "T" + time;
 
   return (
-    <Card key={index} className="standard-card-alt">
-      <Card.Header className="h-[240px] flex xl:h-[200px] relative align-center w-100 overflow-hidden py-[12px] px-[16px]">
+    <div key={index} className="bg-white rounded-lg shadow-sm border standard-card-alt">
+      <div className="h-[240px] flex xl:h-[200px] relative align-center w-full overflow-hidden py-3 px-4">
         <img
           src={`https://encoro.app/cdn-cgi/image/quality=85,format=webp/${
             media.split("aws.com/")[1]
@@ -63,51 +76,54 @@ const OrganizerEventCard = ({
           width={262}
           height={240}
         />
-        <Badge bg="primary" className="max-h-[24px] relative z-3">
+        <Badge className="max-h-[24px] relative z-3">
           {CATEGORIES_DICT[category]}
         </Badge>
 
         {loggedUser && (
-          <Button
-            className={`follow-btn ${isFollowed ? "followed" : ""}`}
+          <button
+            className={`absolute right-4 top-4 rounded-full p-1 transition-colors ${
+              isFollowed ? "text-red-500" : "text-slate-400"
+            }`}
             onClick={(e) => {
               onFollowAction?.();
               e.currentTarget.blur();
               e.stopPropagation();
               e.preventDefault();
             }}
+            aria-label={isFollowed ? "Dejar de seguir" : "Seguir"}
           >
             <AiFillHeart size={36} />
-          </Button>
+          </button>
         )}
-      </Card.Header>
+      </div>
 
-      <Card.Body className="flex flex-column">
+      <div className="flex flex-col p-4">
         <Link
           className="text-slate-900 no-underline"
           href={`/${category.toLocaleLowerCase().split(" ").join("-")}/${id}`}
         >
-          <Card.Title className="text-base">
+          <div className="text-base font-semibold">
             {truncateText(title, 90)}
-          </Card.Title>
+          </div>
         </Link>
-        <Card.Text className="flex items-center gap-[12px]">
-          <span className="inline-flex flex-start items-center text-slate-600">
-            <AiTwotoneCalendar className="mr-[4px]" size={16} />
+        <div className="flex items-center gap-3 mt-2">
+          <span className="inline-flex items-center text-slate-600">
+            <AiTwotoneCalendar className="mr-1" size={16} />
             <span className="text-base capitalize">
               {dayjs(date).locale(es).format("MMM D, YYYY")}
             </span>
           </span>
-          <span className="h-[12px] w-[1px] bg-slate-300" />
-          <span className="inline-flex flex-start items-center text-slate-600">
-            <AiOutlineClockCircle className="mr-[4px]" size={16} />
+          <span className="h-3 w-px bg-slate-300" />
+          <span className="inline-flex items-center text-slate-600">
+            <AiOutlineClockCircle className="mr-1" size={16} />
             <span className="text-base">
               {dayjs(timeString).format("h:mm A")}
             </span>
           </span>
-        </Card.Text>
-      </Card.Body>
-    </Card>
+        </div>
+      </div>
+    </div>
   );
 };
 

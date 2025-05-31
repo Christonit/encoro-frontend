@@ -32,25 +32,25 @@ export const ShareLinkButton: React.FC<ShareLinkButtonType> = ({
   };
 
   const getSocialButton = () => {
-    switch (social_network) {
+  switch (social_network) {
       case "whatsapp": {
-        const encodedMessage = encodeURIComponent(
-          `Mira este Evento en Encoro:\n${link}`
-        );
-        const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+      const encodedMessage = encodeURIComponent(
+        `Mira este Evento en Encoro:\n${link}`
+      );
+      const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
         return (
           <Link 
             href={whatsappUrl} 
             className="text-slate-600 hover:text-slate-900 transition-colors"
           >
             <AiOutlineWhatsApp size={24} />
-          </Link>
-        );
+        </Link>
+      );
       }
 
       case "facebook": {
         const encodedUrl = encodeURIComponent(link);
-        const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+      const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
         return (
           <Link 
             href={shareUrl} 
@@ -58,18 +58,18 @@ export const ShareLinkButton: React.FC<ShareLinkButtonType> = ({
             className="text-slate-600 hover:text-slate-900 transition-colors"
           >
             <MdFacebook size={24} />
-          </Link>
-        );
+        </Link>
+      );
       }
 
       case "twitter": {
-        const encodedText = encodeURIComponent(`Encontre este evento en Encoro`);
+      const encodedText = encodeURIComponent(`Encontre este evento en Encoro`);
         const encodedUrl = encodeURIComponent(link);
-        const encodedHashtags = hashtags
-          ? encodeURIComponent(hashtags.join(","))
-          : "";
+      const encodedHashtags = hashtags
+        ? encodeURIComponent(hashtags.join(","))
+        : "";
 
-        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}&hashtags=${encodedHashtags}`;
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}&hashtags=${encodedHashtags}`;
         return (
           <Link 
             href={twitterUrl} 
@@ -77,8 +77,8 @@ export const ShareLinkButton: React.FC<ShareLinkButtonType> = ({
             className="text-slate-600 hover:text-slate-900 transition-colors"
           >
             <AiFillTwitterCircle size={24} />
-          </Link>
-        );
+        </Link>
+      );
       }
 
       case "share-link": {
@@ -86,24 +86,24 @@ export const ShareLinkButton: React.FC<ShareLinkButtonType> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  onClick={handleCopyClick}
+        <button
+          onClick={handleCopyClick}
                   className="text-slate-600 hover:text-slate-900 transition-colors"
-                >
+        >
                   <MdContentCopy size={24} />
                 </button>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="text-sm">{copyStatus}</p>
               </TooltipContent>
-            </Tooltip>
+              </Tooltip>
           </TooltipProvider>
-        );
+      );
       }
 
       default:
         return null;
-    }
+  }
   };
 
   return getSocialButton();
