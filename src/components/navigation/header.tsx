@@ -1,4 +1,4 @@
-
+import React from "react";  
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +53,29 @@ const FEE_PILLS = [
   { label: "Gratis", value: "free" },
   { label: "Pago", value: "paid" },
 ];
+
+export function useThrottledScrollY() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    console.log("Whatsup");
+    console.log({scrollY}); 
+    let ticking = false;
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return scrollY;
+}
 
 const Header = () => {
   const { patch, get } = useBackend();
@@ -200,6 +223,10 @@ const Header = () => {
   }, [params]);
 
   useEffect(() => {
+    console.log("MOunt-unmount");
+  }, []);  
+
+  useEffect(() => {
     if (pathname === "/") {
       setShouldShowActionsBar(true);
     } else {
@@ -285,6 +312,7 @@ const Header = () => {
       setScrollDirectionValue(null);
     }
   }, [scrollDirection, pathname]);
+ 
   useEffect(() => {
     if (pathname === "/" && shouldActionsBar) {
       const shouldBeOnTop = scrollPos < 300;
@@ -311,15 +339,15 @@ const Header = () => {
   }, [user_notifications]);
 
   // --- DESKTOP HEADER ---
-  const DesktopHeader = () => (
+  const DesktopHeader = React.memo(() => (
     <header className={cn(
       "w-full border-b flex flex-col transition-colors duration-200 sticky top-0 z-50",
-      pathname === "/" && isOnTopScrollOnHome ? "bg-transparent border-transparent" : "bg-white border-b-slate-200"
+      !(pathname === "/" && isOnTopScrollOnHome) ?   "bg-white border-b-slate-200" : "bg-transparent border-transparent"
     )}>
       <div className="flex items-center justify-between px-6 py-3 w-full">
         {/* Logo */}
-        <Link href="/" className="flex items-center min-w-[130px]">
-          <Image src="/images/logo.svg" alt="Logo" width={130} height={30} />
+        <Link href="/" className="flex items-center min-w-[130px] mr-auto">
+          <Image  src="/images/logo.svg" alt="Logo" width={130} height={30} />
         </Link>
         {/* Search bar */}
         <div className="flex-1 flex justify-center">
@@ -391,7 +419,7 @@ const Header = () => {
         </nav>
       </div>
     </header>
-  );
+  ));
 
   // --- MOBILE HEADER ---
   const MobileHeader = () => (
@@ -556,6 +584,7 @@ const Header = () => {
       ))}
     </div>
   );
+
 
   // --- RENDER ---
   return windowWidth >= resolution.lg ? <DesktopHeader /> : <MobileHeader />;
