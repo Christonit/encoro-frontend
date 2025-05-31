@@ -12,6 +12,10 @@
   &.is-scrolling {
     top: 64px;
   }
+
+  &:hover {
+    // ... existing code ...
+  }
 }
 
 .filter-header-container {

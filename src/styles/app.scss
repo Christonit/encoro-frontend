@@ -481,6 +481,7 @@ figure:hover .grid-button-wrapper {
   z-index: 99;
   background-color: gray;
   transition: width 200ms ease-in-out;
+  
   &:hover {
     width: 240px;
   }
