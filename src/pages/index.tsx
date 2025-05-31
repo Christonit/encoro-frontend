@@ -27,6 +27,8 @@ import { LuLoader } from "react-icons/lu";
 import { useRouter } from "next/router";
 import { FiltersProvider, useFilters } from "@/context/filters";
 import { FiltersContainer } from "@/components/complex/FiltersContainer";
+import HeroBanner from "@/components/complex/HeroBanner";
+import CategoriesSection from "@/components/complex/CategoriesSection";
 dayjs.locale("es-do");
 
 
@@ -427,8 +429,9 @@ function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProp
           }}
         />
       </Head>
+
       <HeroBanner />
-      {/* <CategoriesSection /> */}
+      <CategoriesSection />
 
       <Container className="bg-white border-y border-slate-100" variant="sm">
         <TitleH1 className="text-left mb-0">Sucediendo cerca de ti</TitleH1>

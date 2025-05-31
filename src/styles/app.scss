@@ -1350,6 +1350,7 @@ img.image-block {
   position: relative;
 }
 
+
 .dropdown-box {
   position: absolute;
   right: 0;
@@ -1525,4 +1526,10 @@ img.image-block {
 
 .text-tourism-end {
   color: $tourism-end-color;
+}
+
+
+
+.culture-badge, .concerts-badge {
+  color: rgba(#fff, 0.9);
 }

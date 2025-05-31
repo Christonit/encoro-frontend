@@ -1,9 +1,3 @@
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 
 import {
   DropdownMenu,
@@ -13,7 +7,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
-import OnHoverDropdown from "@/components/cards/OnHoverDropdown";
 import Image from "next/image";
 import {
   AiOutlineMenu,
@@ -293,12 +286,13 @@ const Header = () => {
     }
   }, [scrollDirection, pathname]);
   useEffect(() => {
-    if (pathname === "/" && shouldActionsBar && scrollPos >= 400) {
-      setIsOnTopScrollOnHome(false);
-    } else if (pathname === "/" && shouldActionsBar && scrollPos < 400) {
-      setIsOnTopScrollOnHome(true);
+    if (pathname === "/" && shouldActionsBar) {
+      const shouldBeOnTop = scrollPos < 300;
+      if (isOnTopScrollOnHome !== shouldBeOnTop) {
+        setIsOnTopScrollOnHome(shouldBeOnTop);
+      }
     }
-  }, [shouldActionsBar, pathname, scrollPos]);
+  }, [shouldActionsBar, pathname, scrollPos, isOnTopScrollOnHome]);
 
   const mobileButtonHandler = (route: string) => {
     toggleMobileNav(false);
@@ -318,7 +312,10 @@ const Header = () => {
 
   // --- DESKTOP HEADER ---
   const DesktopHeader = () => (
-    <header className="w-full border-b bg-white flex flex-col">
+    <header className={cn(
+      "w-full border-b flex flex-col transition-colors duration-200 sticky top-0 z-50",
+      pathname === "/" && isOnTopScrollOnHome ? "bg-transparent border-transparent" : "bg-white border-b-slate-200"
+    )}>
       <div className="flex items-center justify-between px-6 py-3 w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center min-w-[130px]">
@@ -326,13 +323,15 @@ const Header = () => {
         </Link>
         {/* Search bar */}
         <div className="flex-1 flex justify-center">
-          <DateLocationFilter
-            selectedDay={date_filter}
-            handleLocationChange={(payload: any) => setParams({ ...params, location: payload.city ?? "" })}
-            handleDateChange={(date: any) => setParams({ ...params, date: dayjs(date).format("YYYY-MM-DD") })}
-            handleOnSearch={(e: any) => queryForEvents(e)}
-            searchResults={search_results}
-          />
+          {!(pathname === "/" && isOnTopScrollOnHome) && (
+            <DateLocationFilter
+              selectedDay={date_filter}
+              handleLocationChange={(payload: any) => setParams({ ...params, location: payload.city ?? "" })}
+              handleDateChange={(date: any) => setParams({ ...params, date: dayjs(date).format("YYYY-MM-DD") })}
+              handleOnSearch={(e: any) => queryForEvents(e)}
+              searchResults={search_results}
+            />
+          )}
         </div>
         {/* Navigation */}
         <nav className="flex items-center gap-4 ml-6">
@@ -391,7 +390,6 @@ const Header = () => {
           )}
         </nav>
       </div>
-     
     </header>
   );
 

@@ -6,6 +6,7 @@
   z-index: 5;
   @include breakpoint(md) {
     position: sticky;
+    top: 64px;
   }
   transition: all 200ms ease-in-out;
 
