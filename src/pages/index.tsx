@@ -289,8 +289,8 @@ function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProp
       printedGridClass === "grid-5"
     ) {
       return (
-        <div className="event-card-text-lateral px-[20px] py-[20px] flex flex-column justify-content-end">
-          <div>
+        <div className="event-card-text-lateral px-[20px] py-[20px] flex flex-column justify-content-end mt-auto">
+          <div className="flex flex-col gap-[12px] mt-auto">
             <Badge className={cn("mb-[12px]", `${event.category}-badge`)}>
               {CATEGORIES_DICT[event.category]}
             </Badge>
@@ -305,8 +305,8 @@ function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProp
 
     if (printedGridClass === "grid-1") {
       return (
-        <div className="event-card-text px-[20px] py-[20px]">
-          <h2 className="subtitle text-white text-shadow-lv1 mb-[12px]">
+        <div className="event-card-text px-[20px] py-[20px] mt-auto">
+          <h2 className="subtitle text-white text-shadow-lv1 mb-2">
             {event.title}
           </h2>
           <div className="flex gap-[16px] align-items-center">
@@ -329,14 +329,14 @@ function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProp
       printedGridClass !== "special-grid"
     ) {
       return (
-        <div className="event-card-text px-[20px] py-[20px]">
+        <div className="event-card-text px-[20px] py-[20px] mt-auto">
           <Badge
             className={cn("shadow-lv1", "mb-[12px]", `${event.category}-badge`)}
           >
             {CATEGORIES_DICT[event.category]}
           </Badge>
 
-          <h2 className="subtitle text-white text-shadow-lv1 mb-[12px]">
+          <h2 className="subtitle text-white text-shadow-lv1 mb-2">
             {event.title}
           </h2>
           <div className="flex gap-[16px] align-items-center">

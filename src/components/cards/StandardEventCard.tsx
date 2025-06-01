@@ -62,7 +62,7 @@ const StandardEventCard = ({
         className="w-full h-full object-cover"
         loading="lazy"
       />
-      <div className=" px-[20px] py-[20px] event-card-text px-[20px] py-[20px]">
+      <div className=" px-[20px] py-[20px] event-card-text px-[20px] py-[20px] mt-auto">
         <div className="flex gap-[20px] items-center mb-[12px] flex-wrap">
           <Badge className={`${category}-badge`}>
             {CATEGORIES_DICT[category]}

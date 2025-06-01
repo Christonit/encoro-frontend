@@ -856,7 +856,7 @@ img.image-block {
 }
 
 .card {
-  @include border-radius(8);
+  @include border-radius(12);
   overflow: hidden;
   position: relative;
 }

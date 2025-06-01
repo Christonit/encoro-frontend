@@ -169,7 +169,7 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
       )}
       <div className="lg:py-8">
         <div className="container mx-auto px-4 xl:container">
-          <div className="lg:flex lg:flex-row-reverse" id="event-post-body">
+          <div className="lg:flex lg:flex-row-reverse gap-8" id="event-post-body">
             <div className="lg:w-1/2">
               <section className="mb-6 lg:mb-0 grid-container">
                 <div className="activity-grid-area">
@@ -207,17 +207,18 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
             <div className="lg:w-1/2">
               <div className="flex gap-3 mb-6">
                 {event.entrance_format === "free" ? (
-                  <Badge variant="default" className="font-semibold">
+                  <Badge variant="no-cover" size="lg">
                     Gratis
                   </Badge>
                 ) : (
-                  <Badge variant="default" className="font-semibold">
+                  <Badge variant="with-cover" className="font-semibold" size="lg">
                     {event.fee > 0 && `RD$ ${formatMoneyWithCommas(event.fee)}`}
                   </Badge>
                 )}
 
                 {event.category && (
                   <Badge
+                  size="lg"
                     variant="secondary"
                     className={`font-normal ${event.category}-badge`}
                   >
@@ -228,6 +229,7 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
                   <>
                     {secondary_category.map((category, i) => (
                       <Badge
+                      size="lg"
                         variant="secondary"
                         key={i}
                         className={`font-normal ${category}-badge`}
@@ -310,8 +312,8 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
                 </span>
 
                 <Button
-                  variant="outline"
-                  className="mt-3 md:mt-0 md:ml-3 text-sm font-semibold"
+                  variant="ghost"
+                  className="mx-3"
                   onClick={() => setOpenMap(!openMap)}
                 >
                   {!openMap ? "Ver mapa" : "Cerrar mapa"}
