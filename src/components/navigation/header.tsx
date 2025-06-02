@@ -1,4 +1,4 @@
-import React from "react";  
+import React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +35,12 @@ import { useBackend, useWindow } from "@/hooks";
 import { cn } from "@/lib/utils";
 import NotificationItem from "@/components/notifications/NotificationItem";
 import SearchResultItem from "@/components/ui/search-result-item";
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+} from "@/components/ui/navigation-menu";
 
 const CATEGORY_PILLS = [
   { label: "Todas las categorías", value: "all" },
@@ -59,7 +65,7 @@ export function useThrottledScrollY() {
 
   useEffect(() => {
     console.log("Whatsup");
-    console.log({scrollY}); 
+    console.log({ scrollY });
     let ticking = false;
     const handleScroll = () => {
       if (!ticking) {
@@ -111,6 +117,8 @@ const Header = () => {
   const [search_results, setSearchResults] = useState<
     EventSearchResultType[] | undefined
   >();
+
+  const [agendaMenuOpen, setAgendaMenuOpen] = useState(false);
 
   const backButtonPositioner = (
     refElement: HTMLButtonElement | HTMLDivElement | null,
@@ -224,7 +232,7 @@ const Header = () => {
 
   useEffect(() => {
     console.log("MOunt-unmount");
-  }, []);  
+  }, []);
 
   useEffect(() => {
     if (pathname === "/") {
@@ -312,7 +320,7 @@ const Header = () => {
       setScrollDirectionValue(null);
     }
   }, [scrollDirection, pathname]);
- 
+
   useEffect(() => {
     if (pathname === "/" && shouldActionsBar) {
       const shouldBeOnTop = scrollPos < 300;
@@ -342,12 +350,12 @@ const Header = () => {
   const DesktopHeader = React.memo(() => (
     <header className={cn(
       "w-full border-b flex flex-col transition-colors duration-200 sticky top-0 z-50",
-      !(pathname === "/" && isOnTopScrollOnHome) ?   "bg-white border-b-slate-200" : "bg-transparent border-transparent"
+      !(pathname === "/" && isOnTopScrollOnHome) ? "bg-white border-b-slate-200" : "bg-transparent border-transparent"
     )}>
       <div className="flex items-center justify-between px-6 py-3 w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center min-w-[130px] mr-auto">
-          <Image  src="/images/logo.svg" alt="Logo" width={130} height={30} />
+          <Image src="/images/logo.svg" alt="Logo" width={130} height={30} />
         </Link>
         {/* Search bar */}
         <div className="flex-1 flex justify-center">
@@ -362,61 +370,99 @@ const Header = () => {
           )}
         </div>
         {/* Navigation */}
-        <nav className="flex items-center gap-4 ml-6">
-          <Link href="/" className="font-semibold text-slate-900 hover:text-slate-600">Actividades</Link>
-          <div className="relative group">
-            <button className="font-semibold text-red-500 focus:outline-none">Mi agenda</button>
-            <div className="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 min-w-[180px] z-50">
-              <Link href="/user/my-schedule/" className="block px-4 py-2 hover:bg-slate-100">Mi Calendario</Link>
-              <Link href="/user/followed/" className="block px-4 py-2 hover:bg-slate-100">Perfiles seguidos</Link>
-            </div>
-          </div>
-          {user && user.is_business && (
-            <Link href="/user/my-events/" className="font-semibold text-slate-900">Mis eventos</Link>
-          )}
-          <button className="relative" onClick={() => toggleNotificationsModal(true)}>
-            <AiFillBell size={24} className="text-slate-900" />
-            {has_new_notifs && <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />}
-          </button>
-          {user && user.is_business && (
-            <Link
-              href="/activity/create/"
-              className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg text-base transition-colors ml-2"
-            >
-              Crear evento
-            </Link>
-          )}
-          {/* User avatar dropdown */}
-          {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="overflow-hidden bg-none p-0 border-0 outline-0 rounded-full">
-                <img
-                  src={user.business_picture ? user.business_picture : user.image ?? ""}
-                  className="w-8 h-8 min-w-8 min-h-8 object-cover rounded-full"
-                  alt=""
-                />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="z-[9] text-right !top-[4px]">
-                {!user.is_business && (
-                  <DropdownMenuItem>
-                    <Button onClick={() => push("/user/create-business-profile/")} className="hover:bg-transparent">
-                      <span className="bg-blue-500 hover:bg-blue-700 mt-0 inline-block px-2 py-2 text-white font-semibold rounded">Actualizar a Negocio</span>
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/" className="font-semibold text-slate-900 hover:text-slate-600">Actividades</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <div
+                onMouseEnter={() => setAgendaMenuOpen(true)}
+                onMouseLeave={() => setAgendaMenuOpen(false)}
+              >
+                <DropdownMenu open={agendaMenuOpen} onOpenChange={setAgendaMenuOpen}>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="link" className="font-semibold text-sm text-slate-900 hover:text-slate-600">Mi agenda</Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="min-w-[200px] bg-white border border-slate-200 rounded-lg ">
+                    <DropdownMenuItem asChild className="py-2 hover:bg-slate-100 rounded-md">
+                      <Link href="/user/my-schedule/" className="font-regular text-slate-900  hover:text-slate-600">Mi Calendario</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild className="py-2 hover:bg-slate-100 rounded-md">
+                      <Link href="/user/followed/" className="font-regular text-slate-900  hover:text-slate-600">Perfiles seguidos</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </NavigationMenuItem>
+            {user && user.is_business && (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/user/my-events/" className="font-semibold text-slate-900">Mis eventos</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )}
+
+            {user &&
+             
+                <Button variant="clear" className="relative px-2" onClick={() => toggleNotificationsModal(true)}>
+                  <AiFillBell size={24} className="text-slate-900" />
+                  {has_new_notifs && <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />}
+                </Button>
+            }
+            {user && user.is_business && (
+              <NavigationMenuItem>
+                  <Link
+                    href="/activity/create/"
+                    className="bg-red-500 hover:bg-red-400 text-white hover:text-white/[0.8] font-bold py-2 px-4 rounded-lg text-base transition-colors ml-2"
+                  >
+                    Crear evento
+                  </Link>
+              </NavigationMenuItem>
+            )}
+            {/* User avatar dropdown */}
+            {user && (
+              <NavigationMenuItem className="ml-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="overflow-hidden bg-none p-0 border-0 outline-0 rounded-full">
+
+                      <Image
+                        src={user.business_picture || user.image || ''}
+                        className="w-8 h-8 min-w-8 min-h-8 object-cover rounded-full"
+                        alt=""
+                        width="32"
+                        height="32"
+                      /> 
                     </Button>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem>
-                  <Button className="py-2" onClick={() => push("/user/settings/")}>Configuracion</Button>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Button className="py-2" onClick={() => signOut()}>Cerrar sesion</Button>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-          {!session && (
-            <Button onClick={() => signIn()} className="ml-2 whitespace-nowrap" >Login</Button>
-          )}
-        </nav>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="z-[9] text-right !top-[4px]">
+                    {!user.is_business && (
+                      <DropdownMenuItem asChild>
+                        <Button onClick={() => push("/user/create-business-profile/")} className="hover:bg-transparent w-full text-left">
+                          <span className="bg-blue-500 hover:bg-blue-700 mt-0 inline-block px-2 py-2 text-white font-semibold rounded">Actualizar a Negocio</span>
+                        </Button>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem asChild>
+                      <Button className="py-2 w-full text-left" onClick={() => push("/user/settings/")}>Configuracion</Button>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Button className="py-2 w-full text-left" onClick={() => signOut()}>Cerrar sesion</Button>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </NavigationMenuItem>
+            )}
+            {!session && (
+              <NavigationMenuItem>
+                <Button onClick={() => signIn()} className="ml-2 whitespace-nowrap" >Login</Button>
+              </NavigationMenuItem>
+            )}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
     </header>
   ));

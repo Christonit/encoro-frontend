@@ -127,6 +127,7 @@ const DateLocationFilter = forwardRef(
         <Button
           className="px-[8px] py-0 h-[36px] bg-transparent border-0 "
           onClick={handleToggleSearch}
+          variant="clear"
         >
           {showSearch ? (
             <AiOutlineArrowLeft size={20} className="text-slate-900" />
