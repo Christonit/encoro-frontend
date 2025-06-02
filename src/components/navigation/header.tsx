@@ -363,7 +363,7 @@ const Header = () => {
         </div>
         {/* Navigation */}
         <nav className="flex items-center gap-4 ml-6">
-          <Link href="/" className="font-semibold text-slate-900">Actividades</Link>
+          <Link href="/" className="font-semibold text-slate-900 hover:text-slate-600">Actividades</Link>
           <div className="relative group">
             <button className="font-semibold text-red-500 focus:outline-none">Mi agenda</button>
             <div className="absolute hidden group-hover:block bg-white shadow-lg rounded mt-2 min-w-[180px] z-50">
@@ -414,7 +414,7 @@ const Header = () => {
             </DropdownMenu>
           )}
           {!session && (
-            <Button onClick={() => signIn()} className="ml-2 whitespace-nowrap">Login</Button>
+            <Button onClick={() => signIn()} className="ml-2 whitespace-nowrap" >Login</Button>
           )}
         </nav>
       </div>

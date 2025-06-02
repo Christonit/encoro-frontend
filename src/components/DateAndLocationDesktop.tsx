@@ -117,15 +117,13 @@ const DateLocationFilter = forwardRef(
       <div
         ref={ref}
         className={cn(
-          "top-bar-main-actions flex items-center lg:min-w-[516px] w-max  bg-white",
+          "top-bar-main-actions flex items-center bg-white border border-slate-300 rounded-xl",
           {
             "border-slate-900": showSearch,
             "absolute ": isOnHeader && windowWidth >= resolution["3xl"],
           }
         )}
       >
-        {/* Disabled divider until I do the searchbar */}
-        {/* <span className="h-[24px] w-[1px] bg-slate-300"></span> */}
         <Button
           className="px-[8px] py-0 h-[36px] bg-transparent border-0 "
           onClick={handleToggleSearch}
@@ -136,7 +134,6 @@ const DateLocationFilter = forwardRef(
             <AiOutlineSearch size={20} className="text-slate-900" />
           )}
         </Button>
-
         {showSearch ? (
           <input
             ref={searchInput}
@@ -152,9 +149,8 @@ const DateLocationFilter = forwardRef(
           />
         ) : (
           <>
-            <span className="h-[20px] w-[2px] mr-[12px] bg-slate-300 border-solid  relative"></span>
-
-            <div className="top-bar-location-picker">
+            <span className="h-6 w-px bg-slate-300" />
+            <div className="top-bar-location-picker flex items-center">
               <SearchForCity
                 citiesList={availableCities}
                 onChangeLocation={(props) => {
@@ -164,16 +160,14 @@ const DateLocationFilter = forwardRef(
                   toggleClearFilter(true);
                 }}
                 defaultValue={isOnHeader ? defaultValue : defaultCity}
-                className="header-location-input"
+                className="header-location-input bg-transparent border-0  text-slate-900 text-lg"
                 clearLocation={clearLocation}
                 showClearFilter={showClearFilter}
               />
             </div>
-
-            <span className="h-[20px] w-[2px] bg-slate-300 border-solid  relative"></span>
-
+            <span className="h-6 w-px bg-slate-300" />
             <DatePicker
-              className=" w-full py-[2px] z-[2] relative xl:min-w-[240px]"
+              className="w-full max-w-[240px] min-w-[240px]"
               handleDateChange={handleDateChange}
               seletedDate={selectedDay}
             />

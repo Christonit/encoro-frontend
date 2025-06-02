@@ -57,17 +57,17 @@ export const DatePicker = ({
       })}
     >
       <Button
-        variant="outline-secondary"
+        variant="clear"
         onClick={() => openCalendar(true)}
         className={cn(
-          "flex flex-row  items-center gap-[8px]  !overflow-hidden !hover:bg-red-100 !rounded-[6px] font-normal px-[12px] py-0 border-0  w-full h-full",
+          "flex flex-row  justify-start gap-[8px]  !overflow-hidden  !rounded-[6px] font-normal px-[12px] py-0 border-0  w-full h-full",
           {
             " pl-[52px]": isForm,
           }
         )}
       >
         {isForm ? (
-          <span className="absolute rounded-tl-[6px] rounded-bl-[6px] top-0 bottom-0 my-auto px-[8px] py-[8px] bg-slate-100  w-[40px] flex items-center justify-center left-0">
+          <span className="absolute rounded-tl-[6px] rounded-bl-[6px] top-0 bottom-0 my-auto px-[8px] py-[8px]  w-[40px] flex items-center  left-0">
             <LuCalendarDays size={20} />
           </span>
         ) : (
@@ -89,9 +89,9 @@ export const DatePicker = ({
           onClick={() => {
             handleDateChange(undefined);
           }}
-          variant="link"
+          variant="ghost"
           className={cn(
-            "px-0 py-0 h-[32px] min-w-[32px] justify-center  flex items-center absolute  bottom-[0] top-[0] my-auto border-0",
+            "px-0 py-0 h-[32px] min-w-[32px]   flex items-center absolute  bottom-[0] top-[0] my-auto border-0",
             { "right-[4px]": !isForm, "right-0": isForm }
           )}
         >

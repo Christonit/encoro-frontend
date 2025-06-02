@@ -1,15 +1,7 @@
 .btn {
 
   line-height: normal;
-  font-weight: 600;
-  min-height: 32px;
-  color: $slate-900;
-  border-color: $slate-200;
-  &:hover {
-    background-color: $slate-100;
-    border-color: $slate-200;
-    color: $slate-900;
-  }
+  
 }
 .pill.btn {
   line-height: 1;

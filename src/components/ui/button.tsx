@@ -5,15 +5,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "leading-none inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 btn",
+  "leading-none inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 btn",
   {
     variants: {
       variant: {
-        default: "bg-red-500 text-white hover:bg-red-600",
+        default: "bg-red-500 text-white hover:bg-red-400",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
-          "bg-[#FFE5EA] !text-red-600  hover:bg-red-200/50  hover:text-red-500 border !border-red-600",
+          "bg-[#FFE5EA] !text-red-500  hover:bg-red-200/50  hover:text-red-500 border !border-red-500",
         "outline-secondary":
           "bg-neutral-100 text-slate-900 hover:bg-neutral-200  border border-slate-900",
         secondary:
@@ -22,7 +22,7 @@ const buttonVariants = cva(
         "ghost-white":
           "hover:bg-neutral-100/[.50] hover:text-accent-foreground bg-[#fff] ",
         light: "hover:bg-accent hover:text-accent-foreground",
-
+        clear: "!active:bg-slate-200/[0.5] hover:bg-slate-200/[0.5]",
         link: "text-red-500 underline-offset-4 hover:underline",
       },
       size: {
@@ -41,7 +41,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 

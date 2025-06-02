@@ -99,7 +99,7 @@ const SearchForCity = ({
       )}
       ref={searchAddress}
     >
-      <div className="flex items-center h-full">
+      <div className="flex items-center h-full px-2">
         {appearence === "primary" ? (
           <div className="border-0 h-[36px] rounded-r-none">
             <MdLocationPin size={20} />
@@ -115,7 +115,7 @@ const SearchForCity = ({
             setShowOptions(true);
           }}
           className={cn(
-            "border-1 border-solid focus:outline-none border-slate-500 bg-transparent h-[32px] py-[8px] px-[8px] text-base text-neutral-900 placeholder:text-slate-200",
+            " focus:outline-none  bg-transparent h-[32px] py-[8px] px-[8px] text-base text-neutral-900 placeholder:text-slate-200",
             {
               "max-w-[240px] w-full": !fluid && appearence === "clear",
               "w-full": fluid || appearence === "primary",
