@@ -264,219 +264,301 @@ export default function CreateEvent() {
         <meta name="robots" content="noindex" />
       </Head>
 
-      <div className="xl:container">
-        <form
-          onSubmit={(props) => {
-            if (!media) setDisplayRequiredMedia(true);
+      <div className="lg:py-8">
+        <div className="container mx-auto px-4 lg:px-0 !max-w-[1200px]">
+          {/* Preview Header Section */}
+          <h1 className="text-2xl font-semibold mb-6 ">Crea tu evento</h1>
 
-            if (!direction) setDisplayRequiredLocation(true);
-
-            if (fee && isNaN(fee)) setDisplayRequiredFee(true);
-
-            if (eventTime === "" || eventDate) setDisplayRequiredDateTime(true);
-            formik.handleSubmit(props);
-          }}
-          className="mb-[32px] lg:my-[32px]"
-        >
-          <div className="gap-[32px]">
-            <div className="heading-container flex items-center">
-              <h1 className="text-3xl lg:text-5xl font-semibold mb-0">
-                Crea tu evento
-              </h1>
-
-              <div className="ml-auto hidden lg:flex ">
-                {/* TODO: Create Preview Event Functionality */}
-                {/* <Button>Previzualizar</Button> */}
-                <button type="submit" className="h-[40px]">
-                  Publicar evento
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="gap-[32px] lg:gap-[56px] grid grid-cols-1 lg:grid-cols-2 max-lg:pt-0 ">
-            <div className="grid gap-y-[32px] md:gap-y-[52px] w-full">
-              <div className="mb-4">
-                <label className="block font-medium mb-1">
-                  Titulo <RequiredStar />
-                </label>
-                <Input
-                  type="text"
-                  {...formik.getFieldProps("title")}
-                  placeholder="Digita tu titulo"
-                />
-                {formik.touched.title && formik.errors.title ? (
-                  <div className="text-red-500 text-sm mt-1">{formik.errors.title}</div>
-                ) : null}
-              </div>
-              <div className="mb-4">
-                <label className="block font-medium mb-1">
-                  Categoria <RequiredStar />
-                </label>
-                <select
-                  {...formik.getFieldProps("category")}
-                  aria-label="Selecciona una categoria"
-                  className="block w-full border border-slate-200 rounded-md px-3 py-2"
-                >
-                  <option>Seleccione una categoría</option>
-                  {CATEGORIES.map((cat) => {
-                    if (cat.value !== "all")
-                      return (
-                        <option key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </option>
-                      );
-                  })}
-                </select>
-                {formik.touched.category && formik.errors.category ? (
-                  <div className="text-red-500 text-sm mt-1">{formik.errors.category}</div>
-                ) : null}
-              </div>
-              <div className="mb-4">
-                <label className="block font-medium mb-1">
-                  Descripción <RequiredStar />
-                </label>
-                <Textarea
-                  {...formik.getFieldProps("description")}
-                  name="description"
-                  rows={3}
-                  placeholder="Describe tu evento"
-                />
-                {formik.touched.description && formik.errors.description ? (
-                  <div className="text-red-500 text-sm mt-1">{formik.errors.description}</div>
-                ) : null}
-              </div>
-              <div className="mb-4">
-                <label className="block font-medium mb-1">Hashtags</label>
-                <Input
-                  type="text"
-                  onChange={(e) => {
-                    if (e.target.value !== "") {
-                      setHashtags(e.target.value.split(/[, ]+/));
-                    }
-                  }}
-                  placeholder="Ej: musica,arte,fiesta"
-                />
-                {hashtags && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {hashtags.map((hashtag, i) => (
-                      <Badge key={i} variant="secondary">
-                        #{hashtag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="block font-medium mb-1">Tipo de asistencia</label>
-                <ToggleGroup
-                  type="single"
-                  value={entrance_format}
-                  onValueChange={setEntranceFormat}
-                  className="gap-2"
-                >
-                  <ToggleGroupItem value="free">Gratis</ToggleGroupItem>
-                  <ToggleGroupItem value="pay">Pago</ToggleGroupItem>
-                </ToggleGroup>
-                {entrance_format === "pay" && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-lg">$</span>
-                    <Input
-                      type="number"
-                      onChange={(e) => setEntranceFee(Number(e.target.value))}
-                      placeholder="Indique el precio"
-                      aria-label="Indique el precio"
-                      className="max-w-[120px]"
-                    />
-                    {displayRequiredFee && (
-                      <span className="text-red-500 text-xs ml-2">
-                        El precio debe ser un número o mayor a 0
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-col gap-y-[32px] md:gap-y-[52px]">
-              <div className="mb-4">
-                <label className="block font-medium mb-1">
-                  Dirección <RequiredStar />
-                </label>
-                <SearchDirection
-                  displayWarning={displayRequiredLocation}
-                  clearSearch={() => setDirection(undefined)}
-                  onChangeLocation={(value: any) => {
-                    setDirection({
-                      city: value.city,
-                      city_id: value.city_id,
-                      direction: value.location,
-                      place_id: value.id,
-                      address_terms: value.terms,
-                    });
-                  }}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block font-medium mb-1">
-                  Fecha <RequiredStar />
-                </label>
-                <div className="flex flex-col md:flex-row gap-4">
-                  <DatePicker
-                    className="border border-slate-200 rounded-md w-full md:max-w-[348px] h-[40px]"
-                    seletedDate={eventDate}
-                    isForm
-                    handleDateChange={setEventDate}
-                  />
-                  <div className="flex items-center gap-2 max-w-[172px] md:w-full lg:w-[50%]">
-                    <span className="text-slate-500">
-                      <AiOutlineClockCircle />
-                    </span>
-                    <TimePicker
-                      use12Hours
-                      placeholder="Hora del evento"
-                      format={format}
-                      className="w-full max-w-[132px] timepicker"
-                      onOk={(val) => {
-                        const minute: any = dayjs(val, "HH:mm").minute();
-                        const hour: any = dayjs(val, "HH:mm").hour();
-                        setEventTime(hour + ":" + minute + ":00");
-                      }}
-                    />
-                  </div>
-                </div>
-                {displayRequiredDateTime && (
-                  <span className="text-red-500 text-xs mt-1 block">
-                    Indicar una hora y fecha es requerido.
+          <div className="py-6 sticky top-[64px] z-30 bg-white border-y border-slate-200">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
+              <div>
+                <h2 className="text-3xl font-bold mb-1">
+                  {formik.values.title || "Placeholder Event Title"}
+                </h2>
+                <div className="flex flex-wrap gap-4 text-slate-600 text-base">
+                  <span>
+                    [
+                    {eventDate
+                      ? dayjs(eventDate).format("MMMM D, YYYY")
+                      : "No dates specified Yet"}
+                    ]
                   </span>
-                )}
+                  <span>[{direction?.direction || "Event Location"}]</span>
+                </div>
               </div>
-              <EventMediaInputGroup
-                id="create-event-media"
-                isRequired
-                displayWarning={displayRequiredMedia}
-                setImage={setMediaState}
-              />
-              <div className="mb-4">
-                <label className="block font-medium mb-1">
-                  Enlace para adquirir o reservar
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Indica el enlace para adquirir o reservar tu cupo"
-                  onChange={(e) => setEventLink(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="ml-auto  lg:hidden justify-center flex">
-              {/* TODO: Create Preview Event Functionality */}
-              {/* <Button>Previzualizar</Button> */}
-              <button type="submit" className="h-[40px] max-w-[400px]">
-                Publicar evento
+              <button
+                type="button"
+                className="mt-4 md:mt-0 px-6 py-2 rounded bg-slate-200 text-slate-500 font-semibold cursor-not-allowed"
+                disabled
+              >
+                Preview event
               </button>
             </div>
           </div>
-        </form>
+          <div className="flex flex-row gap-8">
+            {/* Sidebar */}
+            <div className="relative">
+              <nav className="w-64 min-w-[200px] border-r border-slate-200  py-6 sticky top-[188px] z-30 bg-white">
+                <ul className="space-y-2">
+                  <li>
+                    <a
+                      href="#basic-details"
+                      className="block py-2 px-4 rounded hover:bg-slate-100 font-medium sidebar-link active"
+                    >
+                      Detalles basicos
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#media"
+                      className="block py-2 px-4 rounded hover:bg-slate-100 font-medium sidebar-link"
+                    >
+                      Media
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#dates-location"
+                      className="block py-2 px-4 rounded hover:bg-slate-100 font-medium sidebar-link"
+                    >
+                      Fecha y ubicación
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1">
+              <form
+                onSubmit={(props) => {
+                  if (!media) setDisplayRequiredMedia(true);
+                  if (!direction) setDisplayRequiredLocation(true);
+                  if (fee && isNaN(fee)) setDisplayRequiredFee(true);
+                  if (eventTime === "" || eventDate)
+                    setDisplayRequiredDateTime(true);
+                  formik.handleSubmit(props);
+                }}
+                className="mb-[32px] lg:my-[32px]"
+              >
+                {/* Basic Details Section */}
+                <div
+                  id="basic-details"
+                  className="gap-y-6 lg:gap-y-8 grid grid-cols-1  border-b border-slate-200"
+                >
+                  <h2 className="text-2xl font-semibold ">Detalles basicos</h2>
+                  <div className="grid gap-y-6 md:gap-y-8 w-full">
+                    <div className="">
+                      <label className="block font-medium mb-1">
+                        Titulo <RequiredStar />
+                      </label>
+                      <Input
+                        type="text"
+                        {...formik.getFieldProps("title")}
+                        placeholder="Digita tu titulo"
+                      />
+                      {formik.touched.title && formik.errors.title ? (
+                        <div className="text-red-500 text-sm mt-1">
+                          {formik.errors.title}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="">
+                      <label className="block font-medium mb-1">
+                        Categoria <RequiredStar />
+                      </label>
+                      <select
+                        {...formik.getFieldProps("category")}
+                        aria-label="Selecciona una categoria"
+                        className="block w-full border border-slate-200 rounded-md px-3 py-2"
+                      >
+                        <option>Seleccione una categoría</option>
+                        {CATEGORIES.map((cat) => {
+                          if (cat.value !== "all")
+                            return (
+                              <option key={cat.value} value={cat.value}>
+                                {cat.label}
+                              </option>
+                            );
+                        })}
+                      </select>
+                      {formik.touched.category && formik.errors.category ? (
+                        <div className="text-red-500 text-sm mt-1">
+                          {formik.errors.category}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="">
+                      <label className="block font-medium mb-1">
+                        Descripción <RequiredStar />
+                      </label>
+                      <Textarea
+                        {...formik.getFieldProps("description")}
+                        name="description"
+                        rows={3}
+                        placeholder="Describe tu evento"
+                      />
+                      {formik.touched.description &&
+                      formik.errors.description ? (
+                        <div className="text-red-500 text-sm mt-1">
+                          {formik.errors.description}
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className="">
+                      <label className="block font-medium mb-1">Hashtags</label>
+                      <Input
+                        type="text"
+                        onChange={(e) => {
+                          if (e.target.value !== "") {
+                            setHashtags(e.target.value.split(/[, ]+/));
+                          }
+                        }}
+                        placeholder="Ej: musica,arte,fiesta"
+                      />
+                      {hashtags && (
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {hashtags.map((hashtag, i) => (
+                            <Badge key={i} variant="secondary">
+                              #{hashtag}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="">
+                      <label className="block font-medium mb-1">
+                        Tipo de asistencia
+                      </label>
+                      <ToggleGroup
+                        type="single"
+                        value={entrance_format}
+                        onValueChange={setEntranceFormat}
+                        className="gap-2"
+                      >
+                        <ToggleGroupItem value="free">Gratis</ToggleGroupItem>
+                        <ToggleGroupItem value="pay">Pago</ToggleGroupItem>
+                      </ToggleGroup>
+                      {entrance_format === "pay" && (
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className="text-lg">$</span>
+                          <Input
+                            type="number"
+                            onChange={(e) =>
+                              setEntranceFee(Number(e.target.value))
+                            }
+                            placeholder="Indique el precio"
+                            aria-label="Indique el precio"
+                            className="max-w-[120px]"
+                          />
+                          {displayRequiredFee && (
+                            <span className="text-red-500 text-xs ml-2">
+                              El precio debe ser un número o mayor a 0
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Media Section */}
+                <div id="media" className="pt-8 pb-8 border-b border-slate-200">
+                  <div className="">
+                    <h2 className="text-2xl font-semibold mb-2">Media</h2>
+                  </div>
+                  <div className="flex flex-col gap-y-[32px] md:gap-y-[52px]">
+                    <EventMediaInputGroup
+                      id="create-event-media"
+                      isRequired
+                      displayWarning={displayRequiredMedia}
+                      setImage={setMediaState}
+                    />
+                    <div className="mb-4">
+                      <label className="block font-medium mb-1">
+                        Enlace para adquirir o reservar
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Indica el enlace para adquirir o reservar tu cupo"
+                        onChange={(e) => setEventLink(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dates and Location Section */}
+                <div id="dates-location" className="pt-8 pb-8">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-semibold mb-2">
+                      Date and Location
+                    </h2>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block font-medium mb-1">
+                      Dirección <RequiredStar />
+                    </label>
+                    <SearchDirection
+                      displayWarning={displayRequiredLocation}
+                      clearSearch={() => setDirection(undefined)}
+                      onChangeLocation={(value: any) => {
+                        setDirection({
+                          city: value.city,
+                          city_id: value.city_id,
+                          direction: value.location,
+                          place_id: value.id,
+                          address_terms: value.terms,
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block font-medium mb-1">
+                      Fecha <RequiredStar />
+                    </label>
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <DatePicker
+                        className="border border-slate-200 rounded-md w-full md:max-w-[348px] h-[40px]"
+                        seletedDate={eventDate}
+                        isForm
+                        handleDateChange={setEventDate}
+                      />
+                      <div className="flex items-center gap-2 max-w-[172px] md:w-full lg:w-[50%]">
+                        <span className="text-slate-500">
+                          <AiOutlineClockCircle />
+                        </span>
+                        <TimePicker
+                          use12Hours
+                          placeholder="Hora del evento"
+                          format={format}
+                          className="w-full max-w-[132px] timepicker"
+                          onOk={(val) => {
+                            const minute: any = dayjs(val, "HH:mm").minute();
+                            const hour: any = dayjs(val, "HH:mm").hour();
+                            setEventTime(hour + ":" + minute + ":00");
+                          }}
+                        />
+                      </div>
+                    </div>
+                    {displayRequiredDateTime && (
+                      <span className="text-red-500 text-xs mt-1 block">
+                        Indicar una hora y fecha es requerido.
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="ml-auto  lg:hidden justify-center flex">
+                  {/* TODO: Create Preview Event Functionality */}
+                  {/* <Button>Previzualizar</Button> */}
+                  <button type="submit" className="h-[40px] max-w-[400px]">
+                    Publicar evento
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
 
       {statusMessage.type && (
@@ -487,7 +569,6 @@ export default function CreateEvent() {
           show={statusMessage.show}
           closeModal={() => {
             setStatusMessage((status) => ({ ...status, show: false }));
-
             setTimeout(() => {
               navigateTo(newEventUrl);
             }, 500);
