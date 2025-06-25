@@ -2,7 +2,7 @@ import { type ReactNode } from "react";
 import { Header } from "@/components/navigation/header";
 import { useRouter } from "next/router";
 import Head from "next/head";
-// import Footer from "./components/Footer";
+import Footer from "@/components/navigation/footer";
 import { useBackend } from "@/hooks";
 import { cn } from "@/lib/utils";
 const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
@@ -27,7 +27,7 @@ const Layout = ({ children }: { children: ReactNode | ReactNode[] }) => {
 
           <main className="content-container">{children}</main>
 
-          {/* <Footer /> */}
+          <Footer />
         </div>
       )}
     </>

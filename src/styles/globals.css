@@ -53,7 +53,7 @@
   --font-sans: var(--font-outfit);
 
   /* Tailwind slate colors */
-  --slate-50:  #f8fafc;
+  --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
   --slate-200: #e2e8f0;
   --slate-300: #cbd5e1;
@@ -63,6 +63,15 @@
   --slate-700: #334155;
   --slate-800: #1e293b;
   --slate-900: #0f172a;
+
+  /* Primary red colors */
+  --primary-100: #f0f1f4;
+  --primary-200: #ffb8bb;
+  --primary-300: #ff757c;
+  --primary-400: #fc596a;
+  --primary-500: #ff244c;
+  --primary-600: #e2031e;
+  --primary-900: #2f2f2f;
 }
 
 @theme inline {

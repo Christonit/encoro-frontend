@@ -2,7 +2,7 @@ import Head from "next/head";
 import { DatePicker } from "@/components/DatePicker";
 import { AutoComplete as SearchDirection } from "@/components/location/AutoComplete";
 import { useFormik } from "formik";
-import { TimePicker } from "antd";
+import { AutoComplete, TimePicker } from "antd";
 import { AiOutlineClockCircle } from "react-icons/ai";
 import * as Yup from "yup";
 import { useState, SyntheticEvent, useEffect } from "react";
@@ -40,6 +40,16 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  addDays,
+  format as formatDate,
+  isAfter,
+  isBefore,
+  isSameDay,
+  addWeeks,
+} from "date-fns";
+import { Button } from "@/components/ui/button";
 
 export default function CreateEvent() {
   const [media, setMedia] = useState<IMediaToUpload>();
@@ -68,6 +78,70 @@ export default function CreateEvent() {
     },
   });
   const { post } = useBackend();
+
+  // Recurrence state
+  const [recurrenceType, setRecurrenceType] = useState<
+    "once" | "recurrent" | "specific"
+  >("once");
+  const [recurrenceStartDate, setRecurrenceStartDate] = useState<
+    Date | undefined
+  >(undefined);
+  const [recurrenceTime, setRecurrenceTime] = useState<string>("");
+  const [recurrenceWeeks, setRecurrenceWeeks] = useState<number>(4);
+  const [recurrenceDays, setRecurrenceDays] = useState<string[]>([]); // e.g. ['Monday', 'Wednesday']
+  const [recurrencePreview, setRecurrencePreview] = useState<Date[]>([]);
+  const [onceDate, setOnceDate] = useState<Date | undefined>(undefined);
+  const [onceTime, setOnceTime] = useState<string>("");
+  const [specificDates, setSpecificDates] = useState<
+    { date: Date | undefined; time: string }[]
+  >([{ date: undefined, time: "" }]);
+
+  const weekDays = [
+    { label: "Monday", value: 1 },
+    { label: "Tuesday", value: 2 },
+    { label: "Wednesday", value: 3 },
+    { label: "Thursday", value: 4 },
+    { label: "Friday", value: 5 },
+    { label: "Saturday", value: 6 },
+    { label: "Sunday", value: 0 },
+  ];
+
+  // Generate preview dates when relevant state changes
+  useEffect(() => {
+    if (
+      recurrenceType === "recurrent" &&
+      recurrenceStartDate &&
+      recurrenceWeeks > 0 &&
+      recurrenceDays.length > 0
+    ) {
+      const preview: Date[] = [];
+      let current = recurrenceStartDate;
+      let weeks = 0;
+      while (weeks < recurrenceWeeks) {
+        weekDays.forEach((day) => {
+          if (recurrenceDays.includes(day.label)) {
+            const date = addDays(
+              recurrenceStartDate,
+              weeks * 7 + ((day.value - recurrenceStartDate.getDay() + 7) % 7)
+            );
+            if (
+              isAfter(date, addWeeks(recurrenceStartDate, recurrenceWeeks)) ||
+              isBefore(date, recurrenceStartDate)
+            )
+              return;
+            if (!preview.some((d) => isSameDay(d, date))) {
+              preview.push(date);
+            }
+          }
+        });
+        weeks++;
+      }
+      preview.sort((a, b) => a.getTime() - b.getTime());
+      setRecurrencePreview(preview);
+    } else {
+      setRecurrencePreview([]);
+    }
+  }, [recurrenceType, recurrenceStartDate, recurrenceWeeks, recurrenceDays]);
 
   const setMediaState = (e: SyntheticEvent, i?: number) => {
     const target = e.target as HTMLInputElement;
@@ -541,10 +615,240 @@ export default function CreateEvent() {
                 <div id="dates-location" className="pt-8 pb-8">
                   <div className="mb-6">
                     <h2 className="text-2xl font-semibold mb-2">
-                      Date and Location
+                      Fecha y ubicación
                     </h2>
                   </div>
-                  <div className="mb-4">
+                  <div id="event-dates" className="mb-4">
+                    <label className="block font-medium mb-1">
+                      Recurrencia
+                    </label>
+                    <RadioGroup
+                      className="flex flex-row gap-6 mb-6"
+                      value={recurrenceType}
+                      onValueChange={(val) => setRecurrenceType(val as any)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="once" id="once" />
+                        <label htmlFor="once">Solo una vez</label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="recurrent" id="recurrent" />
+                        <label htmlFor="recurrent">Recurrente</label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <RadioGroupItem value="specific" id="specific" />
+                        <label htmlFor="specific">Fechas específicas</label>
+                      </div>
+                    </RadioGroup>
+                    {recurrenceType === "once" && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                        <div className="flex flex-row gap-4 items-end">
+                          <div className="flex-1 min-w-[220px]">
+                            <label className="block font-medium mb-1">
+                              Fecha
+                            </label>
+                            <DatePicker
+                              className="border border-slate-200 rounded-md w-full min-w-[220px] h-[40px]"
+                              seletedDate={onceDate}
+                              isForm
+                              handleDateChange={setOnceDate}
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <label className="block font-medium mb-1">
+                              Hora
+                            </label>
+                            <Input
+                              type="time"
+                              value={onceTime}
+                              onChange={(e) => setOnceTime(e.target.value)}
+                              className=" w-[120px]"
+                            />
+                          </div>
+                        </div>
+                        {/* Empty second column for alignment */}
+                        <div className="hidden md:block" />
+                      </div>
+                    )}
+                    {recurrenceType === "recurrent" && (
+                      <div className="space-y-6">
+                        <div className="flex flex-col md:flex-row gap-4 items-end">
+                          <div>
+                            <label className="block font-medium mb-1">
+                              Comenzando en
+                            </label>
+                            <DatePicker
+                              className="border border-slate-200 rounded-md w-full md:max-w-[200px] h-[40px]"
+                              seletedDate={recurrenceStartDate}
+                              isForm
+                              handleDateChange={setRecurrenceStartDate}
+                            />
+                          </div>
+                          <div>
+                            <label className="block font-medium mb-1">
+                              Hora
+                            </label>
+                            <Input
+                              type="time"
+                              value={recurrenceTime}
+                              onChange={(e) =>
+                                setRecurrenceTime(e.target.value)
+                              }
+                              className="w-[120px]"
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block font-medium mb-1">
+                            Duración
+                          </label>
+                          <Input
+                            type="number"
+                            min={1}
+                            max={12}
+                            value={recurrenceWeeks}
+                            onChange={(e) =>
+                              setRecurrenceWeeks(
+                                Math.max(
+                                  1,
+                                  Math.min(12, Number(e.target.value))
+                                )
+                              )
+                            }
+                            className="w-[60px] inline-block mr-2"
+                          />
+                          <span>semanas</span>
+                        </div>
+                        <div>
+                          <label className="block font-medium mb-1">Days</label>
+                          <div className="flex gap-2 flex-wrap">
+                            {weekDays.map((day) => (
+                              <button
+                                type="button"
+                                key={day.label}
+                                className={`fee-toggle${
+                                  recurrenceDays.includes(day.label)
+                                    ? " fee-toggle--active"
+                                    : ""
+                                }`}
+                                onClick={() => {
+                                  setRecurrenceDays((prev) =>
+                                    prev.includes(day.label)
+                                      ? prev.filter((d) => d !== day.label)
+                                      : [...prev, day.label]
+                                  );
+                                }}
+                              >
+                                {day.label.slice(0, 3)}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        {recurrencePreview.length > 0 && (
+                          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
+                            <div className="flex items-center gap-2 mb-2 text-slate-700">
+                              <AiOutlineInfoCircle />
+                              <span className="font-semibold">
+                                {recurrencePreview.length} events will be
+                                created at the following dates:
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {recurrencePreview
+                                .slice(0, 5)
+                                .map((date, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="bg-slate-200 rounded-full px-3 py-1 text-sm"
+                                  >
+                                    {formatDate(date, "eeee, MMMM do")}
+                                    {recurrenceTime
+                                      ? `, ${recurrenceTime}`
+                                      : ""}
+                                  </span>
+                                ))}
+                              {recurrencePreview.length > 5 && (
+                                <span className="bg-slate-300 rounded-full px-3 py-1 text-sm">
+                                  +{recurrencePreview.length - 5}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {recurrenceType === "specific" && (
+                      <div className="space-y-4">
+                        <label className="block font-medium mb-1">Fechas</label>
+                        {specificDates.map((entry, idx) => (
+                          <div
+                            key={idx}
+                            className="flex flex-col md:flex-row gap-2 md:gap-4 items-end w-full"
+                          >
+                            <div className="flex-1 min-w-[160px]">
+                              <DatePicker
+                                className="border border-slate-200 rounded-md w-full h-[40px]"
+                                seletedDate={entry.date}
+                                isForm
+                                handleDateChange={(date: Date | undefined) => {
+                                  setSpecificDates((prev) =>
+                                    prev.map((e, i) =>
+                                      i === idx ? { ...e, date } : e
+                                    )
+                                  );
+                                }}
+                              />
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <label className="font-medium">Hora</label>
+                              <Input
+                                type="time"
+                                value={entry.time}
+                                onChange={(e) =>
+                                  setSpecificDates((prev) =>
+                                    prev.map((d, i) =>
+                                      i === idx
+                                        ? { ...d, time: e.target.value }
+                                        : d
+                                    )
+                                  )
+                                }
+                                className="w-[100px]"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              className="bg-slate-100 border border-slate-200 rounded-md px-4 py-2 font-semibold text-slate-900 hover:bg-slate-200 ml-2"
+                              onClick={() =>
+                                setSpecificDates((prev) =>
+                                  prev.filter((_, i) => i !== idx)
+                                )
+                              }
+                              disabled={specificDates.length === 1}
+                            >
+                              Remove date
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          className="bg-slate-100 border border-slate-200 rounded-md px-4 py-2 font-semibold text-slate-900 hover:bg-slate-200"
+                          onClick={() =>
+                            setSpecificDates((prev) => [
+                              ...prev,
+                              { date: undefined, time: "" },
+                            ])
+                          }
+                          disabled={specificDates.length >= 8}
+                        >
+                          + Add new date
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div id="event-location" className="mb-4">
                     <label className="block font-medium mb-1">
                       Dirección <RequiredStar />
                     </label>
@@ -562,48 +866,26 @@ export default function CreateEvent() {
                       }}
                     />
                   </div>
-                  <div className="mb-4">
-                    <label className="block font-medium mb-1">
-                      Fecha <RequiredStar />
-                    </label>
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <DatePicker
-                        className="border border-slate-200 rounded-md w-full md:max-w-[348px] h-[40px]"
-                        seletedDate={eventDate}
-                        isForm
-                        handleDateChange={setEventDate}
-                      />
-                      <div className="flex items-center gap-2 max-w-[172px] md:w-full lg:w-[50%]">
-                        <span className="text-slate-500">
-                          <AiOutlineClockCircle />
-                        </span>
-                        <TimePicker
-                          use12Hours
-                          placeholder="Hora del evento"
-                          format={format}
-                          className="w-full max-w-[132px] timepicker"
-                          onOk={(val) => {
-                            const minute: any = dayjs(val, "HH:mm").minute();
-                            const hour: any = dayjs(val, "HH:mm").hour();
-                            setEventTime(hour + ":" + minute + ":00");
-                          }}
-                        />
-                      </div>
-                    </div>
-                    {displayRequiredDateTime && (
-                      <span className="text-red-500 text-xs mt-1 block">
-                        Indicar una hora y fecha es requerido.
-                      </span>
-                    )}
-                  </div>
                 </div>
 
-                <div className="ml-auto  lg:hidden justify-center flex">
-                  {/* TODO: Create Preview Event Functionality */}
-                  {/* <Button>Previzualizar</Button> */}
-                  <button type="submit" className="h-[40px] max-w-[400px]">
+                <div className="flex flex-col md:flex-row justify-center md:justify-end gap-4 mt-8">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      if (formik && formik.resetForm) formik.resetForm();
+                    }}
+                    className="min-w-[160px]"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="default"
+                    className="min-w-[160px]"
+                  >
                     Publicar evento
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
