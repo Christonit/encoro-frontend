@@ -25,6 +25,21 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import { FeeToggleGroup } from "@/components/complex/FeeToggleGroup";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 export default function CreateEvent() {
   const [media, setMedia] = useState<IMediaToUpload>();
@@ -367,21 +382,27 @@ export default function CreateEvent() {
                       <label className="block font-medium mb-1">
                         Categoria <RequiredStar />
                       </label>
-                      <select
-                        {...formik.getFieldProps("category")}
+                      <Select
+                        value={formik.values.category}
+                        onValueChange={(value) =>
+                          formik.setFieldValue("category", value)
+                        }
+                        name="category"
                         aria-label="Selecciona una categoria"
-                        className="block w-full border border-slate-200 rounded-md px-3 py-2"
                       >
-                        <option>Seleccione una categoría</option>
-                        {CATEGORIES.map((cat) => {
-                          if (cat.value !== "all")
-                            return (
-                              <option key={cat.value} value={cat.value}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccione una categoría" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.filter((cat) => cat.value !== "all").map(
+                            (cat) => (
+                              <SelectItem key={cat.value} value={cat.value}>
                                 {cat.label}
-                              </option>
-                            );
-                        })}
-                      </select>
+                              </SelectItem>
+                            )
+                          )}
+                        </SelectContent>
+                      </Select>
                       {formik.touched.category && formik.errors.category ? (
                         <div className="text-red-500 text-sm mt-1">
                           {formik.errors.category}
@@ -426,21 +447,36 @@ export default function CreateEvent() {
                         </div>
                       )}
                     </div>
-                    <div className="">
-                      <label className="block font-medium mb-1">
+                    <div className="flex flex-row gap-9 items-center mb-8">
+                      <label className="block font-medium">
                         Tipo de asistencia
                       </label>
-                      <ToggleGroup
-                        type="single"
-                        value={entrance_format}
-                        onValueChange={setEntranceFormat}
-                        className="gap-2"
-                      >
-                        <ToggleGroupItem value="free">Gratis</ToggleGroupItem>
-                        <ToggleGroupItem value="pay">Pago</ToggleGroupItem>
-                      </ToggleGroup>
+                      <div className="flex gap-0">
+                        <button
+                          type="button"
+                          className={`fee-toggle rounded-l-full${
+                            entrance_format === "free"
+                              ? " fee-toggle--active"
+                              : ""
+                          }`}
+                          onClick={() => setEntranceFormat("free")}
+                        >
+                          Gratis
+                        </button>
+                        <button
+                          type="button"
+                          className={`fee-toggle rounded-r-full${
+                            entrance_format === "pay"
+                              ? " fee-toggle--active"
+                              : ""
+                          }`}
+                          onClick={() => setEntranceFormat("pay")}
+                        >
+                          Pago
+                        </button>
+                      </div>
                       {entrance_format === "pay" && (
-                        <div className="flex items-center gap-2 mt-2">
+                        <div className="flex items-center gap-2 ">
                           <span className="text-lg">$</span>
                           <Input
                             type="number"
@@ -449,8 +485,22 @@ export default function CreateEvent() {
                             }
                             placeholder="Indique el precio"
                             aria-label="Indique el precio"
-                            className="max-w-[120px]"
+                            className="max-w-[220px]"
                           />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="ml-1 cursor-pointer text-slate-400 hover:text-slate-700">
+                                  <AiOutlineInfoCircle size={18} />
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top">
+                                Esto es para dar una idea del precio en caso de
+                                que, por ejemplo, haya diferentes costos. El
+                                precio se mostrara en pesos dominicanos.
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                           {displayRequiredFee && (
                             <span className="text-red-500 text-xs ml-2">
                               El precio debe ser un número o mayor a 0

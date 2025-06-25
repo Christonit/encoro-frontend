@@ -25,6 +25,7 @@ const CATEGORIES = [
   { value: "bars", label: "Bares" },
   { value: "conferences", label: "Conferencias" },
   { value: "education", label: "Educación" },
+  { value: "wellness", label: "Bienestar" },
 ];
 
 const CATEGORIES_DICT: { [key: string]: string } = {
