@@ -13,6 +13,7 @@ import { CATEGORIES_DICT } from "@/lib/variables";
 import { EventStandardCardI } from "../../interfaces";
 import es from "dayjs/locale/es-do";
 import Image from "@/components/ui/image";
+import ProgressiveBlurOverlay from "@/components/cards/ProgressiveBlurOverlay";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 
@@ -52,23 +53,26 @@ const StandardEventCard = ({
 
   return (
     <Link
-      className={`card  event-card standard-card`}
+      className={`card event-card standard-card relative overflow-hidden`}
       href={`/${category}/${id}`}
       target={"_blank"}
     >
       <Image
         src={postImage}
         alt={postImage}
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
         loading="lazy"
       />
-      <div className=" px-[20px] py-[20px] event-card-text px-[20px] py-[20px] mt-auto">
+      {/* Progressive Blur Overlay */}
+      <ProgressiveBlurOverlay />
+
+      <div className="px-[20px] py-[20px] event-card-text px-[20px] py-[20px] mt-auto relative z-[2]">
         <div className="flex gap-[20px] items-center mb-[12px] flex-wrap">
           <Badge className={`${category}-badge`}>
             {CATEGORIES_DICT[category]}
           </Badge>
 
-          {displayDate && (
+          {/* {displayDate && (
             <span className="flex items-center text-white text-shadow-lv1 text-base ">
               <AiTwotoneCalendar className="mr-[4px]" size={16} />
               <span className="text-base capitalize">{formattedDate}</span>
@@ -80,7 +84,7 @@ const StandardEventCard = ({
               <AiOutlineClockCircle className="mr-[4px]" size={16} />
               {dayjs(timeString).format("h:mm A")}
             </span>
-          )}
+          )} */}
         </div>
         <h2 className="subtitle text-white   text-shadow-lv1 mb-[12px]">
           {truncateText(title, 64)}

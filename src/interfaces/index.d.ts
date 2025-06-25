@@ -161,6 +161,6 @@ export type EventStandardCardI = {
   canFollow?: boolean;
   displayDate?: boolean;
   displayTime?: boolean;
-  unfollowAction: () => void;
+  unfollowAction?: () => void;
   onFollowAction?: () => void;
 };

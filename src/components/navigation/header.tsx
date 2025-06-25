@@ -41,6 +41,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
+import { LuCalendarDays, LuUser } from "react-icons/lu";
 
 const CATEGORY_PILLS = [
   { label: "Todas las categorías", value: "all" },
@@ -348,10 +349,14 @@ const Header = () => {
 
   // --- DESKTOP HEADER ---
   const DesktopHeader = React.memo(() => (
-    <header className={cn(
-      "w-full border-b flex flex-col transition-colors duration-200 sticky top-0 z-50",
-      !(pathname === "/" && isOnTopScrollOnHome) ? "bg-white border-b-slate-200" : "bg-transparent border-transparent"
-    )}>
+    <header
+      className={cn(
+        "w-full border-b flex flex-col transition-colors duration-200 sticky top-0 z-50",
+        !(pathname === "/" && isOnTopScrollOnHome)
+          ? "bg-white border-b-slate-200"
+          : "bg-transparent border-transparent"
+      )}
+    >
       <div className="flex items-center justify-between px-6 py-3 w-full">
         {/* Logo */}
         <Link href="/" className="flex items-center min-w-[130px] mr-auto">
@@ -362,8 +367,12 @@ const Header = () => {
           {!(pathname === "/" && isOnTopScrollOnHome) && (
             <DateLocationFilter
               selectedDay={date_filter}
-              handleLocationChange={(payload: any) => setParams({ ...params, location: payload.city ?? "" })}
-              handleDateChange={(date: any) => setParams({ ...params, date: dayjs(date).format("YYYY-MM-DD") })}
+              handleLocationChange={(payload: any) =>
+                setParams({ ...params, location: payload.city ?? "" })
+              }
+              handleDateChange={(date: any) =>
+                setParams({ ...params, date: dayjs(date).format("YYYY-MM-DD") })
+              }
               handleOnSearch={(e: any) => queryForEvents(e)}
               searchResults={search_results}
             />
@@ -374,25 +383,69 @@ const Header = () => {
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link href="/" className="font-semibold text-slate-900 hover:text-slate-600">Actividades</Link>
+                <Link href="/" className="navigation-link">
+                  Actividades
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <div
-                onMouseEnter={() => setAgendaMenuOpen(true)}
-                onMouseLeave={() => setAgendaMenuOpen(false)}
-              >
-                <DropdownMenu open={agendaMenuOpen} onOpenChange={setAgendaMenuOpen}>
+              <div>
+                <DropdownMenu
+                  open={agendaMenuOpen}
+                  onOpenChange={setAgendaMenuOpen}
+                >
                   <DropdownMenuTrigger asChild>
-                    <Button variant="link" className="font-semibold text-sm text-slate-900 hover:text-slate-600">Mi agenda</Button>
+                    <Button
+                      variant="link"
+                      className={cn(
+                        "navigation-link",
+                        agendaMenuOpen && "active-dropdown"
+                      )}
+                      onMouseEnter={() => {
+                        setTimeout(() => {
+                          setAgendaMenuOpen(true);
+                        }, 250);
+                      }}
+                    >
+                      Mi agenda
+                    </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="min-w-[200px] bg-white border border-slate-200 rounded-lg ">
-                    <DropdownMenuItem asChild className="py-2 hover:bg-slate-100 rounded-md">
-                      <Link href="/user/my-schedule/" className="font-regular text-slate-900  hover:text-slate-600">Mi Calendario</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="py-2 hover:bg-slate-100 rounded-md">
-                      <Link href="/user/followed/" className="font-regular text-slate-900  hover:text-slate-600">Perfiles seguidos</Link>
-                    </DropdownMenuItem>
+                  <DropdownMenuContent
+                    align="end"
+                    className="min-w-[200px] bg-white border border-slate-200 rounded-lg relative"
+                  >
+                    <div onMouseLeave={() => setAgendaMenuOpen(false)}>
+                      {/* Arrow indicator */}
+                      {agendaMenuOpen && (
+                        <div className="absolute top-0 right-6 w-4 h-4 z-10 -translate-y-1/2 -translate-x-[16px]">
+                          <div className="w-4 h-4 bg-white border-b border-r border-slate-200 rotate-[225deg] " />
+                        </div>
+                      )}
+                      <DropdownMenuItem
+                        asChild
+                        className="py-2 hover:bg-slate-100 rounded-md"
+                      >
+                        <Link
+                          href="/user/my-schedule/"
+                          className="navigation-link dropdown-link"
+                        >
+                          <LuCalendarDays size={16} />
+                          <span>Mi Calendario</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        asChild
+                        className="py-2 hover:bg-slate-100 rounded-md"
+                      >
+                        <Link
+                          href="/user/followed/"
+                          className="navigation-link dropdown-link"
+                        >
+                          <LuUser size={16} />
+                          <span>Perfiles seguidos</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -400,26 +453,33 @@ const Header = () => {
             {user && user.is_business && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
-                  <Link href="/user/my-events/" className="font-semibold text-slate-900">Mis eventos</Link>
+                  <Link href="/user/my-events/" className="navigation-link">
+                    Mis eventos
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             )}
 
-            {user &&
-             
-                <Button variant="clear" className="relative px-2" onClick={() => toggleNotificationsModal(true)}>
-                  <AiFillBell size={24} className="text-slate-900" />
-                  {has_new_notifs && <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />}
-                </Button>
-            }
+            {user && (
+              <Button
+                variant="clear"
+                className="relative px-2"
+                onClick={() => toggleNotificationsModal(true)}
+              >
+                <AiFillBell size={24} className="text-slate-900" />
+                {has_new_notifs && (
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+              </Button>
+            )}
             {user && user.is_business && (
               <NavigationMenuItem>
-                  <Link
-                    href="/activity/create/"
-                    className="bg-red-500 hover:bg-red-400 text-white hover:text-white/[0.8] font-bold py-2 px-4 rounded-lg text-base transition-colors ml-2"
-                  >
-                    Crear evento
-                  </Link>
+                <Link
+                  href="/activity/create/"
+                  className="bg-red-500 hover:bg-red-400 text-white hover:text-white/[0.8] font-bold py-2 px-4 rounded-lg text-base transition-colors ml-2"
+                >
+                  Crear evento
+                </Link>
               </NavigationMenuItem>
             )}
             {/* User avatar dropdown */}
@@ -427,30 +487,47 @@ const Header = () => {
               <NavigationMenuItem className="ml-3">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="overflow-hidden bg-none p-0 border-0 outline-0 rounded-full">
-
+                    <Button
+                      variant="ghost"
+                      className="overflow-hidden bg-none p-0 border-0 outline-0 rounded-full"
+                    >
                       <Image
-                        src={user.business_picture || user.image || ''}
+                        src={user.business_picture || user.image || ""}
                         className="w-8 h-8 min-w-8 min-h-8 object-cover rounded-full"
                         alt=""
                         width="32"
                         height="32"
-                      /> 
+                      />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="z-[9] text-right !top-[4px]">
                     {!user.is_business && (
                       <DropdownMenuItem asChild>
-                        <Button onClick={() => push("/user/create-business-profile/")} className="hover:bg-transparent w-full text-left">
-                          <span className="bg-blue-500 hover:bg-blue-700 mt-0 inline-block px-2 py-2 text-white font-semibold rounded">Actualizar a Negocio</span>
+                        <Button
+                          onClick={() => push("/user/create-business-profile/")}
+                          className="hover:bg-transparent w-full text-left"
+                        >
+                          <span className="bg-blue-500 hover:bg-blue-700 mt-0 inline-block px-2 py-2 text-white font-semibold rounded">
+                            Actualizar a Negocio
+                          </span>
                         </Button>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem asChild>
-                      <Button className="py-2 w-full text-left" onClick={() => push("/user/settings/")}>Configuracion</Button>
+                      <Button
+                        className="py-2 w-full text-left"
+                        onClick={() => push("/user/settings/")}
+                      >
+                        Configuracion
+                      </Button>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Button className="py-2 w-full text-left" onClick={() => signOut()}>Cerrar sesion</Button>
+                      <Button
+                        className="py-2 w-full text-left"
+                        onClick={() => signOut()}
+                      >
+                        Cerrar sesion
+                      </Button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -458,7 +535,12 @@ const Header = () => {
             )}
             {!session && (
               <NavigationMenuItem>
-                <Button onClick={() => signIn()} className="ml-2 whitespace-nowrap" >Login</Button>
+                <Button
+                  onClick={() => signIn()}
+                  className="ml-2 whitespace-nowrap"
+                >
+                  Login
+                </Button>
               </NavigationMenuItem>
             )}
           </NavigationMenuList>
@@ -471,7 +553,10 @@ const Header = () => {
   const MobileHeader = () => (
     <header className="w-full border-b bg-white flex flex-col">
       <div className="flex items-center px-4 py-3 w-full">
-        <button onClick={() => toggleMobileNav(true)} className="min-w-[32px] h-[32px] flex items-center justify-center">
+        <button
+          onClick={() => toggleMobileNav(true)}
+          className="min-w-[32px] h-[32px] flex items-center justify-center"
+        >
           <AiOutlineMenu size={24} />
         </button>
         <Link href="/" className="ml-2">
@@ -488,7 +573,9 @@ const Header = () => {
         </div>
         <button onClick={() => toggleNotificationsModal(true)} className="ml-2">
           <AiFillBell size={24} className="text-slate-900" />
-          {has_new_notifs && <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />}
+          {has_new_notifs && (
+            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+          )}
         </button>
       </div>
       {/* Category pills */}
@@ -500,7 +587,11 @@ const Header = () => {
             {session && user ? (
               <span className="overflow-hidden p-1 outline-0 rounded-full flex items-center gap-3">
                 <img
-                  src={user.business_picture ? user.business_picture : user.image ?? ""}
+                  src={
+                    user.business_picture
+                      ? user.business_picture
+                      : user.image ?? ""
+                  }
                   className="w-10 h-10 rounded-full object-cover border border-slate-100"
                   alt=""
                 />
@@ -513,35 +604,123 @@ const Header = () => {
                 onClick={() => mobileButtonHandler("/")}
                 className="mobile-link branding block bg-transparent"
               >
-                <Image src="/images/logo.svg" alt="Logo" className="branding-logo" width={100} height={100} />
+                <Image
+                  src="/images/logo.svg"
+                  alt="Logo"
+                  className="branding-logo"
+                  width={100}
+                  height={100}
+                />
               </Button>
             )}
             <nav className="flex mt-8 gap-4 flex-col">
-              <Button role="link" onClick={() => { toggleMobileNav(false); push("/"); }} className="mobile-link nav-link px-0">Actividades</Button>
+              <Button
+                role="link"
+                onClick={() => {
+                  toggleMobileNav(false);
+                  push("/");
+                }}
+                className="mobile-link nav-link px-0"
+              >
+                Actividades
+              </Button>
               {user && (
                 <>
-                  <Button role="link" onClick={() => { toggleMobileNav(false); push("/user/my-schedule/"); }} className="mobile-link nav-link px-0">Mi calendario</Button>
-                  <Button role="link" onClick={() => { toggleMobileNav(false); push("/user/followed/"); }} className="mobile-link nav-link px-0">Perfiles seguidos</Button>
+                  <Button
+                    role="link"
+                    onClick={() => {
+                      toggleMobileNav(false);
+                      push("/user/my-schedule/");
+                    }}
+                    className="mobile-link nav-link px-0"
+                  >
+                    Mi calendario
+                  </Button>
+                  <Button
+                    role="link"
+                    onClick={() => {
+                      toggleMobileNav(false);
+                      push("/user/followed/");
+                    }}
+                    className="mobile-link nav-link px-0"
+                  >
+                    Perfiles seguidos
+                  </Button>
                 </>
               )}
               {user && user.is_business && (
-                <Button role="link" onClick={() => { toggleMobileNav(false); push("/user/my-events/"); }} className="mobile-link nav-link px-0">Mis eventos</Button>
+                <Button
+                  role="link"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/user/my-events/");
+                  }}
+                  className="mobile-link nav-link px-0"
+                >
+                  Mis eventos
+                </Button>
               )}
               {user && user.is_business && (
-                <Button variant="default" onClick={() => { toggleMobileNav(false); push("/activity/create/"); }} className="py-3 flex px-6 min-w-[160px] bg-red-500 text-white font-bold text-lg rounded-lg justify-center">Crear evento</Button>
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/activity/create/");
+                  }}
+                  className="py-3 flex px-6 min-w-[160px] bg-red-500 text-white font-bold text-lg rounded-lg justify-center"
+                >
+                  Crear evento
+                </Button>
               )}
               {!user?.is_business && user && (
-                <Button role="link" onClick={() => { toggleMobileNav(false); push("/user/create-business-profile/"); }} className="btn-primary !hover:bg-[#2489FF] !border-[#096ADC] border-2 py-2 !bg-[#2489FF]">Actualiza a Perfil de Negocios</Button>
+                <Button
+                  role="link"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/user/create-business-profile/");
+                  }}
+                  className="btn-primary !hover:bg-[#2489FF] !border-[#096ADC] border-2 py-2 !bg-[#2489FF]"
+                >
+                  Actualiza a Perfil de Negocios
+                </Button>
               )}
               {user && (
-                <Button role="link" onClick={() => { toggleMobileNav(false); push("/user/settings/"); }} className="py-3 w-full px-6 bg-slate-50 flex min-w-[160px] gap-2 justify-center"><AiOutlineSetting size={24} /><span className="font-semibold">Configuracion</span></Button>
+                <Button
+                  role="link"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/user/settings/");
+                  }}
+                  className="py-3 w-full px-6 bg-slate-50 flex min-w-[160px] gap-2 justify-center"
+                >
+                  <AiOutlineSetting size={24} />
+                  <span className="font-semibold">Configuracion</span>
+                </Button>
               )}
             </nav>
             {!session && (
-              <Button role="link" onClick={() => { toggleMobileNav(false); signIn(); }} className="mobile-link mr-auto whitespace-nowrap w-full mt-8">Login</Button>
+              <Button
+                role="link"
+                onClick={() => {
+                  toggleMobileNav(false);
+                  signIn();
+                }}
+                className="mobile-link mr-auto whitespace-nowrap w-full mt-8"
+              >
+                Login
+              </Button>
             )}
             {session && user && (
-              <Button variant="outline-secondary" className="bottom-8 py-3 right-0 left-0 mx-auto w-full mt-auto" onClick={() => { toggleMobileNav(false); signOut(); }}>Cerrar sesion</Button>
+              <Button
+                variant="outline-secondary"
+                className="bottom-8 py-3 right-0 left-0 mx-auto w-full mt-auto"
+                onClick={() => {
+                  toggleMobileNav(false);
+                  signOut();
+                }}
+              >
+                Cerrar sesion
+              </Button>
             )}
           </div>
         </DrawerContent>
@@ -551,7 +730,10 @@ const Header = () => {
         <DrawerContent className="p-0 fullscreen-dialog" id="notifications">
           <DrawerHeader className="bg-white border-slate-100 border-b">
             <div className="flex px-4 w-full gap-3">
-              <button className="flex items-center justify-center h-8 w-8" onClick={closeNotificationsModal}>
+              <button
+                className="flex items-center justify-center h-8 w-8"
+                onClick={closeNotificationsModal}
+              >
                 <AiOutlineArrowLeft size={24} className="text-slate-900" />
               </button>
               <h3 className="text-xl font-semibold mb-0">Notificaciones</h3>
@@ -563,7 +745,9 @@ const Header = () => {
             ))
           ) : (
             <div className="py-3 border-b border-slate-100 flex flex-col justify-center text-center h-[200px] w-full min-w-[352px]">
-              <span className="text-lg text-slate-400">No tienes notificaciones.</span>
+              <span className="text-lg text-slate-400">
+                No tienes notificaciones.
+              </span>
             </div>
           )}
         </DrawerContent>
@@ -573,7 +757,12 @@ const Header = () => {
         <DrawerContent className="fullscreen-dialog">
           <DrawerHeader className="bg-white border-slate-100 border-b h-16">
             <div className="flex px-4 w-full gap-4">
-              <button className="flex items-center justify-center" onClick={handleSearchClose}>Cerrar</button>
+              <button
+                className="flex items-center justify-center"
+                onClick={handleSearchClose}
+              >
+                Cerrar
+              </button>
               <div className="flex flex-row gap-2 items-center border border-slate-200 rounded-lg py-1 px-2 w-full">
                 <AiOutlineSearch size={24} className="text-slate-900" />
                 <input
@@ -586,13 +775,20 @@ const Header = () => {
               </div>
             </div>
           </DrawerHeader>
-          {search_results && (search_results.length > 0 ? (
-            search_results.map((event, index) => (
-              <SearchResultItem key={index} {...event} onClick={handleSearchClose} />
-            ))
-          ) : (
-            <span className="p-4 py-8 block text-center text-slate-600 text-base font-semibold">No se encontraron resultados.</span>
-          ))}
+          {search_results &&
+            (search_results.length > 0 ? (
+              search_results.map((event, index) => (
+                <SearchResultItem
+                  key={index}
+                  {...event}
+                  onClick={handleSearchClose}
+                />
+              ))
+            ) : (
+              <span className="p-4 py-8 block text-center text-slate-600 text-base font-semibold">
+                No se encontraron resultados.
+              </span>
+            ))}
         </DrawerContent>
       </Drawer>
     </header>
@@ -630,7 +826,6 @@ const Header = () => {
       ))}
     </div>
   );
-
 
   // --- RENDER ---
   return windowWidth >= resolution.lg ? <DesktopHeader /> : <MobileHeader />;

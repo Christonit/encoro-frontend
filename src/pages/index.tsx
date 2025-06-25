@@ -4,9 +4,9 @@ import dayjs from "dayjs";
 import es from "dayjs/locale/es-do";
 import { cn, truncateText, imageLinkParser } from "@/lib/utils";
 import Link from "next/link";
-import {  CATEGORIES_DICT } from "@/lib/variables";
+import { CATEGORIES_DICT } from "@/lib/variables";
 import { useEvents } from "@/context/events";
-import {  BsFilter } from "react-icons/bs";
+import { BsFilter } from "react-icons/bs";
 // import Offcanvas from "react-bootstrap/Offcanvas";
 import { AiFillHeart, AiOutlineClose } from "react-icons/ai";
 import { StandardEventCard } from "@/components/cards";
@@ -29,8 +29,9 @@ import { FiltersProvider, useFilters } from "@/context/filters";
 import { FiltersContainer } from "@/components/complex/FiltersContainer";
 import HeroBanner from "@/components/complex/HeroBanner";
 import CategoriesSection from "@/components/complex/CategoriesSection";
-dayjs.locale("es-do");
+import ProgressiveBlurOverlay from "@/components/cards/ProgressiveBlurOverlay";
 
+dayjs.locale("es-do");
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const schemaMarkup = {
@@ -63,13 +64,11 @@ export default function Home(
   );
 }
 
-function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const {
-    priceFilter,
-    displayType,
-    setDisplayType,
-    eventsCategory,
-  } = useFilters();
+function HomeContent(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>
+) {
+  const { priceFilter, displayType, setDisplayType, eventsCategory } =
+    useFilters();
   const [events, setEvents] = useState<any>();
   const [showFilters, toggleShowFilters] = useState<boolean>(false);
   const [isLoading, toggleLoading] = useState<boolean>(true);
@@ -78,18 +77,18 @@ function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProp
   const [isLoadingEvents, toggleLoadingEvents] = useState<boolean>(false);
 
   const { data: session } = useSession();
-  const { windowWidth, resolution, isInViewport, scrollDirection: useWindowScrollDirection } =
-    useWindow();
+  const {
+    windowWidth,
+    resolution,
+    isInViewport,
+    scrollDirection: useWindowScrollDirection,
+  } = useWindow();
   const userInfo: userI | undefined = session?.user;
   const loadMoreRef = useRef<HTMLElement | null>(null);
   const [loadMoreEvents, setLoadMore] = useState<boolean>(false);
   const [currentPage, incrementCurrentPage] = useState<number>(1);
-  const {
-    date_filter,
-    followEventsIds,
-    location,
-    setFollowedEventsIds,
-  } = useEvents();
+  const { date_filter, followEventsIds, location, setFollowedEventsIds } =
+    useEvents();
   const { get, destroy, post } = useBackend();
   const inRange = (x: number, min: number, max: number) => {
     return (x - min) * (x - max) <= 0;
@@ -507,6 +506,8 @@ function HomeContent(props: InferGetServerSidePropsType<typeof getServerSideProp
                             width={gridClass === "grid-1" ? 869 : 426}
                             height={gridClass === "grid-3" ? 620 : 300}
                           />
+
+                          <ProgressiveBlurOverlay />
 
                           {event_group[1].length === 1
                             ? cardSwitcher("grid-2", event)

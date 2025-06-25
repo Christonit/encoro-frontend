@@ -1,0 +1,27 @@
+.navigation-link {
+  font-weight: 600;
+  color: $slate-900;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
+    text-decoration: none;
+    color: $slate-400;
+  }
+
+  &.active-dropdown {
+    color: $slate-400;
+  }
+}
+
+.dropdown-link {
+  cursor: pointer;
+  font-weight: 400;
+  padding-top: 8px;
+  padding-bottom: 8px;
+
+  &:hover {
+    background-color: rgba($slate-100, 0.5);
+    color: $slate-900;
+  }
+}

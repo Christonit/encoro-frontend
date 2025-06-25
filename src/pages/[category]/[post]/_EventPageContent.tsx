@@ -10,7 +10,12 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import Lightbox from "@/components/Lightbox";
 import { useBackend, useWindow } from "@/hooks";
 import { userI } from "@/interfaces/index";
@@ -20,6 +25,7 @@ import SuperUserBusinessProfileCard from "@/components/cards/SuperUserBusinessPr
 import BusinessProfileCard from "@/components/cards/BusinessProfileCard";
 import { CATEGORIES_DICT } from "@/lib/variables";
 import { useEvents } from "@/context/events";
+import StandardEventCard from "@/components/cards/StandardEventCard";
 
 dayjs.locale("es-do");
 
@@ -37,7 +43,10 @@ interface EventPageContentProps {
   schemaMarkup: any;
 }
 
-export default function EventPageContent({ event, schemaMarkup }: EventPageContentProps) {
+export default function EventPageContent({
+  event,
+  schemaMarkup,
+}: EventPageContentProps) {
   const [openMap, setOpenMap] = useState(false);
   const [isLightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImageIndex, setLightboxImageIndex] = useState(0);
@@ -169,7 +178,10 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
       )}
       <div className="lg:py-8">
         <div className="container mx-auto px-4 xl:container">
-          <div className="lg:flex lg:flex-row-reverse gap-8" id="event-post-body">
+          <div
+            className="lg:flex lg:flex-row-reverse gap-8"
+            id="event-post-body"
+          >
             <div className="lg:w-1/2">
               <section className="mb-6 lg:mb-0 grid-container">
                 <div className="activity-grid-area">
@@ -211,14 +223,18 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
                     Gratis
                   </Badge>
                 ) : (
-                  <Badge variant="with-cover" className="font-semibold" size="lg">
+                  <Badge
+                    variant="with-cover"
+                    className="font-semibold"
+                    size="lg"
+                  >
                     {event.fee > 0 && `RD$ ${formatMoneyWithCommas(event.fee)}`}
                   </Badge>
                 )}
 
                 {event.category && (
                   <Badge
-                  size="lg"
+                    size="lg"
                     variant="secondary"
                     className={`font-normal ${event.category}-badge`}
                   >
@@ -229,7 +245,7 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
                   <>
                     {secondary_category.map((category, i) => (
                       <Badge
-                      size="lg"
+                        size="lg"
                         variant="secondary"
                         key={i}
                         className={`font-normal ${category}-badge`}
@@ -241,9 +257,7 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
                 )}
               </div>
 
-              <h1 className="text-3xl font-semibold mb-6">
-                {event.title}
-              </h1>
+              <h1 className="text-3xl font-semibold mb-6">{event.title}</h1>
 
               <div className="flex flex-wrap items-center gap-5 mb-6">
                 <span className="inline-flex items-center text-slate-600">
@@ -276,7 +290,7 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
                         rel="noreferrer"
                         className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-lg text-base transition-colors"
                       >
-                         Más información
+                        Más información
                       </Link>
                     )}
                     {isLoggedIn && !isFollowed && (
@@ -412,26 +426,22 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
               <div className="grid md:grid-cols-3 gap-8">
                 {suggestedPosts?.map((post, index) => {
                   return (
-                    <Link
-                      href={`/${post.category}/${post.id}`}
+                    <StandardEventCard
                       key={index}
-                      className="recomended-event"
-                      style={{
-                        backgroundImage: Array.isArray(post.media)
-                          ? `url(${post.media[0]})`
-                          : `url(${JSON.parse(post.media)[0]})`,
-                      }}
-                    >
-                      <div className="recomended-event-text px-5 py-5">
-                        <h3 className="text-xl">{post.title}</h3>
-                        <span className="inline-flex items-center mr-3">
-                          <AiTwotoneCalendar className="mr-3" />
-                          <span className="text-base capitalize">
-                            {dayjs(post.date).locale(es).format("MMMM D, YYYY")}
-                          </span>
-                        </span>
-                      </div>
-                    </Link>
+                      title={post.title}
+                      category={post.category}
+                      date={post.date}
+                      id={post.id}
+                      image={
+                        Array.isArray(post.media)
+                          ? post.media[0]
+                          : typeof post.media === "string"
+                          ? JSON.parse(post.media)[0]
+                          : ""
+                      }
+                      direction={post.direction}
+                      time={post.time || ""}
+                    />
                   );
                 })}
               </div>
@@ -476,4 +486,4 @@ export default function EventPageContent({ event, schemaMarkup }: EventPageConte
       )}
     </div>
   );
-} 
+}
