@@ -1,15 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { DayPicker } from "react-day-picker";
-import { es } from "date-fns/locale/es";
-import { AiOutlineCloseCircle } from "react-icons/ai";
-import { Button } from "@/components/ui/button";
-
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
-
+import "react-day-picker/style.css";
 import dayjs from "dayjs";
 import { LuCalendarDays } from "react-icons/lu";
 import { useWindow } from "@/hooks";
+import { es } from "date-fns/locale/es";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+import { Button } from "@/components/ui/button";
 
 type GenericI = {
   [key: string]: any;
@@ -51,77 +49,76 @@ export const DatePicker = ({
   }, [open, windowWidth]);
 
   return (
-    <div className="relative ...">
-      <div
-        className={cn(className, {
-          "date-picker-form": isForm,
-        })}
+    <div
+      className={cn("relative", className, {
+        "date-picker-form": isForm,
+      })}
+    >
+      <Button
+        variant="clear"
+        onClick={() => openCalendar(true)}
+        className={cn(
+          "flex flex-row  justify-start gap-[8px]  !overflow-hidden  !rounded-[6px] font-normal px-[12px] py-0 border-0  w-full h-full",
+          {
+            " pl-[52px]": isForm,
+          }
+        )}
       >
+        {isForm ? (
+          <span className="absolute rounded-tl-[6px] rounded-bl-[6px] top-0 bottom-0 my-auto px-[8px] py-[8px]  w-[40px] flex items-center  left-0">
+            <LuCalendarDays size={20} />
+          </span>
+        ) : (
+          <LuCalendarDays size={20} />
+        )}
+        {seletedDate ? (
+          <span className="capitalize">
+            {dayjs(seletedDate).format("MMMM DD, YYYY")}
+          </span>
+        ) : (
+          <span className="text-slate-200 font-regular text-base ">
+            Selecciona una fecha
+          </span>
+        )}
+      </Button>
+
+      {seletedDate && (
         <Button
-          variant="clear"
-          onClick={() => openCalendar(true)}
+          onClick={() => {
+            handleDateChange(undefined);
+          }}
+          variant="ghost"
           className={cn(
-            "flex flex-row  justify-start gap-[8px]  !overflow-hidden  !rounded-[6px] font-normal px-[12px] py-0 border-0  w-full h-full",
-            {
-              " pl-[52px]": isForm,
-            }
+            "px-0 py-0 h-[32px] min-w-[32px]   flex items-center absolute  bottom-[0] top-[0] my-auto border-0",
+            { "right-[4px]": !isForm, "right-0": isForm }
           )}
         >
-          {isForm ? (
-            <span className="absolute rounded-tl-[6px] rounded-bl-[6px] top-0 bottom-0 my-auto px-[8px] py-[8px]  w-[40px] flex items-center  left-0">
-              <LuCalendarDays size={20} />
-            </span>
-          ) : (
-            <LuCalendarDays size={20} />
-          )}
-          {seletedDate ? (
-            <span className="capitalize">
-              {dayjs(seletedDate).format("MMMM DD, YYYY")}
-            </span>
-          ) : (
-            <span className="text-slate-200 font-regular text-base ">
-              Selecciona una fecha
-            </span>
-          )}
+          <AiOutlineCloseCircle size={20} />
         </Button>
+      )}
 
-        {seletedDate && (
-          <Button
-            onClick={() => {
-              handleDateChange(undefined);
+      {open && (
+        <div
+          ref={calendarRef}
+          className={cn(
+            "absolute z-50 mt-2 left-0 bg-white rounded-xl shadow-lg border border-slate-200 date-picker-dropdown",
+            "date-picker"
+          )}
+          // style={{ minWidth: 320 }}
+        >
+          <DayPicker
+            animate
+            locale={es}
+            mode="single"
+            selected={seletedDate}
+            disabled={[{ before: new Date() }]}
+            onSelect={(val) => {
+              handleDateChange(val);
+              openCalendar(false);
             }}
-            variant="ghost"
-            className={cn(
-              "px-0 py-0 h-[32px] min-w-[32px]   flex items-center absolute  bottom-[0] top-[0] my-auto border-0",
-              { "right-[4px]": !isForm, "right-0": isForm }
-            )}
-          >
-            <AiOutlineCloseCircle size={20} />
-          </Button>
-        )}
-
-        {open && (
-          <div
-            ref={calendarRef}
-            className={cn(
-              "absolute z-50 mt-2 left-0 bg-white rounded-xl shadow-lg border border-slate-200",
-              "date-picker-dropdown"
-            )}
-            style={{ minWidth: 320 }}
-          >
-            <DayPicker
-              locale={es}
-              mode="single"
-              selected={seletedDate}
-              disabled={[{ before: new Date() }]}
-              onSelect={(val) => {
-                handleDateChange(val);
-                openCalendar(false);
-              }}
-            />
-          </div>
-        )}
-      </div>
+          />
+        </div>
+      )}
     </div>
   );
 };

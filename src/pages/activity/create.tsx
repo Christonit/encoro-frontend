@@ -184,9 +184,7 @@ export default function CreateEvent() {
   const formik = useFormik({
     initialValues: {
       title: "",
-
       category: "",
-
       description: "",
       hashtags: "",
       direction: "",
@@ -194,17 +192,14 @@ export default function CreateEvent() {
       entrance_format: "",
       fee: 0,
       ticket_link: "",
+      secondary_category: "",
     },
 
     validationSchema: Yup.object({
       title: Yup.string()
-
         .min(10, "Debe ser de más de 10 caracteres o más.")
-
         .required("Requerido"),
-
       category: Yup.string().required("Requerido"),
-
       description: Yup.string().required("Requerido"),
     }),
 
@@ -213,6 +208,16 @@ export default function CreateEvent() {
 
       const { title, description, category } = values;
 
+      console.log("First Log", values, {
+        entrance_format,
+        fee,
+        direction,
+        media,
+        recurrenceType,
+        specificDates,
+        recurrencePreview,
+        recurrenceTime,
+      });
       if (eventTime && eventDate) {
         setDisplayRequiredDateTime(false);
       }
@@ -229,16 +234,11 @@ export default function CreateEvent() {
         setDisplayRequiredLocation(false);
       }
 
-      if (
-        !title ||
-        !description ||
-        !category ||
-        !media ||
-        !eventDate ||
-        !eventTime ||
-        !direction
-      )
-        return;
+      if (!title || !description || !category || !media || !direction) return;
+
+      if (recurrenceType == "once" && !onceDate) return;
+      if (recurrenceType == "recurrent" && !recurrencePreview.length) return;
+      if (recurrenceType == "specific" && !specificDates.length) return;
 
       if (!["free", "pay"].includes(entrance_format)) return;
 
@@ -246,78 +246,62 @@ export default function CreateEvent() {
 
       console.log("EVENT LINK", event_link);
 
-      const event = {
-        title,
-        description: textWithLineBreaks,
-        category,
-        eventDate,
-        fee,
-        eventTime,
-        entrance_format,
-        direction,
-        hashtags,
-        ticket_link: event_link,
-      };
+      const eventsArray = generateEventsArray();
+      if (eventsArray.length === 0) {
+        setDisplayRequiredDateTime(true);
+        return;
+      }
 
-      // Replace line breaks with <br> tags before saving to the database
+      console.log("Request Payload", { events: eventsArray });
 
-      // When displaying the text, use innerHTML to render the line breaks as HTML line breaks
-      // If has no media cancels execution.
-      if (media) {
-        //1. Takes the files from the media state which is filled from the inputs.
+      let files = media?.secondaryMedia
+        ? [media.mainMedia, ...media?.secondaryMedia].map((file) => ({
+            name: file.name,
+            type: file.type,
+          }))
+        : [{ name: media.mainMedia.name, type: media.mainMedia.type }];
 
-        //2. makes array of name,type keys.
-        let files = media?.secondaryMedia
-          ? [media.mainMedia, ...media?.secondaryMedia].map((file) => {
-              return { name: file.name, type: file.type };
-            })
-          : [{ name: media.mainMedia.name, type: media.mainMedia.type }];
+      const response = await post("/api/events", {
+        events: eventsArray,
+        files,
+        id: userInfo?.id,
+      });
 
-        //3. Is submited to our create an event endpoint alongside the event data for url signing.
-        const response = await post("/api/events", {
-          event,
-          files,
-          id: userInfo?.id,
-        });
+      files = media?.secondaryMedia
+        ? [media.mainMedia, ...media?.secondaryMedia]
+        : [media.mainMedia];
 
-        //4. Resets the files array so it has the files instead of just text.
-        files = media?.secondaryMedia
-          ? [media.mainMedia, ...media?.secondaryMedia]
-          : [media.mainMedia];
-
-        //5. Loops the files to save the file in our S3 bucket from our signed urls.
-        const signedUrls = response.data.urls;
-        signedUrls.map(async (url: string, index: number) => {
-          await $axios.put(url, files[index], {
+      const signedUrls = response.data.urls;
+      await Promise.all(
+        signedUrls.map((url: string, index: number) =>
+          $axios.put(url, files[index], {
             headers: {
               "Content-type": files[index].type,
               "Access-Control-Allow-Origin": "*",
             },
-          });
+          })
+        )
+      );
+
+      if (response.status === 200) {
+        setNewEventUrl("/user/my-events");
+
+        setEventDate(undefined);
+        setEventTime("");
+        setDirection(undefined);
+        setHashtags([]);
+        setMedia(undefined);
+        resetForm();
+        setEntranceFee(0);
+
+        setStatusMessage({
+          show: true,
+          type: "success",
+          message: {
+            title: "Evento(s) publicado(s) exitosamente",
+            body: "Serás redireccionado a tu lista de eventos en breve.",
+          },
         });
-
-        if (response.status === 200) {
-          setNewEventUrl(
-            `/${response.data.new_event.category}/${response.data.new_event.id}`
-          );
-
-          setEventDate(undefined);
-          setEventTime("");
-          setDirection(undefined);
-          setHashtags([]);
-          setMedia(undefined);
-          resetForm();
-          setEntranceFee(0);
-
-          setStatusMessage({
-            show: true,
-            type: "success",
-            message: {
-              title: "Evento publicado exitosamente",
-              body: "Serás redireccionado a tu lista de eventos en breve.",
-            },
-          });
-        }
       }
     },
   });
@@ -327,6 +311,56 @@ export default function CreateEvent() {
       setUserInfo(session["user"]!);
     }
   }, [session]);
+
+  function generateEventsArray() {
+    const baseEvent = {
+      title: formik.values.title,
+      description: formik.values.description.replace(/(?:\r\n|\r|\n)/g, "<br>"),
+      category: formik.values.category,
+      direction,
+      fee,
+      entrance_format,
+      hashtags,
+      ticket_link: event_link,
+      ...(formik.values.secondary_category && {
+        secondary_category: formik.values.secondary_category,
+      }),
+    };
+
+    if (recurrenceType === "once" && onceDate && onceTime) {
+      return [
+        {
+          ...baseEvent,
+          eventDate: onceDate,
+          eventTime: onceTime,
+        },
+      ];
+    }
+
+    if (
+      recurrenceType === "recurrent" &&
+      recurrencePreview.length > 0 &&
+      recurrenceTime
+    ) {
+      return recurrencePreview.map((date) => ({
+        ...baseEvent,
+        eventDate: date,
+        eventTime: recurrenceTime,
+      }));
+    }
+
+    if (recurrenceType === "specific") {
+      return specificDates
+        .filter((entry) => entry.date && entry.time)
+        .map((entry) => ({
+          ...baseEvent,
+          eventDate: entry.date,
+          eventTime: entry.time,
+        }));
+    }
+
+    return [];
+  }
 
   if (status === "loading") {
     return <p>Loading...</p>;
@@ -433,7 +467,7 @@ export default function CreateEvent() {
                 {/* Basic Details Section */}
                 <div
                   id="basic-details"
-                  className="gap-y-6 lg:gap-y-8 grid grid-cols-1  border-b border-slate-200"
+                  className="gap-y-6 lg:gap-y-8 grid grid-cols-1  border-b border-slate-200  pb-16"
                 >
                   <h2 className="text-2xl font-semibold ">Detalles basicos</h2>
                   <div className="grid gap-y-6 md:gap-y-8 w-full">
@@ -458,9 +492,12 @@ export default function CreateEvent() {
                       </label>
                       <Select
                         value={formik.values.category}
-                        onValueChange={(value) =>
-                          formik.setFieldValue("category", value)
-                        }
+                        onValueChange={(value) => {
+                          formik.setFieldValue("category", value);
+                          if (formik.values.secondary_category === value) {
+                            formik.setFieldValue("secondary_category", "");
+                          }
+                        }}
                         name="category"
                         aria-label="Selecciona una categoria"
                       >
@@ -482,6 +519,34 @@ export default function CreateEvent() {
                           {formik.errors.category}
                         </div>
                       ) : null}
+                    </div>
+                    <div className="">
+                      <label className="block font-medium mb-1">
+                        Subcategoría (opcional)
+                      </label>
+                      <Select
+                        value={formik.values.secondary_category || ""}
+                        onValueChange={(value) =>
+                          formik.setFieldValue("secondary_category", value)
+                        }
+                        name="secondary_category"
+                        aria-label="Selecciona una subcategoría"
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccione una subcategoría (opcional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {CATEGORIES.filter(
+                            (cat) =>
+                              cat.value !== "all" &&
+                              cat.value !== formik.values.category
+                          ).map((cat) => (
+                            <SelectItem key={cat.value} value={cat.value}>
+                              {cat.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="">
                       <label className="block font-medium mb-1">
@@ -586,33 +651,11 @@ export default function CreateEvent() {
                   </div>
                 </div>
 
-                {/* Media Section */}
-                <div id="media" className="pt-8 pb-8 border-b border-slate-200">
-                  <div className="">
-                    <h2 className="text-2xl font-semibold mb-2">Media</h2>
-                  </div>
-                  <div className="flex flex-col gap-y-[32px] md:gap-y-[52px]">
-                    <EventMediaInputGroup
-                      id="create-event-media"
-                      isRequired
-                      displayWarning={displayRequiredMedia}
-                      setImage={setMediaState}
-                    />
-                    <div className="mb-4">
-                      <label className="block font-medium mb-1">
-                        Enlace para adquirir o reservar
-                      </label>
-                      <Input
-                        type="text"
-                        placeholder="Indica el enlace para adquirir o reservar tu cupo"
-                        onChange={(e) => setEventLink(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </div>
-
                 {/* Dates and Location Section */}
-                <div id="dates-location" className="pt-8 pb-8">
+                <div
+                  id="dates-location"
+                  className="py-16 border-b border-slate-200"
+                >
                   <div className="mb-6">
                     <h2 className="text-2xl font-semibold mb-2">
                       Fecha y ubicación
@@ -648,26 +691,23 @@ export default function CreateEvent() {
                               Fecha
                             </label>
                             <DatePicker
-                              className="border border-slate-200 rounded-md w-full min-w-[220px] h-[40px]"
+                              className="border border-slate-200 rounded-md w-full min-w-[240px] h-[40px]"
                               seletedDate={onceDate}
                               isForm
                               handleDateChange={setOnceDate}
                             />
                           </div>
-                          <div className="flex-1">
-                            <label className="block font-medium mb-1">
-                              Hora
-                            </label>
-                            <Input
-                              type="time"
-                              value={onceTime}
-                              onChange={(e) => setOnceTime(e.target.value)}
-                              className=" w-[120px]"
-                            />
-                          </div>
                         </div>
-                        {/* Empty second column for alignment */}
-                        <div className="hidden md:block" />
+
+                        <div className="flex-1">
+                          <label className="block font-medium mb-1">Hora</label>
+                          <Input
+                            type="time"
+                            value={onceTime}
+                            onChange={(e) => setOnceTime(e.target.value)}
+                            className=" w-[120px]"
+                          />
+                        </div>
                       </div>
                     )}
                     {recurrenceType === "recurrent" && (
@@ -678,7 +718,7 @@ export default function CreateEvent() {
                               Comenzando en
                             </label>
                             <DatePicker
-                              className="border border-slate-200 rounded-md w-full md:max-w-[200px] h-[40px]"
+                              className="border border-slate-200 rounded-md w-full min-w-[240px] h-[40px]"
                               seletedDate={recurrenceStartDate}
                               isForm
                               handleDateChange={setRecurrenceStartDate}
@@ -788,7 +828,7 @@ export default function CreateEvent() {
                           >
                             <div className="flex-1 min-w-[160px]">
                               <DatePicker
-                                className="border border-slate-200 rounded-md w-full h-[40px]"
+                                className="border border-slate-200 rounded-md w-full min-w-[240px] h-[40px]"
                                 seletedDate={entry.date}
                                 isForm
                                 handleDateChange={(date: Date | undefined) => {
@@ -848,7 +888,7 @@ export default function CreateEvent() {
                     )}
                   </div>
 
-                  <div id="event-location" className="mb-4">
+                  <div id="event-location" className="">
                     <label className="block font-medium mb-1">
                       Dirección <RequiredStar />
                     </label>
@@ -865,6 +905,32 @@ export default function CreateEvent() {
                         });
                       }}
                     />
+                  </div>
+                </div>
+
+                {/* Media Section */}
+                <div id="media" className="py-16 border-b border-slate-200">
+                  <div className="">
+                    <h2 className="text-2xl font-semibold mb-2">Media</h2>
+                  </div>
+                  <div className="flex flex-col gap-y-[32px] md:gap-y-[52px]">
+                    <EventMediaInputGroup
+                      id="create-event-media"
+                      isRequired
+                      displayWarning={displayRequiredMedia}
+                      setImage={setMediaState}
+                    />
+                    <div className="mb-4">
+                      <label className="block font-medium mb-1">
+                        Enlace para adquirir entradas, obtener más información o
+                        hacer reservas
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Indica el enlace para adquirir o reservar tu cupo"
+                        onChange={(e) => setEventLink(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
 

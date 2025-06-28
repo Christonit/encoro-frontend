@@ -15,32 +15,24 @@ const CATEGORIES = [
   { value: "all", label: "Todas las categorías" },
   { value: "music", label: "Música" },
   { value: "art", label: "Arte" },
-  { value: "tourism", label: "Turismo" },
-  { value: "sports", label: "Deportes" },
-  { value: "theather", label: "Teatro" },
   { value: "nightlife", label: "Vida nocturna" },
-  { value: "concerts", label: "Conciertos" },
-  { value: "culture", label: "Cultura" },
   { value: "gastronomy", label: "Gastronomía" },
-  { value: "bars", label: "Bares" },
-  { value: "conferences", label: "Conferencias" },
-  { value: "education", label: "Educación" },
+  { value: "tourism", label: "Turismo" },
   { value: "wellness", label: "Bienestar" },
+  { value: "education", label: "Educación y Conferencias" },
+  { value: "entertainment", label: "Entretenimiento" },
+  { value: "sports", label: "Deportes" },
 ];
 
 const CATEGORIES_DICT: { [key: string]: string } = {
   music: "Música",
   art: "Arte",
   nightlife: "Vida Nocturna",
-  concerts: "Conciertos",
-  culture: "Cultura",
   gastronomy: "Gastronomía",
-  bars: "Bares",
-  conferences: "Conferencias",
   tourism: "Turismo",
   sports: "Deportes",
-  theater: "Teatro",
-  education: "Educación",
+  education: "Educación y Conferencias",
+  entertainment: "Entretenimiento",
 };
 
 const ROLES = ["SUPERUSER", "ADMIN", "COLLABORATOR"];

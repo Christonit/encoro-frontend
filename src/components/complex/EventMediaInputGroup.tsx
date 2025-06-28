@@ -1,7 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import cx from 'classnames';
-import { AiOutlineCloseCircle, AiOutlineFileImage } from 'react-icons/ai';
+import cx from "classnames";
+import { AiOutlineCloseCircle, AiOutlineFileImage } from "react-icons/ai";
 
 interface EventMediaInputGroupI {
   id: string;
@@ -33,7 +33,7 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
 
     if (event.target && event.target.files?.length) {
       const file = event.target.files[0];
-      if (file && file.type.match('image.*')) {
+      if (file && file.type.match("image.*")) {
         const reader = new FileReader();
         reader.onload = function (e) {
           console.log(e.target?.result);
@@ -42,20 +42,20 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
             `#${id} #image-block-${index}`
           ) as HTMLImageElement;
 
-          console.log('1', image);
+          console.log("1", image);
           if (image) {
             image.src = src;
           } else {
-            const imageTag = document.createElement('img');
+            const imageTag = document.createElement("img");
             imageTag.id = `image-block-${index}`;
-            imageTag.classList.add('image-block');
+            imageTag.classList.add("image-block");
             imageTag.src = src;
             event.target.parentElement!.append(imageTag);
 
-            console.log('2', event.target.parentElement);
+            console.log("2", event.target.parentElement);
             event.target.parentElement!.append(imageTag);
             const placeholderIcon = event.target.previousSibling as HTMLElement;
-            placeholderIcon.classList.add('hidden');
+            placeholderIcon.classList.add("hidden");
           }
         };
 
@@ -72,9 +72,12 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
 
       <div className="mb-6">
         <div
-          className={cx('relative flex h-[200px] w-full items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-4', {
-            'border-slate-300': defaultMedia && defaultMedia[0],
-          })}
+          className={cx(
+            "relative flex h-[200px] w-full max-w-xs items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-4",
+            {
+              "border-slate-300": defaultMedia && defaultMedia[0],
+            }
+          )}
         >
           {defaultMedia && defaultMedia[0] ? (
             <div className="relative h-full w-full">
@@ -95,7 +98,7 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
             data-image="image-block-1"
             data-image-index="1"
             type="file"
-            onChange={e => handleImageUpdate(e, 1)}
+            onChange={(e) => handleImageUpdate(e, 1)}
           />
         </div>
         <div className="mt-4">
@@ -103,19 +106,19 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
             <Button
               type="button"
               variant="outline"
-              onClick={() => document.getElementById('main-media')?.click()}
+              onClick={() => document.getElementById("main-media")?.click()}
               className="text-sm"
             >
               Seleccionar archivo...
             </Button>
             <span className="text-base text-slate-900">
               {defaultMedia && defaultMedia[0]
-                ? '...' +
+                ? "..." +
                   defaultMedia[0].slice(
                     Math.round(defaultMedia[0].length / 2),
                     -1
                   )
-                : ' No hay archivo seleccionado.'}
+                : " No hay archivo seleccionado."}
             </span>
           </div>
           <span className="text-sm text-slate-500">
@@ -128,9 +131,12 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
         {[2, 3, 4, 5].map((index) => (
           <div
             key={index}
-            className={cx('relative flex h-[120px] w-[120px] items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-2', {
-              'border-slate-300': defaultMedia && defaultMedia[index - 1],
-            })}
+            className={cx(
+              "relative flex h-[120px] w-[120px] items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-2",
+              {
+                "border-slate-300": defaultMedia && defaultMedia[index - 1],
+              }
+            )}
           >
             {defaultMedia && defaultMedia[index - 1] ? (
               <>
@@ -159,7 +165,7 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
               data-image={`image-block-${index}`}
               data-image-index={index}
               name={`media-${index}`}
-              onChange={e => handleImageUpdate(e, index)}
+              onChange={(e) => handleImageUpdate(e, index)}
               type="file"
             />
           </div>

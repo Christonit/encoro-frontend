@@ -1,0 +1,15 @@
+.rdp-day:hover,
+.rdp-day:focus {
+  background-color: rgba($color: $blue-100, $alpha: 1);
+  border-radius: 100%;
+}
+
+.rdp-today {
+  background-color: rgba($color: $blue-100, $alpha: 1);
+  border-radius: 100%;
+}
+
+// .rdp-day_selected {
+//   background-color: rgba($color: $blue-100, $alpha: 1);
+//   border-radius: 100%;
+// }
