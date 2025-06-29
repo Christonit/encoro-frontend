@@ -344,7 +344,7 @@ const UserMyEvents = () => {
 
                     <Button
                       variant="outline"
-                      onClick={() => router.push(`/user/settings`)}
+                      onClick={() => router.push(`/user/profile`)}
                       className="mr-auto text-sm px-3 h-9 font-semibold"
                     >
                       Editar perfil
@@ -606,7 +606,11 @@ const UserMyEvents = () => {
                               {...event}
                               media={event.media[0]}
                               userId={(session?.user as userI).id}
-                              toggleVisibilityAction={(id, user_id, is_active) =>
+                              toggleVisibilityAction={(
+                                id,
+                                user_id,
+                                is_active
+                              ) =>
                                 toggleConfirmActionModal(() => ({
                                   is_visible: true,
                                   type: is_active ? "hide" : "show",

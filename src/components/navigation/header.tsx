@@ -252,7 +252,7 @@ const Header = () => {
         // case "/activity/[post]/edit":
         //   pathLabel = "Actualizar Evento";
         //   break;
-        case "/user/settings":
+        case "/user/profile":
           pathLabel = "Mi Perfil";
           break;
         case "/user/my-events":
@@ -516,7 +516,7 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Button
                         className="py-2 w-full text-left"
-                        onClick={() => push("/user/settings/")}
+                        onClick={() => push("/user/profile/")}
                       >
                         Configuracion
                       </Button>
@@ -689,7 +689,7 @@ const Header = () => {
                   role="link"
                   onClick={() => {
                     toggleMobileNav(false);
-                    push("/user/settings/");
+                    push("/user/profile/");
                   }}
                   className="py-3 w-full px-6 bg-slate-50 flex min-w-[160px] gap-2 justify-center"
                 >

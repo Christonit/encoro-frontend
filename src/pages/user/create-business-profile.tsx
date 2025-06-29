@@ -39,11 +39,15 @@ const UserSettings = () => {
 
               <p className="mb-8 text-lg text-slate-500">
                 Comienza completando tu perfil público{" "}
-                <Link href="/user/settings" target="_blank" className="text-blue-600 hover:underline">
+                <Link
+                  href="/user/profile"
+                  target="_blank"
+                  className="text-blue-600 hover:underline"
+                >
                   en este enlace
                 </Link>{" "}
-                y contáctanos a través del siguiente formulario, y
-                procederemos a actualizar tu perfil lo antes posible.
+                y contáctanos a través del siguiente formulario, y procederemos
+                a actualizar tu perfil lo antes posible.
               </p>
               <ZohoBusinessContactFrom />
             </div>

@@ -104,9 +104,9 @@ export default function CategoriesSection() {
               {categoryCard({ category: "music" })}
               {categoryCard({ category: "nightlife" })}
               {categoryCard({ category: "gastronomy" })}
-              {categoryCard({ category: "concerts" })}
+              {categoryCard({ category: "art" })}
               {categoryCard({ category: "tourism" })}
-              {categoryCard({ category: "theater" })}
+              {categoryCard({ category: "wellness" })}
             </div>
           ) : (
             <Carousel
