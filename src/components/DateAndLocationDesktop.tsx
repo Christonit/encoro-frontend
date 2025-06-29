@@ -158,10 +158,10 @@ const DateLocationFilter = forwardRef(
               ref={searchInput}
               type="text"
               className="text-base text-slate-900 w-full border-0 focus:outline-none"
-              placeholder="Que buscas hoy?"
+              placeholder="¿Qué buscas hoy?"
               onChange={handleInputChange}
               onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === "Escape") {
+                if (e.key === "Escape") {
                   toggleSearch(false);
                 }
               }}
@@ -185,10 +185,10 @@ const DateLocationFilter = forwardRef(
                 ref={searchInput}
                 type="text"
                 className="text-base text-slate-900 w-full border-0 focus:outline-none"
-                placeholder="Que buscas hoy?"
+                placeholder="¿Qué buscas hoy?"
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === "Escape") {
+                  if (e.key === "Escape") {
                     toggleSearch(false);
                   }
                 }}

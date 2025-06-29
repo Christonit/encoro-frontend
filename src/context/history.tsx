@@ -29,6 +29,7 @@ export const HistoryProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   useEffect(() => {
+    console.log("History use effect");
     setHistory((previous) => [...previous, asPath]);
   }, [asPath]);
 

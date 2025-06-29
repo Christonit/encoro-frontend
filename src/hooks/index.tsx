@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useHistory } from "../context/history";
 import { useSession, getSession, getCsrfToken } from "next-auth/react";
 import axios, { AxiosResponse, AxiosInstance } from "axios";
+import React from "react";
 
 type BackendMethods = {
   get: (url: string, data?: any) => Promise<AxiosResponse>;
@@ -92,10 +93,6 @@ const useBackend = (): BackendMethods => {
 };
 const useWindow = () => {
   const [windowWidth, setWindowWidth] = useState(0);
-
-  const [scrollDirection, setScrollDirection] = useState<"up" | "down">("down");
-
-  const [scrollPos, setScrollPos] = useState(0);
   // Function to check if an element is in view
   const isInViewport = (element: HTMLElement) => {
     const rect = element.getBoundingClientRect();
@@ -126,40 +123,37 @@ const useWindow = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    // Attach the event listener
     window.addEventListener("resize", handleResize);
-
-    // Cleanup function to remove the event listener when component unmounts
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
+  return { windowWidth, resolution, isInViewport };
+};
+
+// New hook for scroll position and direction
+const useScrollPosition = () => {
+  const [scrollPos, setScrollPos] = useState(0);
+  const [scrollDirection, setScrollDirection] = useState<"up" | "down">("down");
+  const scrollPosRef = React.useRef(0);
+
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollPos = window.pageYOffset;
-      if (
-        currentScrollPos > 0 &&
-        currentScrollPos < document.documentElement.scrollHeight
-      ) {
-        setScrollDirection(currentScrollPos > scrollPos ? "down" : "up");
-      }
-      scrollPos = currentScrollPos;
-
-      setScrollPos(scrollPos);
+      setScrollDirection(
+        currentScrollPos > scrollPosRef.current ? "down" : "up"
+      );
+      scrollPosRef.current = currentScrollPos;
+      setScrollPos(currentScrollPos);
     };
-
-    let scrollPos = window.pageYOffset;
-
-    // Attach the scroll event listener
     window.addEventListener("scroll", handleScroll);
-
-    // Cleanup function to remove the scroll event listener when component unmounts
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  return { windowWidth, resolution, isInViewport, scrollDirection, scrollPos };
+
+  return { scrollPos, scrollDirection };
 };
 
 const useNavigation = () => {
@@ -173,4 +167,4 @@ const useNavigation = () => {
   return { goBack, push };
 };
 
-export { useWindow, useNavigation, useBackend };
+export { useWindow, useNavigation, useBackend, useScrollPosition };

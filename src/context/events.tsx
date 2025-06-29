@@ -152,19 +152,23 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
               );
 
               if (result?.address_components) {
-                const city = result.address_components.find(
-                  (component) => component.types?.includes("locality")
-                )?.long_name || "";
+                const city =
+                  result.address_components.find((component) =>
+                    component.types?.includes("locality")
+                  )?.long_name || "";
 
-                const country = result.address_components.find(
-                  (component) => component.types?.includes("country")
-                )?.long_name || "";
+                const country =
+                  result.address_components.find((component) =>
+                    component.types?.includes("country")
+                  )?.long_name || "";
 
                 const locationData = { city, country };
                 setLocation(locationData);
                 localStorage.setItem("location", JSON.stringify(locationData));
               } else {
-                console.warn("Could not find address components in geocoding result");
+                console.warn(
+                  "Could not find address components in geocoding result"
+                );
                 workaroundLocationLookup();
               }
             } else {
@@ -188,7 +192,7 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
         {
           timeout: 10000,
           maximumAge: 0,
-          enableHighAccuracy: true
+          enableHighAccuracy: true,
         }
       );
     } else {
@@ -248,14 +252,12 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   };
 
   useEffect(() => {
+    console.log("Query use effect");
     if (query.date) {
-      console.log("DATE QUERY", query);
-
       setDateFilter(query.date as string);
     }
 
     if (query.location) {
-      console.log("LOCATION QUERY", query.location as string);
       setLocation({
         ...location,
         city: query.location as string,
@@ -263,6 +265,7 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
   }, [pathname, query.location, query.date]);
   useEffect(() => {
+    console.log("Session use effect");
     if (session && session.user) {
       const user: userI = session.user;
       get(`/api/organizer/followed/${user.id}`).then((res) => {
@@ -276,9 +279,8 @@ export const EventsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   useEffect(() => {
     const location = localStorage.getItem("location");
 
-    console.log("LOCATION", location);
+    console.log("LOCATION");
     if (!location) {
-      console.log("DONT HAVE LOCATION");
       getUserLocation();
     } else {
       setLocation(JSON.parse(location));
