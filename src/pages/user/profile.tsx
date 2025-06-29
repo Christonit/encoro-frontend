@@ -307,7 +307,7 @@ const UserSettings = () => {
           </div>
           <Button
             variant="secondary"
-            disabled={!userInfo || status === "loading"}
+            disabled={!userInfo || status === "loading" || isEditing}
             onClick={() => setIsEditing(true)}
             className="h-10 px-8 text-base font-semibold"
           >

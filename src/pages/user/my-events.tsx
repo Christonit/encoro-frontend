@@ -26,6 +26,7 @@ import { useBackend, useWindow } from "@/hooks";
 import NoEventsProfileCard from "@/components/cards/NoEventsProfileCard";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import clsx from "clsx";
 
 type socialNetworksType = {
   website: string;
@@ -260,6 +261,11 @@ const UserMyEvents = () => {
     return string;
   };
 
+  function capitalize(str: string) {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   useEffect(() => {
     if (session?.user && session.user.name) {
       setUserInfo(session["user"]!);
@@ -299,6 +305,10 @@ const UserMyEvents = () => {
     }
   }, [userEvents]);
 
+  const hasSchedule =
+    userInfo?.schedule &&
+    Array.isArray(userInfo?.schedule) &&
+    userInfo?.schedule.length > 0;
   return (
     <div>
       {statusMessage.type && (
@@ -338,7 +348,7 @@ const UserMyEvents = () => {
                 )}
                 <div className="flex w-full flex-col gap-5">
                   <div className="flex lg:items-center flex-col lg:flex-row gap-3">
-                    <h1 className="text-2xl lg:text-4xl mb-0 md:mb-4 font-semibold">
+                    <h1 className="text-2xl lg:text-4xl font-semibold">
                       {userInfo.name}
                     </h1>
 
@@ -397,7 +407,14 @@ const UserMyEvents = () => {
                     </div>
                   </div>
 
-                  <div className="hidden md:flex items-center gap-5">
+                  <div
+                    className={clsx("hidden md:flex ", {
+                      "flex-col gap-4":
+                        hasSchedule && userInfo?.schedule.length > 1,
+                      "gap-5 items-center":
+                        !hasSchedule && userInfo?.schedule.length > 1,
+                    })}
+                  >
                     {userInfo.location && (
                       <>
                         <span className="inline-flex flex-start items-center max-w-[600px] text-slate-500">
@@ -406,68 +423,82 @@ const UserMyEvents = () => {
                             {truncateText(userInfo.location)}
                           </span>
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             className="ml-3 text-sm font-semibold"
                             onClick={() => setOpenMap(!openMap)}
                           >
                             {!openMap ? "Ver mapa" : "Cerrar mapa"}
                           </Button>
                         </span>
-
-                        <span className="h-4 w-px bg-slate-300" />
                       </>
                     )}
 
                     {userInfo.phone_number && (
-                      <span className="flex flex-end max-w-[200px] items-center text-slate-500">
-                        <AiTwotonePhone className="mr-[12px]" />
-                        <span className="text-base">
-                          {userInfo.phone_number}
-                        </span>
-                      </span>
-                    )}
-
-                    {userInfo.schedule && userInfo.schedule && (
                       <>
-                        <span className="h-[16px] w-[1px] bg-slate-300" />
-                        <span className="flex items-center text-slate-600">
-                          <AiOutlineClockCircle className="mr-[12px]" />
-
-                          {userInfo.schedule.map((schedule: any, i: number) => (
-                            <span key={i}>
-                              {schedule.start_day &&
-                                schedule.start_day.length > 0 &&
-                                schedule.start_day[0].toUpperCase()}{" "}
-                              -{" "}
-                              {schedule.end_day &&
-                                schedule.end_day.length > 0 &&
-                                schedule.end_day[0].toUpperCase()}
-                              : {schedule.time && schedule.time.toLowerCase()}
-                            </span>
-                          ))}
+                        <span className="flex flex-end max-w-[200px] items-center text-slate-500 border-l border-slate-200 px-4">
+                          <AiTwotonePhone className="mr-[12px]" />
+                          <span className="text-base">
+                            {userInfo.phone_number}
+                          </span>
                         </span>
                       </>
                     )}
+
+                    {userInfo.schedule &&
+                      Array.isArray(userInfo.schedule) &&
+                      userInfo.schedule.length > 0 && (
+                        <>
+                          <span
+                            className={clsx(
+                              "flex items-center text-slate-600 ",
+                              {
+                                "border-l border-slate-200 px-4":
+                                  hasSchedule && userInfo?.schedule.length == 1,
+                              }
+                            )}
+                          >
+                            <AiOutlineClockCircle className="mr-[12px]" />
+                            {userInfo.schedule.map((slot: any, i: number) => (
+                              <span
+                                key={i}
+                                className={clsx("mr-3 ", {
+                                  "border-r border-slate-200 pr-3 last:border-r-0":
+                                    i < userInfo.schedule.length - 1,
+                                })}
+                              >
+                                {slot.dayFrom && slot.dayTo
+                                  ? `${capitalize(slot.dayFrom)} - ${capitalize(
+                                      slot.dayTo
+                                    )}`
+                                  : ""}
+                                {slot.hourFrom && slot.hourTo
+                                  ? `: ${slot.hourFrom} - ${slot.hourTo}`
+                                  : ""}
+                              </span>
+                            ))}
+                          </span>
+                        </>
+                      )}
                   </div>
 
-                  <div
-                    className={`w-full hidden md:block overflow-hidden rounded-xl border border-slate-200 transition-all duration-300 ${
-                      openMap ? "max-h-[320px]" : "max-h-0"
-                    }`}
-                  >
-                    <div id="event-map">
-                      <iframe
-                        className="w-full"
-                        height={320}
-                        style={{ border: 0 }}
-                        src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_API}&q=${userInfo.location}`}
-                        allowFullScreen={true}
-                      ></iframe>
+                  {openMap ? (
+                    <div
+                      className={`w-full block overflow-hidden rounded-xl border border-slate-200 transition-all duration-300  max-h-[320px]`}
+                    >
+                      <div id="event-map">
+                        <iframe
+                          className="w-full"
+                          height={320}
+                          style={{ border: 0 }}
+                          src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_API}&q=${userInfo.location}`}
+                          allowFullScreen={true}
+                        ></iframe>
+                      </div>
                     </div>
-                  </div>
+                  ) : null}
 
                   <p
-                    className="text-slate-500 hidden md:flex leading-relaxed mb-[32px] max-w-[700px]"
+                    className="text-slate-500 hidden md:flex leading-relaxed mb-[32px] max-w-[700px] pt-4 border-t border-slate-200"
                     dangerouslySetInnerHTML={{ __html: userInfo.biography }}
                   ></p>
 
@@ -505,21 +536,21 @@ const UserMyEvents = () => {
                     </span>
                   )}
 
-                  {userInfo.schedule && userInfo.schedule && (
+                  {userInfo.schedule && Array.isArray(userInfo.schedule) && (
                     <>
                       <span className="flex items-start text-slate-500 mb-[8px]">
                         <AiOutlineClockCircle className="mr-[12px]" />
                         <span className="flex flex-wrap flex-col gap-[4px] text-slate-500">
-                          {userInfo.schedule.map((schedule: any, i: number) => (
-                            <span key={i}>
-                              {schedule.start_day &&
-                                schedule.start_day.length > 0 &&
-                                schedule.start_day[0].toUpperCase()}{" "}
-                              -{" "}
-                              {schedule.end_day &&
-                                schedule.end_day.length > 0 &&
-                                schedule.end_day[0].toUpperCase()}
-                              : {schedule.time && schedule.time.toLowerCase()}
+                          {userInfo.schedule.map((slot: any, i: number) => (
+                            <span key={i} className="mr-2">
+                              {slot.dayFrom && slot.dayTo
+                                ? `${capitalize(slot.dayFrom)} - ${capitalize(
+                                    slot.dayTo
+                                  )}`
+                                : ""}
+                              {slot.hourFrom && slot.hourTo
+                                ? `: ${slot.hourFrom} - ${slot.hourTo}`
+                                : ""}
                             </span>
                           ))}
                         </span>
