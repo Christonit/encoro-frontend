@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import SearchForCity from "./location/SearchCity";
 import { DatePicker } from "@/components/DatePicker";
 import { forwardRef, ForwardedRef, useState, useEffect, useRef } from "react";
@@ -38,11 +39,12 @@ const DateLocationFilter = forwardRef(
     }: DateLocationFilter,
     ref: ForwardedRef<HTMLDivElement>
   ) => {
+    const router = useRouter();
     const { location, setLocation, availableCities } = useEvents();
     const [showClearFilter, toggleClearFilter] = useState(false);
+    const [showOnlySearch, toggleShowOnlySearch] = useState(false);
     const [showSearch, toggleSearch] = useState(false);
     const [defaultValue, setDefaultValue] = useState(defaultCity ?? "");
-
     const searchInput = useRef<HTMLInputElement>(null);
 
     const { windowWidth, resolution } = useWindow();
@@ -113,6 +115,21 @@ const DateLocationFilter = forwardRef(
         }, 0);
       }
     }, [searchInput, showSearch]);
+
+    useEffect(() => {
+      console.log("HEADER ROUTER", router.pathname);
+
+      const routesWithAllOptions = ["/", "/[category]"];
+
+      if (routesWithAllOptions.includes(router.pathname)) {
+        toggleShowOnlySearch(false);
+      } else {
+        if (!showOnlySearch) {
+          toggleShowOnlySearch(true);
+        }
+      }
+    }, [router.pathname, showOnlySearch]);
+
     return (
       <div
         ref={ref}
@@ -124,56 +141,87 @@ const DateLocationFilter = forwardRef(
           }
         )}
       >
-        <Button
-          className="px-[8px] py-0 h-[36px] bg-transparent border-0 "
-          onClick={handleToggleSearch}
-          variant="clear"
-        >
-          {showSearch ? (
-            <AiOutlineArrowLeft size={20} className="text-slate-900" />
-          ) : (
-            <AiOutlineSearch size={20} className="text-slate-900" />
-          )}
-        </Button>
-        {showSearch ? (
-          <input
-            ref={searchInput}
-            type="text"
-            className="text-base text-slate-900 w-full border-0 focus:outline-none"
-            placeholder="Que buscas hoy?"
-            onChange={handleInputChange}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === "Escape") {
-                toggleSearch(false);
-              }
-            }}
-          />
+        {showOnlySearch ? (
+          <div className="flex items-center w-full">
+            <Button
+              className="px-[8px] py-0 h-[36px] bg-transparent border-0 "
+              onClick={handleToggleSearch}
+              variant="clear"
+            >
+              {showSearch ? (
+                <AiOutlineArrowLeft size={20} className="text-slate-900" />
+              ) : (
+                <AiOutlineSearch size={20} className="text-slate-900" />
+              )}
+            </Button>
+            <input
+              ref={searchInput}
+              type="text"
+              className="text-base text-slate-900 w-full border-0 focus:outline-none"
+              placeholder="Que buscas hoy?"
+              onChange={handleInputChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === "Escape") {
+                  toggleSearch(false);
+                }
+              }}
+            />
+          </div>
         ) : (
           <>
-            <span className="h-6 w-px bg-slate-300" />
-            <div className="top-bar-location-picker flex items-center">
-              <SearchForCity
-                citiesList={availableCities}
-                onChangeLocation={(props) => {
-                  if (handleLocationChange) {
-                    handleLocationChange(props);
+            <Button
+              className="px-[8px] py-0 h-[36px] bg-transparent border-0 "
+              onClick={handleToggleSearch}
+              variant="clear"
+            >
+              {showSearch ? (
+                <AiOutlineArrowLeft size={20} className="text-slate-900" />
+              ) : (
+                <AiOutlineSearch size={20} className="text-slate-900" />
+              )}
+            </Button>
+            {showSearch ? (
+              <input
+                ref={searchInput}
+                type="text"
+                className="text-base text-slate-900 w-full border-0 focus:outline-none"
+                placeholder="Que buscas hoy?"
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === "Escape") {
+                    toggleSearch(false);
                   }
-                  toggleClearFilter(true);
                 }}
-                defaultValue={isOnHeader ? defaultValue : defaultCity}
-                className="header-location-input bg-transparent border-0  text-slate-900 text-lg"
-                clearLocation={clearLocation}
-                showClearFilter={showClearFilter}
               />
-            </div>
-            <span className="h-6 w-px bg-slate-300" />
-            <DatePicker
-              className="w-full max-w-[240px] min-w-[240px]"
-              handleDateChange={handleDateChange}
-              seletedDate={selectedDay}
-            />
+            ) : (
+              <>
+                <span className="h-6 w-px bg-slate-300" />
+                <div className="top-bar-location-picker flex items-center">
+                  <SearchForCity
+                    citiesList={availableCities}
+                    onChangeLocation={(props) => {
+                      if (handleLocationChange) {
+                        handleLocationChange(props);
+                      }
+                      toggleClearFilter(true);
+                    }}
+                    defaultValue={isOnHeader ? defaultValue : defaultCity}
+                    className="header-location-input bg-transparent border-0  text-slate-900 text-lg"
+                    clearLocation={clearLocation}
+                    showClearFilter={showClearFilter}
+                  />
+                </div>
+                <span className="h-6 w-px bg-slate-300" />
+                <DatePicker
+                  className="w-full max-w-[240px] min-w-[240px]"
+                  handleDateChange={handleDateChange}
+                  seletedDate={selectedDay}
+                />
+              </>
+            )}
           </>
         )}
+
         {showSearch && searchResults && (
           <div className="w-full border-slate-200 border-[1px] rounded-[8px] bg-white z-[999] overflow-y-auto max-h-[320px] absolute top-[40px]  left-0">
             {searchResults.length > 0 ? (

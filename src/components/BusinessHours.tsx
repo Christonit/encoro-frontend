@@ -30,9 +30,11 @@ export type BusinessHoursSlot = {
 export default function BusinessHours({
   value,
   onChange,
+  disabled,
 }: {
   value?: BusinessHoursSlot[];
   onChange?: (slots: BusinessHoursSlot[]) => void;
+  disabled?: boolean;
 }) {
   const [slots, setSlots] = useState<BusinessHoursSlot[]>(
     value && value.length > 0
@@ -76,6 +78,7 @@ export default function BusinessHours({
           <div className="flex items-center border rounded-md px-2 py-1 bg-slate-50">
             <AiOutlineCalendar className="mr-1 text-slate-400" />
             <Select
+              disabled={disabled}
               value={slot.dayFrom}
               onValueChange={(val) => updateSlot(idx, "dayFrom", val)}
             >
@@ -92,6 +95,7 @@ export default function BusinessHours({
             </Select>
             <span className="mx-2">a</span>
             <Select
+              disabled={disabled}
               value={slot.dayTo}
               onValueChange={(val) => updateSlot(idx, "dayTo", val)}
             >
@@ -117,6 +121,7 @@ export default function BusinessHours({
               className="w-20"
               placeholder="Desde"
               required
+              disabled={disabled}
             />
             <span className="mx-2">a</span>
             <Input
@@ -126,6 +131,7 @@ export default function BusinessHours({
               className="w-20"
               placeholder="Hasta"
               required
+              disabled={disabled}
             />
           </div>
           {/* Remove button */}
@@ -134,6 +140,7 @@ export default function BusinessHours({
             variant="outline"
             className="ml-2"
             onClick={() => removeSlot(idx)}
+            disabled={disabled}
           >
             -
           </Button>
@@ -145,6 +152,7 @@ export default function BusinessHours({
         variant="outline"
         className="w-fit"
         onClick={addSlot}
+        disabled={disabled}
       >
         + Agregar horario
       </Button>
