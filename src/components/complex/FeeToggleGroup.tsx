@@ -14,7 +14,6 @@ export const FeeToggleGroup = ({
   className = "",
   labels = { all: "Todos", free: "Gratis", pay: "Pago" },
 }: FeeToggleGroupProps) => {
-
   return (
     <div className={cn("event-fee-filter-container flex", className)}>
       <ToggleGroup
@@ -38,7 +37,7 @@ export const FeeToggleGroup = ({
         </ToggleGroupItem>
         <ToggleGroupItem
           className={cn(
-            "fee-toggle",
+            "fee-toggle border-x-1 border-slate-300",
             value === "free" && "fee-toggle--active"
           )}
           value="free"
@@ -64,4 +63,4 @@ export const FeeToggleGroup = ({
       </ToggleGroup>
     </div>
   );
-}; 
+};

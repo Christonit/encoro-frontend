@@ -19,7 +19,7 @@
   font-weight: 400;
   padding-top: 8px;
   padding-bottom: 8px;
-
+  text-wrap: nowrap;
   &:hover {
     background-color: rgba($slate-100, 0.5);
     color: $slate-900;

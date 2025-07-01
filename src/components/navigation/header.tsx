@@ -115,11 +115,14 @@ const DesktopHeader = React.memo(
     >
       <div className="flex items-center justify-between px-6 py-3 w-full">
         {/* Logo */}
-        <Link href="/" className="flex items-center min-w-[130px] mr-auto">
+        <Link
+          href="/"
+          className="flex items-center min-w-[130px] mr-auto lg:mr-0"
+        >
           <Image src="/images/logo.svg" alt="Logo" width={130} height={30} />
         </Link>
         {/* Search bar */}
-        <div className="flex-1 flex justify-center">
+        <div className="mr-auto flex-row flex items-center ml-8 gap-4 w-full max-w-[880px]">
           {!(pathname === "/" && isOnTopScrollOnHome) && (
             <DateLocationFilter
               selectedDay={date_filter}
@@ -133,89 +136,100 @@ const DesktopHeader = React.memo(
               searchResults={search_results}
             />
           )}
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/" className="navigation-link">
+                    Actividades
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              {user && (
+                <>
+                  <NavigationMenuItem>
+                    <div>
+                      <DropdownMenu
+                        open={agendaMenuOpen}
+                        onOpenChange={setAgendaMenuOpen}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="link"
+                            className={cn(
+                              "navigation-link",
+                              agendaMenuOpen && "active-dropdown"
+                            )}
+                            onMouseEnter={() => {
+                              setTimeout(() => {
+                                setAgendaMenuOpen(true);
+                              }, 250);
+                            }}
+                          >
+                            Mis cosas
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="min-w-[200px] bg-white border border-slate-200 rounded-lg relative"
+                        >
+                          <div onMouseLeave={() => setAgendaMenuOpen(false)}>
+                            {/* Arrow indicator */}
+                            {agendaMenuOpen && (
+                              <div className="absolute top-0 right-6 w-4 h-4 z-10 -translate-y-1/2 -translate-x-[16px]">
+                                <div className="w-4 h-4 bg-white border-b border-r border-slate-200 rotate-[225deg] " />
+                              </div>
+                            )}
+                            <DropdownMenuItem
+                              asChild
+                              className="py-2 hover:bg-slate-100 rounded-md"
+                            >
+                              <Link
+                                href="/user/my-schedule/"
+                                className="navigation-link dropdown-link"
+                              >
+                                <LuCalendarDays size={16} />
+                                <span>Mi agenda</span>
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              asChild
+                              className="py-2 hover:bg-slate-100 rounded-md"
+                            >
+                              <Link
+                                href="/user/followed/"
+                                className="navigation-link dropdown-link"
+                              >
+                                <LuUser size={16} />
+                                <span>Perfiles seguidos</span>
+                              </Link>
+                            </DropdownMenuItem>
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </NavigationMenuItem>
+
+                  {user.is_business && (
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          href="/user/my-events/"
+                          className="navigation-link"
+                        >
+                          Mis eventos
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+                  )}
+                </>
+              )}
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
         {/* Navigation */}
         <NavigationMenu>
           <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/" className="navigation-link">
-                  Actividades
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <div>
-                <DropdownMenu
-                  open={agendaMenuOpen}
-                  onOpenChange={setAgendaMenuOpen}
-                >
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="link"
-                      className={cn(
-                        "navigation-link",
-                        agendaMenuOpen && "active-dropdown"
-                      )}
-                      onMouseEnter={() => {
-                        setTimeout(() => {
-                          setAgendaMenuOpen(true);
-                        }, 250);
-                      }}
-                    >
-                      Mi agenda
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="min-w-[200px] bg-white border border-slate-200 rounded-lg relative"
-                  >
-                    <div onMouseLeave={() => setAgendaMenuOpen(false)}>
-                      {/* Arrow indicator */}
-                      {agendaMenuOpen && (
-                        <div className="absolute top-0 right-6 w-4 h-4 z-10 -translate-y-1/2 -translate-x-[16px]">
-                          <div className="w-4 h-4 bg-white border-b border-r border-slate-200 rotate-[225deg] " />
-                        </div>
-                      )}
-                      <DropdownMenuItem
-                        asChild
-                        className="py-2 hover:bg-slate-100 rounded-md"
-                      >
-                        <Link
-                          href="/user/my-schedule/"
-                          className="navigation-link dropdown-link"
-                        >
-                          <LuCalendarDays size={16} />
-                          <span>Mi Calendario</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        asChild
-                        className="py-2 hover:bg-slate-100 rounded-md"
-                      >
-                        <Link
-                          href="/user/followed/"
-                          className="navigation-link dropdown-link"
-                        >
-                          <LuUser size={16} />
-                          <span>Perfiles seguidos</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </NavigationMenuItem>
-            {user && user.is_business && (
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/user/my-events/" className="navigation-link">
-                    Mis eventos
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            )}
-
             {user && (
               <Button
                 variant="clear"

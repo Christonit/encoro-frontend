@@ -693,7 +693,7 @@ export default function CreateEvent() {
                             <DatePicker
                               className="border border-slate-200 rounded-md w-full min-w-[240px] h-[40px]"
                               seletedDate={onceDate}
-                              isForm
+                              appearance="form"
                               handleDateChange={setOnceDate}
                             />
                           </div>
@@ -720,7 +720,7 @@ export default function CreateEvent() {
                             <DatePicker
                               className="border border-slate-200 rounded-md w-full min-w-[240px] h-[40px]"
                               seletedDate={recurrenceStartDate}
-                              isForm
+                              appearance="form"
                               handleDateChange={setRecurrenceStartDate}
                             />
                           </div>
@@ -830,7 +830,7 @@ export default function CreateEvent() {
                               <DatePicker
                                 className="border border-slate-200 rounded-md w-full min-w-[240px] h-[40px]"
                                 seletedDate={entry.date}
-                                isForm
+                                appearance="form"
                                 handleDateChange={(date: Date | undefined) => {
                                   setSpecificDates((prev) =>
                                     prev.map((e, i) =>

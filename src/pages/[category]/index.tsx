@@ -57,11 +57,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
 export default function Home(
   props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-  return (
-    <FiltersProvider>
-      <HomeContent {...props} />
-    </FiltersProvider>
-  );
+  return <HomeContent {...props} />;
 }
 
 function HomeContent(

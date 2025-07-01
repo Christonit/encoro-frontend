@@ -24,10 +24,10 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1432px;
+  max-width: 1412px;
   margin: 0 auto;
   padding: 0 16px;
-  overflow: hidden;
+  // overflow: hidden;
 
   @include breakpoint(xxl) {
     padding: 0;
@@ -203,6 +203,10 @@
   cursor: pointer;
   outline: none;
   box-shadow: none;
+  &:not(:first-child, :last-child) {
+    border-left: 1px solid rgba($slate-200, $alpha: 0.5);
+    border-right: 1px solid rgba($slate-200, $alpha: 0.5);
+  }
 }
 .fee-toggle:hover,
 .fee-toggle:focus-visible {

@@ -61,7 +61,7 @@ const useBackend = (): BackendMethods => {
         Authorization: `Bearer ${access_token}`,
       },
     });
-    const response = await axiosInstance!.post(url, data);
+    const response = await axiosInstance!.delete(url, data);
     return response;
   };
 

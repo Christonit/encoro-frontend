@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react";
 import Head from "next/head";
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { AiOutlineCalendar, AiOutlineClose } from "react-icons/ai";
 import { unfollowEvent } from "@/lib/utils";
@@ -8,20 +8,21 @@ import { useEffect } from "react";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { useSession } from "next-auth/react";
-import { DisplayTypeFilters } from "@/components/complex/DisplayTypeFilters";
 import { CATEGORIES_DICT } from "@/lib/variables";
 import { StandardEventCard } from "@/components/cards";
 import { useBackend, useWindow } from "@/hooks";
 import cx from "classnames";
 import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { useRouter } from "next/router";
+import { FiltersContainer } from "@/components/complex/FiltersContainer";
+import { UserThingsHeader } from "@/components/complex/UserThingsHeader";
 
 interface userI {
   name?: string | null | undefined;
@@ -54,22 +55,17 @@ export async function getServerSideProps(context: { req: any }) {
 
 const MyScheduledEvents = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   if (status === "unauthenticated") {
     redirect("/");
   }
   const { get, destroy } = useBackend();
-  const [categories, setCategories] = useState<any>([]);
-  const [showTooltip, setShowTooltip] = useState(false);
   const [feeType, setFeeType] = useState<string>("all");
   const [userInfo, setUserInfo] = useState<userI>();
   const [userEvents, setUserEvents] = useState<any>([]);
   const [dateSelected, setSpecificDate] = useState<Date>();
   const [highlightedDates, setHighlightedDates] = useState<Date[]>();
-  const categoryCounter = useRef<HTMLDivElement | null>(null);
-  const [categoryCounts, setCategoryCounts] = useState<{
-    [key: string]: number;
-  }>({});
   const [showCalendar, toggleShowCalendar] = useState<boolean>(false);
   const { windowWidth, resolution } = useWindow();
 
@@ -87,14 +83,22 @@ const MyScheduledEvents = () => {
         categoryCountsArr[category]++;
       }
     });
-
-    setCategoryCounts(categoryCountsArr);
-
-    console.log(categoryCountsArr);
   };
-  const getFollowedEvents = async (id: string) => {
+  const getFollowedEvents = async (
+    id: string,
+    params?: {
+      category?: string;
+      entrance_format?: string;
+    }
+  ) => {
     try {
-      const { data, status } = await get(`/api/followed-events?user=${id}`);
+      console.log("getFollowedEvents", params);
+
+      const { data, status } = await get(`/api/followed-events?user=${id}`, {
+        params: {
+          ...params,
+        },
+      });
 
       if (status === 200) {
         const arr = data.filter((item: any) =>
@@ -127,16 +131,24 @@ const MyScheduledEvents = () => {
   }, [session]);
 
   useEffect(() => {
-    if (userInfo && userInfo.id) {
-      getFollowedEvents(userInfo?.id);
-    }
-  }, [userInfo]);
+    let params = {};
 
-  useEffect(() => {
-    if (categoryCounts) {
-      setCategories(Object.keys(categoryCounts));
+    if (router.query) {
+      console.log("1 router.query", router.query);
+      const category = router.query.category as string;
+      const entrance_format = router.query.price as string;
+      const date = router.query.date as string;
+      params = {
+        category,
+        entrance_format,
+        date,
+      };
     }
-  }, [categoryCounts]);
+
+    if (userInfo && userInfo.id) {
+      getFollowedEvents(userInfo?.id, params);
+    }
+  }, [router.query.category, router.query.price, router.query.date, userInfo]);
 
   return (
     <div>
@@ -147,205 +159,67 @@ const MyScheduledEvents = () => {
         <meta name="robots" content="noindex" />
       </Head>
 
-      <section className="my-schedule-hero-banner">
-        <div className="flex w-full items-end lg:min-h-[324px]">
-          <div className="mb-8 px-3 lg:mt-0">
-            <h1 className="mb-0 text-2xl font-semibold text-white lg:text-5xl">
-              Manten el seguimiento de tus eventos proximos
-            </h1>
-          </div>
-        </div>
-      </section>
+      <UserThingsHeader session={session} />
 
-      <section className="events-header">
-        <div className="py-4">
-          <div className="mx-auto flex w-full flex-wrap">
-            <div className="grid w-full grid-cols-3 items-center gap-0 md:grid-cols-6 lg:flex lg:w-auto lg:flex-wrap">
-              <div
-                className={cx("category-counter-chip", {
-                  "has-bottom": Object.keys(categoryCounts).length >= 3,
-                })}
-              >
-                <div className="flex w-[31px] grow flex-col justify-center self-center">
-                  <div className="text-center text-3xl font-semibold leading-8 text-indigo-700 whitespace-nowrap">
-                    {userEvents.length}
-                  </div>
-                  <div className="text-center text-sm leading-4 text-indigo-700 whitespace-nowrap">
-                    Total
-                  </div>
-                </div>
-              </div>
-              <>
-                {categories && categories.length <= 4 ? (
-                  categories.map((category: string, index: number) => (
-                    <div
-                      key={index}
-                      className={cx("category-counter-chip", {
-                        "has-bottom": categories.length > 3 && index <= 1,
-                        "has-top": categories.length > 3 && index > 1,
-                      })}
-                    >
-                      <div className="self-center text-center text-3xl font-semibold leading-8 text-slate-900 whitespace-nowrap">
-                        {categoryCounts[category]}
-                      </div>
-                      <div className="self-center text-center text-sm leading-4 text-slate-900 whitespace-nowrap">
-                        {category}
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <>
-                    {categories
-                      .slice(0, 4)
-                      .map((category: string, index: number) => (
-                        <div
-                          key={index}
-                          className={cx("category-counter-chip", {
-                            "has-bottom": categories.length > 3 && index <= 1,
-                            "has-top": categories.length > 3 && index > 1,
-                          })}
-                        >
-                          <div className="self-center text-center text-3xl font-semibold leading-8 text-slate-900 whitespace-nowrap">
-                            {categoryCounts[category]}
-                          </div>
-                          <div className="self-center text-center text-sm leading-4 text-slate-900 whitespace-nowrap">
-                            {category}
-                          </div>
-                        </div>
-                      ))}
-
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div
-                            className="relative mx-auto lg:px-6"
-                            ref={categoryCounter}
-                          >
-                            <div className="flex h-[52px] flex-col items-center justify-center rounded-lg bg-slate-100 px-2">
-                              <div className="text-center text-lg font-semibold text-slate-900">
-                                {categories.slice(4).length}+
-                              </div>
-                              <div className="text-center text-sm text-slate-900">
-                                Categorias
-                              </div>
-                            </div>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {categories.slice(4).map((category: string, index: number) => (
-                            <div key={index} className="text-left text-base">
-                              {category} <b>{categoryCounts[category]}</b>
-                            </div>
-                          ))}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </>
-                )}
-              </>
-            </div>
-
-            {dateSelected && (
-              <Button
-                variant="default"
-                className="mx-auto mt-3 h-10 text-sm font-semibold md:ml-3 lg:mt-1"
-                onClick={() => setSpecificDate(undefined)}
-              >
-                Limpiar fecha
-              </Button>
-            )}
-            {windowWidth >= resolution.lg && (
-              <DisplayTypeFilters
-                changeFeeType={(val: string) => {
-                  setFeeType(val);
-                }}
-                className="lg:max-w-[520px]"
-              />
-            )}
-          </div>
-        </div>
-      </section>
+      <FiltersContainer useParams={true} showViewModeToggle={false} />
 
       <section className="bg-slate-100 pb-14">
-        <div className="mx-auto max-w-7xl px-4">
+        <div className="mx-auto container lg:px-0">
           <div className="py-8 lg:py-14">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-              <div className="lg:col-span-8 xl:col-span-9">
-                {userEvents.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {userEvents
-                      .filter((event: any) => {
-                        if (
-                          dateSelected &&
-                          !dayjs(event.date).isSameOrAfter(dateSelected, "day")
-                        ) {
-                          return false;
-                        }
-                        if (
-                          feeType !== "all" &&
-                          feeType !== event.entrance_format
-                        ) {
-                          return false;
-                        }
-                        return true;
-                      })
-                      .map((event: any, index: number) => (
-                        <StandardEventCard
-                          key={index}
-                          displayDate
-                          displayTime={false}
-                          {...event}
-                          canFollow={false}
-                          image={event.media}
-                          unfollowAction={() => {
-                            if (userInfo?.id)
-                              unfollowEvent(destroy, userInfo.id, event.id).then(
-                                (res) => {
-                                  if (res.status === 200) {
-                                    removeEventFromArray(event.id);
-                                  }
-                                }
-                              );
-                          }}
-                        />
-                      ))}
-                  </div>
-                ) : (
-                  <div>
-                    <img
-                      src="/images/illustration/no-agenda.svg"
-                      className="mx-auto mb-8 w-full max-w-[200px] md:max-w-[400px]"
+            {userEvents.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {userEvents
+                  .filter((event: any) => {
+                    if (
+                      dateSelected &&
+                      !dayjs(event.date).isSameOrAfter(dateSelected, "day")
+                    ) {
+                      return false;
+                    }
+                    if (
+                      feeType !== "all" &&
+                      feeType !== event.entrance_format
+                    ) {
+                      return false;
+                    }
+                    return true;
+                  })
+                  .map((event: any, index: number) => (
+                    <StandardEventCard
+                      key={index}
+                      displayDate
+                      displayTime={false}
+                      {...event}
+                      canFollow={false}
+                      image={event.media}
+                      unfollowAction={() => {
+                        if (userInfo?.id)
+                          unfollowEvent(destroy, userInfo.id, event.id).then(
+                            (res) => {
+                              if (res.status === 200) {
+                                removeEventFromArray(event.id);
+                              }
+                            }
+                          );
+                      }}
                     />
-                    <h1 className="mb-4 text-center text-2xl font-semibold normal-case lg:mb-6">
-                      No tienes eventos en agenda
-                    </h1>
-
-                    <p className="mb-0 text-center text-base font-light leading-normal text-slate-500 lg:text-2xl">
-                      Actualmente no estas dando seguimiento a ningun evento.
-                    </p>
-                  </div>
-                )}
+                  ))}
               </div>
+            ) : (
+              <div>
+                <img
+                  src="/images/illustration/no-agenda.svg"
+                  className="mx-auto mb-8 w-full max-w-[200px] md:max-w-[400px]"
+                />
+                <h1 className="mb-4 text-center text-2xl font-semibold normal-case lg:mb-6">
+                  No tienes eventos en agenda
+                </h1>
 
-              {windowWidth >= resolution.lg &&
-                highlightedDates &&
-                highlightedDates?.length > 0 && (
-                  <div className="lg:col-span-4 xl:col-span-3">
-                    <DayPicker
-                      mode="single"
-                      selected={dateSelected}
-                      onSelect={setSpecificDate}
-                      disabled={[{ before: new Date() }]}
-                      modifiersClassNames={{
-                        highlighted: "highlighted-date",
-                      }}
-                      modifiers={{
-                        highlighted: highlightedDates,
-                      }}
-                    />
-                  </div>
-                )}
-            </div>
+                <p className="mb-0 text-center text-base font-light leading-normal text-slate-500 lg:text-2xl">
+                  Actualmente no estas dando seguimiento a ningun evento.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>

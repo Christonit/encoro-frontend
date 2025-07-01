@@ -14,13 +14,14 @@ type GenericI = {
   handleDateChange?: Function;
   seletedDate?: Date;
   isForm?: boolean;
+  appearance?: "default" | "button" | "form" | "filter";
 };
 
 export const DatePicker = ({
   className,
   handleDateChange = () => {},
   seletedDate,
-  isForm,
+  appearance,
 }: GenericI) => {
   const [open, openCalendar] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,7 @@ export const DatePicker = ({
   };
 
   useEffect(() => {
+    console.log("the calendar is open", open);
     if (windowWidth > resolution["md"]) {
       if (open) {
         setTimeout(() => {
@@ -51,33 +53,54 @@ export const DatePicker = ({
   return (
     <div
       className={cn("relative", className, {
-        "date-picker-form": isForm,
+        "date-picker-form": appearance === "form",
       })}
     >
       <Button
         variant="clear"
         onClick={() => openCalendar(true)}
         className={cn(
-          "flex flex-row  justify-start gap-[8px]  !overflow-hidden  !rounded-[6px] font-normal px-[12px] py-0 border-0  w-full h-full",
+          "flex flex-row  justify-start gap-[8px]  !overflow-hidden  font-normal px-[12px] py-0 border-0  w-full h-full",
           {
-            " pl-[52px]": isForm,
+            " pl-[52px]": appearance === "form",
+            "bg-slate-100 min-h-8 rounded-full border border-slate-100 hover:border-slate-500  box-border leading-normal":
+              appearance === "button" || appearance === "filter",
+            "rounded-[6px]": appearance !== "filter",
           }
         )}
       >
-        {isForm ? (
+        {appearance === "form" ? (
           <span className="absolute rounded-tl-[6px] rounded-bl-[6px] top-0 bottom-0 my-auto px-[8px] py-[8px]  w-[40px] flex items-center  left-0">
             <LuCalendarDays size={20} />
           </span>
         ) : (
-          <LuCalendarDays size={20} />
+          <LuCalendarDays
+            size={appearance === "filter" ? 16 : 20}
+            width={appearance === "filter" ? 16 : 20}
+            height={appearance === "filter" ? 16 : 20}
+            className={cn({
+              "text-slate-500 min-w-4 min-h-4": appearance === "filter",
+            })}
+          />
         )}
         {seletedDate ? (
-          <span className="capitalize">
-            {dayjs(seletedDate).format("MMMM DD, YYYY")}
+          <span
+            className={cn("capitalize", {
+              "text-sm text-slate-900": appearance === "filter",
+            })}
+          >
+            {dayjs(seletedDate).format(
+              appearance === "filter" ? "DD MMMM" : "MMMM DD, YYYY"
+            )}
           </span>
         ) : (
-          <span className="text-slate-200 font-regular text-base ">
-            Selecciona una fecha
+          <span
+            className={cn({
+              "text-slate-500 leading-none": appearance === "filter",
+              "text-slate-200 font-regular text-base ": appearance !== "filter",
+            })}
+          >
+            {appearance === "filter" ? "Fecha" : "Selecciona una fecha"}
           </span>
         )}
       </Button>
@@ -89,11 +112,23 @@ export const DatePicker = ({
           }}
           variant="ghost"
           className={cn(
-            "px-0 py-0 h-[32px] min-w-[32px]   flex items-center absolute  bottom-[0] top-[0] my-auto border-0",
-            { "right-[4px]": !isForm, "right-0": isForm }
+            "px-0 py-0 h-6 min-w-6   flex items-center absolute  bottom-[0] top-[0] my-auto border-0",
+            {
+              "right-[4px]": appearance !== "form",
+              "right-0": appearance === "form",
+              "bg-slate-100 text-slate-500 hover:text-slate-900":
+                appearance === "filter",
+            }
           )}
         >
-          <AiOutlineCloseCircle size={20} />
+          <AiOutlineCloseCircle
+            size={appearance === "filter" ? 16 : 20}
+            width={appearance === "filter" ? 16 : 20}
+            height={appearance === "filter" ? 16 : 20}
+            className={cn({
+              "min-w-4 min-h-4": appearance === "filter",
+            })}
+          />
         </Button>
       )}
 

@@ -30,7 +30,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -491,7 +497,9 @@ function UpdateEvent() {
                   {...formik.getFieldProps("title")}
                 />
                 {formik.touched.title && formik.errors.title ? (
-                  <div className="text-sm text-red-500">{formik.errors.title}</div>
+                  <div className="text-sm text-red-500">
+                    {formik.errors.title}
+                  </div>
                 ) : null}
               </div>
 
@@ -499,7 +507,9 @@ function UpdateEvent() {
                 <Label>Categoria</Label>
                 <Select
                   value={formik.values.category}
-                  onValueChange={(value) => formik.setFieldValue("category", value)}
+                  onValueChange={(value) =>
+                    formik.setFieldValue("category", value)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona una categoria" />
@@ -516,7 +526,9 @@ function UpdateEvent() {
                   </SelectContent>
                 </Select>
                 {formik.touched.category && formik.errors.category ? (
-                  <div className="text-sm text-red-500">{formik.errors.category}</div>
+                  <div className="text-sm text-red-500">
+                    {formik.errors.category}
+                  </div>
                 ) : null}
               </div>
 
@@ -528,7 +540,9 @@ function UpdateEvent() {
                   rows={3}
                 />
                 {formik.touched.description && formik.errors.description ? (
-                  <div className="text-sm text-red-500">{formik.errors.description}</div>
+                  <div className="text-sm text-red-500">
+                    {formik.errors.description}
+                  </div>
                 ) : null}
               </div>
 
@@ -602,7 +616,13 @@ function UpdateEvent() {
                 <AutoComplete
                   defaultValue={defaultValues!.direction}
                   clearSearch={() => setDirection(undefined)}
-                  onChangeLocation={(value: { location: string; id: string; city_id: string; city: string; terms: string[] }) => {
+                  onChangeLocation={(value: {
+                    location: string;
+                    id: string;
+                    city_id: string;
+                    city: string;
+                    terms: string[];
+                  }) => {
                     console.log(value);
                     setDirection({
                       direction: value.location,
@@ -619,7 +639,7 @@ function UpdateEvent() {
                 <Label>Fecha</Label>
                 <div className="flex w-full flex-col gap-4 md:flex-row">
                   <DatePicker
-                    isForm
+                    appearance="form"
                     className="h-10 w-full rounded-md border border-slate-200 md:max-w-[348px]"
                     seletedDate={eventDate}
                     handleDateChange={setEventDate}
@@ -649,9 +669,12 @@ function UpdateEvent() {
                 <Label>Media</Label>
                 <div className="mb-6">
                   <div
-                    className={cx("relative flex h-[200px] w-full items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-4", {
-                      "border-slate-300": defaultValues?.media?.[0],
-                    })}
+                    className={cx(
+                      "relative flex h-[200px] w-full items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-4",
+                      {
+                        "border-slate-300": defaultValues?.media?.[0],
+                      }
+                    )}
                   >
                     {defaultValues?.media?.[0] ? (
                       <div className="relative h-full w-full">
@@ -691,7 +714,9 @@ function UpdateEvent() {
                         <Button
                           type="button"
                           variant="outline"
-                          onClick={() => document.getElementById("main-media")?.click()}
+                          onClick={() =>
+                            document.getElementById("main-media")?.click()
+                          }
                           className="text-sm"
                         >
                           Seleccionar archivo...
@@ -708,9 +733,12 @@ function UpdateEvent() {
                   {[2, 3, 4, 5].map((index) => (
                     <div
                       key={index}
-                      className={cx("relative flex h-[120px] w-[120px] items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-2", {
-                        "border-slate-300": defaultValues?.media?.[index - 1],
-                      })}
+                      className={cx(
+                        "relative flex h-[120px] w-[120px] items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-2",
+                        {
+                          "border-slate-300": defaultValues?.media?.[index - 1],
+                        }
+                      )}
                     >
                       {defaultValues?.media?.[index - 1] ? (
                         <>
@@ -749,10 +777,7 @@ function UpdateEvent() {
 
               <div className="space-y-2">
                 <Label>Enlace para adquirir</Label>
-                <Input
-                  type="text"
-                  {...formik.getFieldProps("ticket_link")}
-                />
+                <Input type="text" {...formik.getFieldProps("ticket_link")} />
               </div>
             </div>
 
@@ -765,10 +790,7 @@ function UpdateEvent() {
                 >
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  className="h-10 max-w-[400px] rounded-md"
-                >
+                <Button type="submit" className="h-10 max-w-[400px] rounded-md">
                   Actualizar
                 </Button>
               </div>

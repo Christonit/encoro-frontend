@@ -5,6 +5,7 @@ import type { AppProps } from "next/app";
 import { SessionProvider } from "next-auth/react";
 import { EventsProvider } from "@/context/events";
 import { HistoryProvider } from "@/context/history";
+import { FiltersProvider } from "@/context/filters";
 // pages/_app.js
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
@@ -29,7 +30,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <EventsProvider>
           <HistoryProvider>
             <Layout>
-              <Component {...pageProps} />
+              <FiltersProvider>
+                <Component {...pageProps} />
+              </FiltersProvider>
             </Layout>
           </HistoryProvider>
         </EventsProvider>

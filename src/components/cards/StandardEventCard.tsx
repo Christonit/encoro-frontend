@@ -99,7 +99,7 @@ const StandardEventCard = ({
 
         {unfollowAction && (
           <button
-            className={`rounded-[8px] border   follow-btn-secondary relative  !min-h-auto !hover:text-slate-500 z-[5]  !text-sm items-center  gap-[8px] mt-[12px] !min-h-[28px] !py-[0] px-[8px] !border-slate-100  w-auto flex !text-slate-100 `}
+            className={`rounded-[8px] border   follow-btn-secondary relative  !min-h-auto hover:text-slate-500 z-[5]  !text-sm items-center  gap-[8px] mt-[12px] !min-h-[28px] !py-[0] px-[8px] !border-slate-100  w-auto flex text-slate-100 `}
             onClick={(e) => {
               unfollowAction();
               e.currentTarget.blur();
