@@ -188,7 +188,7 @@ const UserSettings = () => {
       contact_email: contactEmail,
       phone_number: phoneNumber,
       location: businessAddress,
-      is_business: isBusiness,
+      is_business: true,
       schedule: businessHours.length > 0 ? businessHours : [],
       ...socialNetworks,
       ...(fileMeta && { file: fileMeta }),

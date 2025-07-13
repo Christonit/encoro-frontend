@@ -41,7 +41,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
-import { LuCalendarDays, LuUser } from "react-icons/lu";
+import { LuCalendarDays, LuUser, LuSettings, LuLogOut } from "react-icons/lu";
 
 const CATEGORY_PILLS = [
   { label: "Todas las categorías", value: "all" },
@@ -103,6 +103,8 @@ const DesktopHeader = React.memo(
     toggleNotificationsModal,
     agendaMenuOpen,
     setAgendaMenuOpen,
+    userMenuOpen,
+    setUserMenuOpen,
     session,
     push,
   }: any) => (
@@ -243,24 +245,35 @@ const DesktopHeader = React.memo(
                 )}
               </Button>
             )}
-            {user && user.is_business && (
+            {/* TODO: Everybody can create events for now, this will change when i implemnent Facebook Login and google validation for is_business*/}
+            {/* {user && user.is_business && ( */}
+            {user && (
               <NavigationMenuItem>
                 <Link
                   href="/activity/create/"
                   className="bg-red-500 hover:bg-red-400 text-white hover:text-white/[0.8] font-bold py-2 px-4 rounded-lg text-base transition-colors ml-2"
                 >
-                  Crear evento
+                  Publicar evento
                 </Link>
               </NavigationMenuItem>
             )}
             {/* User avatar dropdown */}
             {user && (
               <NavigationMenuItem className="ml-3">
-                <DropdownMenu>
+                <DropdownMenu
+                  open={userMenuOpen}
+                  // open={true}
+                  onOpenChange={setUserMenuOpen}
+                >
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       className="overflow-hidden bg-none p-0 border-0 outline-0 rounded-full"
+                      onMouseEnter={() => {
+                        setTimeout(() => {
+                          setUserMenuOpen(true);
+                        }, 250);
+                      }}
                     >
                       <Image
                         src={user.business_picture || user.image || ""}
@@ -271,35 +284,75 @@ const DesktopHeader = React.memo(
                       />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="z-[9] text-right !top-[4px]">
-                    {!user.is_business && (
-                      <DropdownMenuItem asChild>
-                        <Button
-                          onClick={() => push("/user/create-business-profile/")}
-                          className="hover:bg-transparent w-full text-left"
+                  <DropdownMenuContent
+                    align="end"
+                    className="min-w-[200px] bg-white border border-slate-200 rounded-lg relative translate-x-[16px] "
+                  >
+                    <div onMouseLeave={() => setUserMenuOpen(false)}>
+                      {/* Arrow indicator */}
+                      <div className="absolute top-0 right-6 w-4 h-4 z-10 -translate-y-1/2 ">
+                        <div
+                          className="absolute top-0 right-6 w-4 h-4 z-10 -translate-y-1/2"
+                          style={{
+                            width: 0,
+                            height: 0,
+                            borderLeft: "8px solid transparent",
+                            borderRight: "8px solid transparent",
+                            borderBottom: "8px solid white",
+                            borderTop: "0 solid transparent",
+                          }}
+                        />
+                      </div>
+                      {/* {!user.is_business && (
+                        <DropdownMenuItem
+                          asChild
+                          className="py-2 hover:bg-slate-100 rounded-md"
+                          onClick={() => setUserMenuOpen(false)}
                         >
-                          <span className="bg-blue-500 hover:bg-blue-700 mt-0 inline-block px-2 py-2 text-white font-semibold rounded">
-                            Actualizar a Negocio
-                          </span>
+                          <Button
+                            onClick={() => {
+                              setUserMenuOpen(false);
+                              push("/user/create-business-profile/");
+                            }}
+                            className="hover:bg-transparent w-full text-left flex items-center gap-2"
+                          >
+                            <span className="bg-blue-500 hover:bg-blue-700 mt-0 inline-block px-2 py-2 text-white font-semibold rounded">
+                              Actualizar a Negocio
+                            </span>
+                          </Button>
+                        </DropdownMenuItem>
+                      )} */}
+                      <DropdownMenuItem
+                        asChild
+                        className="py-2 hover:bg-slate-100 rounded-md flex items-center gap-2 navigation-link dropdown-link"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <Link
+                          href="/user/profile/"
+                          className="w-full !text-center flex items-center justify-center gap-2"
+                        >
+                          <LuSettings size={18} />
+                          <span>Configuración</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        asChild
+                        className="py-2 hover:bg-slate-100 rounded-md flex items-center gap-2 navigation-link dropdown-link"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        <Button
+                          variant="clear"
+                          className="w-full flex items-center gap-2 !hover:bg-slate-100"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            signOut();
+                          }}
+                        >
+                          <LuLogOut size={18} />
+                          <span>Cerrar sesión</span>
                         </Button>
                       </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem asChild>
-                      <Button
-                        className="py-2 w-full text-left"
-                        onClick={() => push("/user/profile/")}
-                      >
-                        Configuracion
-                      </Button>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Button
-                        className="py-2 w-full text-left"
-                        onClick={() => signOut()}
-                      >
-                        Cerrar sesion
-                      </Button>
-                    </DropdownMenuItem>
+                    </div>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </NavigationMenuItem>
@@ -477,10 +530,10 @@ const MobileHeader = ({
                   }}
                   className="py-3 flex px-6 min-w-[160px] bg-red-500 text-white font-bold text-lg rounded-lg justify-center"
                 >
-                  Crear evento
+                  Publicar evento
                 </Button>
               )}
-              {!user?.is_business && user && (
+              {/* {!user?.is_business && user && (
                 <Button
                   role="link"
                   onClick={() => {
@@ -491,7 +544,7 @@ const MobileHeader = ({
                 >
                   Actualiza a Perfil de Negocios
                 </Button>
-              )}
+              )} */}
               {user && (
                 <Button
                   role="link"
@@ -499,10 +552,10 @@ const MobileHeader = ({
                     toggleMobileNav(false);
                     push("/user/profile/");
                   }}
-                  className="py-3 w-full px-6 bg-slate-50 flex min-w-[160px] gap-2 justify-center"
+                  className="py-3 w-full px-6 bg-slate-50 flex min-w-[160px] gap-2 justify-center text-center"
                 >
                   <AiOutlineSetting size={24} />
-                  <span className="font-semibold">Configuracion</span>
+                  <span className="font-semibold">Configuración</span>
                 </Button>
               )}
             </nav>
@@ -634,7 +687,7 @@ const Header = () => {
     null | string
   >(null);
   const { push, pathname } = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [shouldActionsBar, setShouldShowActionsBar] = useState(() => {
     if (pathname === "/") return true;
     return false;
@@ -659,6 +712,7 @@ const Header = () => {
   >();
 
   const [agendaMenuOpen, setAgendaMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   const backButtonPositioner = (
     refElement: HTMLButtonElement | HTMLDivElement | null,
@@ -788,7 +842,7 @@ const Header = () => {
           pathLabel = "Detalles del Evento";
           break;
         case "/activity/create":
-          pathLabel = "Crear Evento";
+          pathLabel = "Publicar Evento";
           break;
         // case "/activity/[post]/edit":
         //   pathLabel = "Actualizar Evento";
@@ -896,6 +950,10 @@ const Header = () => {
   }, [user_notifications]);
 
   // --- RENDER ---
+  if (status === "loading") {
+    return null; // or a loading spinner
+  }
+
   return windowWidth >= resolution.lg ? (
     <DesktopHeader
       pathname={pathname}
@@ -910,6 +968,8 @@ const Header = () => {
       toggleNotificationsModal={toggleNotificationsModal}
       agendaMenuOpen={agendaMenuOpen}
       setAgendaMenuOpen={setAgendaMenuOpen}
+      userMenuOpen={userMenuOpen}
+      setUserMenuOpen={setUserMenuOpen}
       session={session}
       push={push}
     />
