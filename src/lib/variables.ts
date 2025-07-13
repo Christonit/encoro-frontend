@@ -33,6 +33,7 @@ const CATEGORIES_DICT: { [key: string]: string } = {
   sports: "Deportes",
   education: "Educación y Conferencias",
   entertainment: "Entretenimiento",
+  wellness: "Bienestar",
 };
 
 const ROLES = ["SUPERUSER", "ADMIN", "COLLABORATOR"];

@@ -54,15 +54,16 @@ export default function CategoriesSection() {
 
   const categoryCard = ({ category }: { category: string }) => {
     if (!category_counts) return <></>;
+
     return (
       <Link href={`/${category}/`} key={category} className="no-underline">
-        <Card className="px-3 lg:px-[20px] pt-3 pb-3 lg:pb-[20px] rounded-2xl hover:bg-slate-50">
-          <div className="flex justify-between text-slate-900 mb-2">
+        <Card className="px-4 lg:px-[20px] py-4 lg:pb-[20px] rounded-2xl hover:bg-slate-50 gap-3  border-slate-300 shadow-none">
+          <div className="flex justify-between text-slate-900">
             <span className="font-bold text-xl leading-none">
               {CATEGORIES_DICT[category]}
             </span>
             <span className="font-regular text-slate-500 text-base">
-              {category_counts[category]}
+              {category_counts[category] || 0}
             </span>
           </div>
 
@@ -71,7 +72,7 @@ export default function CategoriesSection() {
             width={320}
             height={200}
             alt=""
-            className="rounded-2xl w-full"
+            className="rounded-2xl w-full h-52 object-cover"
           />
         </Card>
       </Link>
@@ -85,7 +86,7 @@ export default function CategoriesSection() {
   return (
     <>
       <Container className="bg-white lg:px-[20px] 2xl:px-0 overflow-hidden">
-        <div className="flex flex-col  items-start gap-6 lg:gap-8 mb-4 lg:mb-5 max-w-[692px]">
+        <div className="flex flex-col  items-start gap-6 lg:gap-8 mb-4 lg:mb-6 max-w-[692px]">
           <TitleH1 className="mb-0">
             Una actividad para todas los gustos
           </TitleH1>
@@ -100,11 +101,11 @@ export default function CategoriesSection() {
 
         {category_counts &&
           (windowWidth > resolution.sm ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
               {categoryCard({ category: "music" })}
               {categoryCard({ category: "nightlife" })}
               {categoryCard({ category: "gastronomy" })}
-              {categoryCard({ category: "art" })}
+              {categoryCard({ category: "entertainment" })}
               {categoryCard({ category: "tourism" })}
               {categoryCard({ category: "wellness" })}
             </div>
@@ -155,10 +156,10 @@ export default function CategoriesSection() {
                   {categoryCard({ category: "tourism" })}
                 </CarouselItem>
                 <CarouselItem
-                  key="theater"
+                  key="wellness"
                   className="md:basis-1/2 lg:basis-1/4 2xl:basis-1/5 3xl:basis-1/6"
                 >
-                  {categoryCard({ category: "theater" })}
+                  {categoryCard({ category: "wellness" })}
                 </CarouselItem>
               </CarouselContent>
             </Carousel>
