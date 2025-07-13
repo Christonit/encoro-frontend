@@ -86,7 +86,7 @@ export default function CategoriesSection() {
   return (
     <>
       <Container className="bg-white lg:px-[20px] 2xl:px-0 overflow-hidden">
-        <div className="flex flex-col  items-start gap-6 lg:gap-8 mb-4 lg:mb-6 max-w-[692px]">
+        <div className="flex flex-col  items-start gap-6 lg:gap-8 mb-6 max-w-[692px]">
           <TitleH1 className="mb-0">
             Una actividad para todas los gustos
           </TitleH1>
@@ -144,10 +144,10 @@ export default function CategoriesSection() {
                   {categoryCard({ category: "gastronomy" })}
                 </CarouselItem>
                 <CarouselItem
-                  key="concerts"
+                  key="entertainment"
                   className="md:basis-1/2 lg:basis-1/4 2xl:basis-1/5 3xl:basis-1/6"
                 >
-                  {categoryCard({ category: "concerts" })}
+                  {categoryCard({ category: "entertainment" })}
                 </CarouselItem>
                 <CarouselItem
                   key="tourism"
