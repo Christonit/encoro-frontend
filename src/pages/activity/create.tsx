@@ -390,12 +390,14 @@ export default function CreateEvent() {
       <div className="lg:py-8">
         <div className="container mx-auto px-4 lg:px-0 !max-w-[1200px]">
           {/* Preview Header Section */}
-          <h1 className="text-2xl font-semibold mb-6 ">Crea tu evento</h1>
+          <h1 className="text-2xl lg:text-3xl font-semibold my-6 lg:mt-0 lg:mb-6 ">
+            Crea tu evento
+          </h1>
 
-          <div className="py-6 sticky top-[64px] z-30 bg-white border-y border-slate-200">
+          <div className="py-4 lg:py-6 lg:sticky top-[56px] z-30 bg-white border-y border-slate-200">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
               <div>
-                <h2 className="text-3xl font-bold mb-1">
+                <h2 className="text-xl lg:text-3xl font-bold mb-1">
                   {formik.values.title || "Placeholder Event Title"}
                 </h2>
                 <div className="flex flex-wrap gap-4 text-slate-600 text-base">
@@ -420,7 +422,7 @@ export default function CreateEvent() {
           </div>
           <div className="flex flex-row gap-8">
             {/* Sidebar */}
-            <div className="relative">
+            <div className="relative hidden lg:block">
               <nav className="w-64 min-w-[200px] border-r border-slate-200  py-6 sticky top-[188px] z-30 bg-white">
                 <ul className="space-y-2">
                   <li>
@@ -467,9 +469,11 @@ export default function CreateEvent() {
                 {/* Basic Details Section */}
                 <div
                   id="basic-details"
-                  className="gap-y-6 lg:gap-y-8 grid grid-cols-1  border-b border-slate-200  pb-16"
+                  className="gap-y-4 lg:gap-y-6 lg:gap-y-8 grid grid-cols-1  border-b border-slate-200  py-8 lg:pb-16 lg:pt-0"
                 >
-                  <h2 className="text-2xl font-semibold ">Detalles basicos</h2>
+                  <h2 className="text-xl lg:text-2xl font-semibold ">
+                    Detalles basicos
+                  </h2>
                   <div className="grid gap-y-6 md:gap-y-8 w-full">
                     <div className="">
                       <label className="block font-medium mb-1">
@@ -586,7 +590,7 @@ export default function CreateEvent() {
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-row gap-9 items-center mb-8">
+                    <div className="flex flex-row gap-9 items-center lg:mb-8">
                       <label className="block font-medium">
                         Tipo de asistencia
                       </label>
@@ -654,19 +658,19 @@ export default function CreateEvent() {
                 {/* Dates and Location Section */}
                 <div
                   id="dates-location"
-                  className="py-16 border-b border-slate-200"
+                  className="py-8 lg:py-16 border-b border-slate-200"
                 >
-                  <div className="mb-6">
-                    <h2 className="text-2xl font-semibold mb-2">
+                  <div className="mb-4 lg:mb-6">
+                    <h2 className="text-xl lg:text-2xl font-semibold mb-2">
                       Fecha y ubicación
                     </h2>
                   </div>
-                  <div id="event-dates" className="mb-4">
+                  <div id="event-dates" className="mb-4 lg:mb-6">
                     <label className="block font-medium mb-1">
                       Recurrencia
                     </label>
                     <RadioGroup
-                      className="flex flex-row gap-6 mb-6"
+                      className="flex flex-row gap-3 lg:gap-6 mb-6 flex-wrap"
                       value={recurrenceType}
                       onValueChange={(val) => setRecurrenceType(val as any)}
                     >
@@ -711,8 +715,8 @@ export default function CreateEvent() {
                       </div>
                     )}
                     {recurrenceType === "recurrent" && (
-                      <div className="space-y-6">
-                        <div className="flex flex-col md:flex-row gap-4 items-end">
+                      <div className="space-y-4 lg:space-y-6 ">
+                        <div className="flex flex-col md:flex-row gap-4 lg:items-end">
                           <div>
                             <label className="block font-medium mb-1">
                               Comenzando en
@@ -740,82 +744,86 @@ export default function CreateEvent() {
                         </div>
 
                         <div>
-                          <label className="block font-medium mb-1">
-                            Duración
-                          </label>
-                          <Input
-                            type="number"
-                            min={1}
-                            max={12}
-                            value={recurrenceWeeks}
-                            onChange={(e) =>
-                              setRecurrenceWeeks(
-                                Math.max(
-                                  1,
-                                  Math.min(12, Number(e.target.value))
+                          <div>
+                            <label className="block font-medium mb-1">
+                              Duración
+                            </label>
+                            <Input
+                              type="number"
+                              min={1}
+                              max={12}
+                              value={recurrenceWeeks}
+                              onChange={(e) =>
+                                setRecurrenceWeeks(
+                                  Math.max(
+                                    1,
+                                    Math.min(12, Number(e.target.value))
+                                  )
                                 )
-                              )
-                            }
-                            className="w-[60px] inline-block mr-2"
-                          />
-                          <span>semanas</span>
-                        </div>
-                        <div>
-                          <label className="block font-medium mb-1">Days</label>
-                          <div className="flex gap-2 flex-wrap">
-                            {weekDays.map((day) => (
-                              <button
-                                type="button"
-                                key={day.label}
-                                className={`fee-toggle${
-                                  recurrenceDays.includes(day.label)
-                                    ? " fee-toggle--active"
-                                    : ""
-                                }`}
-                                onClick={() => {
-                                  setRecurrenceDays((prev) =>
-                                    prev.includes(day.label)
-                                      ? prev.filter((d) => d !== day.label)
-                                      : [...prev, day.label]
-                                  );
-                                }}
-                              >
-                                {day.label.slice(0, 3)}
-                              </button>
-                            ))}
+                              }
+                              className="w-[60px] inline-block mr-2"
+                            />
+                            <span>semanas</span>
                           </div>
-                        </div>
-                        {recurrencePreview.length > 0 && (
-                          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
-                            <div className="flex items-center gap-2 mb-2 text-slate-700">
-                              <AiOutlineInfoCircle />
-                              <span className="font-semibold">
-                                {recurrencePreview.length} events will be
-                                created at the following dates:
-                              </span>
+                          <div>
+                            <label className="block font-medium mb-1">
+                              Days
+                            </label>
+                            <div className="flex gap-2 flex-wrap">
+                              {weekDays.map((day) => (
+                                <button
+                                  type="button"
+                                  key={day.label}
+                                  className={`fee-toggle${
+                                    recurrenceDays.includes(day.label)
+                                      ? " fee-toggle--active"
+                                      : ""
+                                  }`}
+                                  onClick={() => {
+                                    setRecurrenceDays((prev) =>
+                                      prev.includes(day.label)
+                                        ? prev.filter((d) => d !== day.label)
+                                        : [...prev, day.label]
+                                    );
+                                  }}
+                                >
+                                  {day.label.slice(0, 3)}
+                                </button>
+                              ))}
                             </div>
-                            <div className="flex flex-wrap gap-2">
-                              {recurrencePreview
-                                .slice(0, 5)
-                                .map((date, idx) => (
-                                  <span
-                                    key={idx}
-                                    className="bg-slate-200 rounded-full px-3 py-1 text-sm"
-                                  >
-                                    {formatDate(date, "eeee, MMMM do")}
-                                    {recurrenceTime
-                                      ? `, ${recurrenceTime}`
-                                      : ""}
-                                  </span>
-                                ))}
-                              {recurrencePreview.length > 5 && (
-                                <span className="bg-slate-300 rounded-full px-3 py-1 text-sm">
-                                  +{recurrencePreview.length - 5}
+                          </div>
+                          {recurrencePreview.length > 0 && (
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
+                              <div className="flex items-center gap-2 mb-2 text-slate-700">
+                                <AiOutlineInfoCircle />
+                                <span className="font-semibold">
+                                  {recurrencePreview.length} events will be
+                                  created at the following dates:
                                 </span>
-                              )}
+                              </div>
+                              <div className="flex flex-wrap gap-2">
+                                {recurrencePreview
+                                  .slice(0, 5)
+                                  .map((date, idx) => (
+                                    <span
+                                      key={idx}
+                                      className="bg-slate-200 rounded-full px-3 py-1 text-sm"
+                                    >
+                                      {formatDate(date, "eeee, MMMM do")}
+                                      {recurrenceTime
+                                        ? `, ${recurrenceTime}`
+                                        : ""}
+                                    </span>
+                                  ))}
+                                {recurrencePreview.length > 5 && (
+                                  <span className="bg-slate-300 rounded-full px-3 py-1 text-sm">
+                                    +{recurrencePreview.length - 5}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     )}
                     {recurrenceType === "specific" && (
@@ -824,7 +832,7 @@ export default function CreateEvent() {
                         {specificDates.map((entry, idx) => (
                           <div
                             key={idx}
-                            className="flex flex-col md:flex-row gap-2 md:gap-4 items-end w-full"
+                            className="flex flex-col md:flex-row gap-2 md:gap-4 lg:items-end w-full"
                           >
                             <div className="flex-1 min-w-[160px]">
                               <DatePicker
@@ -859,7 +867,7 @@ export default function CreateEvent() {
                             </div>
                             <button
                               type="button"
-                              className="bg-slate-100 border border-slate-200 rounded-md px-4 py-2 font-semibold text-slate-900 hover:bg-slate-200 ml-2"
+                              className="bg-slate-100 border border-slate-200 rounded-md px-4 py-2 font-semibold text-slate-900 hover:bg-slate-200 lg:ml-2"
                               onClick={() =>
                                 setSpecificDates((prev) =>
                                   prev.filter((_, i) => i !== idx)
@@ -909,7 +917,10 @@ export default function CreateEvent() {
                 </div>
 
                 {/* Media Section */}
-                <div id="media" className="py-16 border-b border-slate-200">
+                <div
+                  id="media"
+                  className="py-8 lg:py-16 border-b border-slate-200"
+                >
                   <div className="">
                     <h2 className="text-2xl font-semibold mb-2">Media</h2>
                   </div>

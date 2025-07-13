@@ -104,6 +104,7 @@ const DesktopHeader = React.memo(
     agendaMenuOpen,
     setAgendaMenuOpen,
     session,
+    push,
   }: any) => (
     <header
       className={cn(
@@ -274,9 +275,7 @@ const DesktopHeader = React.memo(
                     {!user.is_business && (
                       <DropdownMenuItem asChild>
                         <Button
-                          onClick={() =>
-                            props.push("/user/create-business-profile/")
-                          }
+                          onClick={() => push("/user/create-business-profile/")}
                           className="hover:bg-transparent w-full text-left"
                         >
                           <span className="bg-blue-500 hover:bg-blue-700 mt-0 inline-block px-2 py-2 text-white font-semibold rounded">
@@ -288,7 +287,7 @@ const DesktopHeader = React.memo(
                     <DropdownMenuItem asChild>
                       <Button
                         className="py-2 w-full text-left"
-                        onClick={() => props.push("/user/profile/")}
+                        onClick={() => push("/user/profile/")}
                       >
                         Configuracion
                       </Button>
@@ -341,278 +340,283 @@ const MobileHeader = ({
   notifications_modal,
   closeNotificationsModal,
   user_notifications,
-}: any) => (
-  <header className="w-full border-b bg-white flex flex-col">
-    <div className="flex items-center px-4 py-3 w-full">
-      <button
-        onClick={() => toggleMobileNav(true)}
-        className="min-w-[32px] h-[32px] flex items-center justify-center"
-      >
-        <AiOutlineMenu size={24} />
-      </button>
-      <Link href="/" className="ml-2">
-        <Image src="/images/logo-m.svg" alt="Logo" width={32} height={32} />
-      </Link>
-      <div className="flex-1 mx-2">
+}: any) => {
+  // Condition to check if current page is home ("/") or a category page ("/[category]")
+  // Assumes access to 'push' or 'router' or 'pathname' as in other components
+  // We'll use 'useRouter' from next/router to get the pathname
+
+  const router = useRouter ? useRouter() : null;
+  const pathname = router ? router.pathname : "";
+
+  // Home page: "/"
+  const isHome = pathname === "/";
+
+  // Category page: "/[category]" (e.g., "/music", "/art", etc.), but not "/"
+  // We'll check if pathname starts with "/" and has no further slashes (i.e., only one segment)
+  const isCategoryPage =
+    pathname.startsWith("/") &&
+    pathname !== "/" &&
+    pathname.split("/").length === 2 &&
+    pathname.split("/")[1].length > 0;
+  return (
+    <header className="w-full border-b border-slate-100 bg-white flex flex-col sticky top-0 z-50">
+      <div className="flex items-center px-4 py-3 w-full ">
         <button
-          onClick={() => toggleSearchMobile(true)}
-          className="w-full border rounded px-2 py-1 text-slate-400 flex items-center bg-white"
+          onClick={() => toggleMobileNav(true)}
+          className="min-w-[32px] h-[32px] flex items-center justify-center"
         >
-          <AiOutlineSearch size={20} />
-          <span className="ml-2">¿Qué buscas hoy?</span>
+          <AiOutlineMenu size={24} />
+        </button>
+        <Link href="/" className="ml-2">
+          <Image src="/images/logo-m.svg" alt="Logo" width={32} height={32} />
+        </Link>
+        <div className="flex-1 mx-2">
+          <button
+            onClick={() => toggleSearchMobile(true)}
+            className="w-full border rounded px-2 py-1 text-slate-400 flex items-center bg-white"
+          >
+            <AiOutlineSearch size={20} />
+            <span className="ml-2">¿Qué buscas hoy?</span>
+          </button>
+        </div>
+        <button onClick={() => toggleNotificationsModal(true)} className="ml-2">
+          <AiFillBell size={24} className="text-slate-900" />
+          {has_new_notifs && (
+            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+          )}
         </button>
       </div>
-      <button onClick={() => toggleNotificationsModal(true)} className="ml-2">
-        <AiFillBell size={24} className="text-slate-900" />
-        {has_new_notifs && (
-          <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
-        )}
-      </button>
-    </div>
-    {/* Category pills */}
-    <CategoryPills />
-    {/* Drawer for mobile menu */}
-    <Drawer open={showMobileNav} onOpenChange={toggleMobileNav}>
-      <DrawerContent className="fullscreen-dialog">
-        <div className="px-5 py-8 h-full flex flex-col">
-          {session && user ? (
-            <span className="overflow-hidden p-1 outline-0 rounded-full flex items-center gap-3">
-              <img
-                src={
-                  user.business_picture
-                    ? user.business_picture
-                    : user.image ?? ""
-                }
-                className="w-10 h-10 rounded-full object-cover border border-slate-100"
-                alt=""
-              />
-              <h3 className="text-xl font-semibold mb-0">{user.name}</h3>
-            </span>
-          ) : (
-            <Button
-              role="link"
-              variant="light"
-              onClick={() => mobileButtonHandler("/")}
-              className="mobile-link branding block bg-transparent"
-            >
-              <Image
-                src="/images/logo.svg"
-                alt="Logo"
-                className="branding-logo"
-                width={100}
-                height={100}
-              />
-            </Button>
-          )}
-          <nav className="flex mt-8 gap-4 flex-col">
-            <Button
-              role="link"
-              onClick={() => {
-                toggleMobileNav(false);
-                push("/");
-              }}
-              className="mobile-link nav-link px-0"
-            >
-              Actividades
-            </Button>
-            {user && (
-              <>
-                <Button
-                  role="link"
-                  onClick={() => {
-                    toggleMobileNav(false);
-                    push("/user/my-schedule/");
-                  }}
-                  className="mobile-link nav-link px-0"
-                >
-                  Mi calendario
-                </Button>
-                <Button
-                  role="link"
-                  onClick={() => {
-                    toggleMobileNav(false);
-                    push("/user/followed/");
-                  }}
-                  className="mobile-link nav-link px-0"
-                >
-                  Perfiles seguidos
-                </Button>
-              </>
+      {/* Category pills */}
+      {isCategoryPage || isHome ? <CategoryPills /> : null}
+      {/* Drawer for mobile menu */}
+      <Drawer open={showMobileNav} onOpenChange={toggleMobileNav}>
+        <DrawerContent className="fullscreen-dialog">
+          <div className="px-5 py-8 h-full flex flex-col">
+            {session && user ? (
+              <span className="overflow-hidden p-1 outline-0 rounded-full flex items-center gap-3">
+                <img
+                  src={
+                    user.business_picture
+                      ? user.business_picture
+                      : user.image ?? ""
+                  }
+                  className="w-10 h-10 rounded-full object-cover border border-slate-100"
+                  alt=""
+                />
+                <h3 className="text-xl font-semibold mb-0">{user.name}</h3>
+              </span>
+            ) : (
+              <Button
+                role="link"
+                variant="light"
+                onClick={() => mobileButtonHandler("/")}
+                className="mobile-link branding block bg-transparent"
+              >
+                <Image
+                  src="/images/logo.svg"
+                  alt="Logo"
+                  className="branding-logo"
+                  width={100}
+                  height={100}
+                />
+              </Button>
             )}
-            {user && user.is_business && (
+            <nav className="flex mt-8 gap-4 flex-col">
               <Button
                 role="link"
                 onClick={() => {
                   toggleMobileNav(false);
-                  push("/user/my-events/");
+                  push("/");
                 }}
                 className="mobile-link nav-link px-0"
               >
-                Mis eventos
+                Actividades
               </Button>
-            )}
-            {user && user.is_business && (
-              <Button
-                variant="default"
-                onClick={() => {
-                  toggleMobileNav(false);
-                  push("/activity/create/");
-                }}
-                className="py-3 flex px-6 min-w-[160px] bg-red-500 text-white font-bold text-lg rounded-lg justify-center"
-              >
-                Crear evento
-              </Button>
-            )}
-            {!user?.is_business && user && (
+              {user && (
+                <>
+                  <Button
+                    role="link"
+                    onClick={() => {
+                      toggleMobileNav(false);
+                      push("/user/my-schedule/");
+                    }}
+                    className="mobile-link nav-link px-0"
+                  >
+                    Mi calendario
+                  </Button>
+                  <Button
+                    role="link"
+                    onClick={() => {
+                      toggleMobileNav(false);
+                      push("/user/followed/");
+                    }}
+                    className="mobile-link nav-link px-0"
+                  >
+                    Perfiles seguidos
+                  </Button>
+                </>
+              )}
+              {user && user.is_business && (
+                <Button
+                  role="link"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/user/my-events/");
+                  }}
+                  className="mobile-link nav-link px-0"
+                >
+                  Mis eventos
+                </Button>
+              )}
+              {user && user.is_business && (
+                <Button
+                  variant="default"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/activity/create/");
+                  }}
+                  className="py-3 flex px-6 min-w-[160px] bg-red-500 text-white font-bold text-lg rounded-lg justify-center"
+                >
+                  Crear evento
+                </Button>
+              )}
+              {!user?.is_business && user && (
+                <Button
+                  role="link"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/user/create-business-profile/");
+                  }}
+                  className="btn-primary !hover:bg-[#2489FF] !border-[#096ADC] border-2 py-2 !bg-[#2489FF]"
+                >
+                  Actualiza a Perfil de Negocios
+                </Button>
+              )}
+              {user && (
+                <Button
+                  role="link"
+                  onClick={() => {
+                    toggleMobileNav(false);
+                    push("/user/profile/");
+                  }}
+                  className="py-3 w-full px-6 bg-slate-50 flex min-w-[160px] gap-2 justify-center"
+                >
+                  <AiOutlineSetting size={24} />
+                  <span className="font-semibold">Configuracion</span>
+                </Button>
+              )}
+            </nav>
+            {!session && (
               <Button
                 role="link"
                 onClick={() => {
                   toggleMobileNav(false);
-                  push("/user/create-business-profile/");
+                  signIn();
                 }}
-                className="btn-primary !hover:bg-[#2489FF] !border-[#096ADC] border-2 py-2 !bg-[#2489FF]"
+                className="mobile-link mr-auto whitespace-nowrap w-full mt-8"
               >
-                Actualiza a Perfil de Negocios
+                Login
               </Button>
             )}
-            {user && (
+            {session && user && (
               <Button
-                role="link"
+                variant="outline-secondary"
+                className="bottom-8 py-3 right-0 left-0 mx-auto w-full mt-auto"
                 onClick={() => {
                   toggleMobileNav(false);
-                  push("/user/profile/");
+                  signOut();
                 }}
-                className="py-3 w-full px-6 bg-slate-50 flex min-w-[160px] gap-2 justify-center"
               >
-                <AiOutlineSetting size={24} />
-                <span className="font-semibold">Configuracion</span>
+                Cerrar sesion
               </Button>
             )}
-          </nav>
-          {!session && (
-            <Button
-              role="link"
-              onClick={() => {
-                toggleMobileNav(false);
-                signIn();
-              }}
-              className="mobile-link mr-auto whitespace-nowrap w-full mt-8"
-            >
-              Login
-            </Button>
-          )}
-          {session && user && (
-            <Button
-              variant="outline-secondary"
-              className="bottom-8 py-3 right-0 left-0 mx-auto w-full mt-auto"
-              onClick={() => {
-                toggleMobileNav(false);
-                signOut();
-              }}
-            >
-              Cerrar sesion
-            </Button>
-          )}
-        </div>
-      </DrawerContent>
-    </Drawer>
-    {/* Drawer for notifications */}
-    <Drawer open={notifications_modal} direction="top">
-      <DrawerContent className="p-0 fullscreen-dialog" id="notifications">
-        <DrawerHeader className="bg-white border-slate-100 border-b">
-          <div className="flex px-4 w-full gap-3">
-            <button
-              className="flex items-center justify-center h-8 w-8"
-              onClick={closeNotificationsModal}
-            >
-              <AiOutlineArrowLeft size={24} className="text-slate-900" />
-            </button>
-            <h3 className="text-xl font-semibold mb-0">Notificaciones</h3>
           </div>
-        </DrawerHeader>
-        {user_notifications && user_notifications.length > 0 ? (
-          user_notifications.map((n: any) => (
-            <NotificationItem key={n.id} {...n} className="pl-4 px-5" />
-          ))
-        ) : (
-          <div className="py-3 border-b border-slate-100 flex flex-col justify-center text-center h-[200px] w-full min-w-[352px]">
-            <span className="text-lg text-slate-400">
-              No tienes notificaciones.
-            </span>
-          </div>
-        )}
-      </DrawerContent>
-    </Drawer>
-    {/* Drawer for search */}
-    <Drawer open={search_mobile} direction="bottom">
-      <DrawerContent className="fullscreen-dialog">
-        <DrawerHeader className="bg-white border-slate-100 border-b h-16">
-          <div className="flex px-4 w-full gap-4">
-            <button
-              className="flex items-center justify-center"
-              onClick={handleSearchClose}
-            >
-              Cerrar
-            </button>
-            <div className="flex flex-row gap-2 items-center border border-slate-200 rounded-lg py-1 px-2 w-full">
-              <AiOutlineSearch size={24} className="text-slate-900" />
-              <input
-                ref={searchInput}
-                type="text"
-                className="text-base text-slate-900 w-full border-0 focus:outline-none"
-                placeholder="Que buscas hoy?"
-                onChange={handleInputSearchChange}
-              />
+        </DrawerContent>
+      </Drawer>
+      {/* Drawer for notifications */}
+      <Drawer open={notifications_modal} direction="top">
+        <DrawerContent className="p-0 fullscreen-dialog" id="notifications">
+          <DrawerHeader className="bg-white border-slate-100 border-b">
+            <div className="flex px-4 w-full gap-3">
+              <button
+                className="flex items-center justify-center h-8 w-8"
+                onClick={closeNotificationsModal}
+              >
+                <AiOutlineArrowLeft size={24} className="text-slate-900" />
+              </button>
+              <h3 className="text-xl font-semibold mb-0">Notificaciones</h3>
             </div>
-          </div>
-        </DrawerHeader>
-        {search_results &&
-          (search_results.length > 0 ? (
-            search_results.map((event: any, index: number) => (
-              <SearchResultItem
-                key={index}
-                {...event}
-                onClick={handleSearchClose}
-              />
+          </DrawerHeader>
+          {user_notifications && user_notifications.length > 0 ? (
+            user_notifications.map((n: any) => (
+              <NotificationItem key={n.id} {...n} className="pl-4 px-5" />
             ))
           ) : (
-            <span className="p-4 py-8 block text-center text-slate-600 text-base font-semibold">
-              No se encontraron resultados.
-            </span>
-          ))}
-      </DrawerContent>
-    </Drawer>
-  </header>
-);
+            <div className="py-3 border-b border-slate-100 flex flex-col justify-center text-center h-[200px] w-full min-w-[352px]">
+              <span className="text-lg text-slate-400">
+                No tienes notificaciones.
+              </span>
+            </div>
+          )}
+        </DrawerContent>
+      </Drawer>
+      {/* Drawer for search */}
+      <Drawer open={search_mobile} direction="bottom">
+        <DrawerContent className="fullscreen-dialog">
+          <DrawerHeader className="bg-white border-slate-100 border-b h-16">
+            <div className="flex px-4 w-full gap-4">
+              <button
+                className="flex items-center justify-center"
+                onClick={handleSearchClose}
+              >
+                Cerrar
+              </button>
+              <div className="flex flex-row gap-2 items-center border border-slate-200 rounded-lg py-1 px-2 w-full">
+                <AiOutlineSearch size={24} className="text-slate-900" />
+                <input
+                  ref={searchInput}
+                  type="text"
+                  className="text-base text-slate-900 w-full border-0 focus:outline-none"
+                  placeholder="Que buscas hoy?"
+                  onChange={handleInputSearchChange}
+                />
+              </div>
+            </div>
+          </DrawerHeader>
+          {search_results &&
+            (search_results.length > 0 ? (
+              search_results.map((event: any, index: number) => (
+                <SearchResultItem
+                  key={index}
+                  {...event}
+                  onClick={handleSearchClose}
+                />
+              ))
+            ) : (
+              <span className="p-4 py-8 block text-center text-slate-600 text-base font-semibold">
+                No se encontraron resultados.
+              </span>
+            ))}
+        </DrawerContent>
+      </Drawer>
+    </header>
+  );
+};
 
 // --- CATEGORY PILLS ---
 const CategoryPills = () => (
-  <div className="flex gap-2 px-4 py-2 overflow-x-auto scrollbar-hide bg-white border-b">
+  <div className="flex gap-2 px-4 py-2 overflow-x-auto scrollbar-hide bg-white border-b border-slate-100">
     {CATEGORY_PILLS.map((pill) => (
       <button
         key={pill.value}
         className={cn(
-          "px-5 py-2 rounded-full font-semibold text-base whitespace-nowrap transition-colors",
+          "px-5 py-2 rounded-full font-semibold text-sm lg:text-base whitespace-nowrap transition-colors",
           pill.value === "all"
             ? "bg-slate-900 text-white"
             : "bg-slate-100 text-slate-900 hover:bg-slate-200"
         )}
       >
-        {pill.label}
-      </button>
-    ))}
-    <span className="mx-2"> </span>
-    {FEE_PILLS.map((pill) => (
-      <button
-        key={pill.value}
-        className={cn(
-          "px-5 py-2 rounded-full font-semibold text-base whitespace-nowrap transition-colors",
-          pill.value === "all"
-            ? "bg-slate-900 text-white"
-            : "bg-slate-100 text-slate-900 hover:bg-slate-200"
-        )}
-      >
-        {pill.label}
+        {pill.value === "all" ? "Todas" : pill.label}
       </button>
     ))}
   </div>
@@ -907,6 +911,7 @@ const Header = () => {
       agendaMenuOpen={agendaMenuOpen}
       setAgendaMenuOpen={setAgendaMenuOpen}
       session={session}
+      push={push}
     />
   ) : (
     <MobileHeader

@@ -73,7 +73,7 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
       <div className="mb-6">
         <div
           className={cx(
-            "relative flex h-[200px] w-full max-w-xs items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-4",
+            "mx-auto lg:mx-0 relative flex h-[200px] w-full max-w-xs items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-4",
             {
               "border-slate-300": defaultMedia && defaultMedia[0],
             }
@@ -132,7 +132,7 @@ const EventMediaInputGroup: React.FC<EventMediaInputGroupI> = ({
           <div
             key={index}
             className={cx(
-              "relative flex h-[120px] w-[120px] items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-2",
+              "relative flex h-[140px] w-[140px] lg:h-[120px] lg:w-[120px] items-center justify-center rounded-lg border-2 border-dashed border-slate-200 bg-slate-50 p-2",
               {
                 "border-slate-300": defaultMedia && defaultMedia[index - 1],
               }

@@ -4,7 +4,8 @@ const nextConfig = {
     domains: [
       'encoro.app',
       'encoro-assets.s3.amazonaws.com',
-      'lh3.googleusercontent.com'
+      'lh3.googleusercontent.com',
+      'platform-lookaside.fbsbx.com'
     ],
   },
   // ... existing code ...

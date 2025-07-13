@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { TitleH1 } from "@/components/ui/TitleH1";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export const UserThingsHeader = ({ session }: { session: any }) => {
   const router = useRouter();
@@ -11,11 +12,20 @@ export const UserThingsHeader = ({ session }: { session: any }) => {
         <TitleH1 className="mb-4">Mis cosas</TitleH1>
         <div className="flex items-center mb-8">
           {session?.user?.image && (
-            <img
-              src={session.user.image}
-              alt={session.user.name || "avatar"}
-              className="w-8 h-8 rounded-full object-cover mr-3"
-            />
+            <div className="relative w-8 h-8 rounded-full overflow-hidden mr-3">
+              <Image
+                src={session.user.image}
+                alt={session.user.name || "avatar"}
+                width={32}
+                height={32}
+                className="object-cover"
+                onError={(e) => {
+                  // Hide the image if it fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                }}
+              />
+            </div>
           )}
           <span className="font-medium text-slate-900 text-base">
             {session?.user?.name}
@@ -35,6 +45,7 @@ export const UserThingsHeader = ({ session }: { session: any }) => {
                 ? " bg-slate-900 text-white disabled:bg-slate-900 disabled:text-white"
                 : "")
             }
+            disabled={currentPath === "/user/my-schedule"}
             onClick={() => router.push("/user/my-schedule")}
           >
             Mi agenda
@@ -47,6 +58,7 @@ export const UserThingsHeader = ({ session }: { session: any }) => {
                 ? " bg-slate-900 text-white"
                 : "")
             }
+            disabled={currentPath === "/user/followed"}
             onClick={() => router.push("/user/followed")}
           >
             Perfiles seguidos

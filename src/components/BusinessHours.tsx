@@ -73,16 +73,16 @@ export default function BusinessHours({
   return (
     <div className="flex flex-col gap-4">
       {slots.map((slot, idx) => (
-        <div key={idx} className="flex items-center gap-2">
+        <div key={idx} className="flex items-center gap-2 flex-wrap w-full">
           {/* Day range */}
-          <div className="flex items-center border rounded-md px-2 py-1 bg-slate-50">
-            <AiOutlineCalendar className="mr-1 text-slate-400" />
+          <div className="flex items-center border rounded-md px-2 py-1 bg-slate-50 w-full">
+            <AiOutlineCalendar className="mr-1 text-slate-400 min-w-4 min-h-4" />
             <Select
               disabled={disabled}
               value={slot.dayFrom}
               onValueChange={(val) => updateSlot(idx, "dayFrom", val)}
             >
-              <SelectTrigger className="w-24">
+              <SelectTrigger className="w-full lg:w-24">
                 <SelectValue placeholder="Desde" />
               </SelectTrigger>
               <SelectContent>
@@ -99,7 +99,7 @@ export default function BusinessHours({
               value={slot.dayTo}
               onValueChange={(val) => updateSlot(idx, "dayTo", val)}
             >
-              <SelectTrigger className="w-24">
+              <SelectTrigger className="w-full lg:w-24">
                 <SelectValue placeholder="Hasta" />
               </SelectTrigger>
               <SelectContent>
@@ -118,7 +118,7 @@ export default function BusinessHours({
               type="time"
               value={slot.hourFrom}
               onChange={(e) => updateSlot(idx, "hourFrom", e.target.value)}
-              className="w-20"
+              className="w-26"
               placeholder="Desde"
               required
               disabled={disabled}
@@ -128,7 +128,7 @@ export default function BusinessHours({
               type="time"
               value={slot.hourTo}
               onChange={(e) => updateSlot(idx, "hourTo", e.target.value)}
-              className="w-20"
+              className="w-26"
               placeholder="Hasta"
               required
               disabled={disabled}
