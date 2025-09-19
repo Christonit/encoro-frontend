@@ -2,7 +2,6 @@ import { getSession } from "next-auth/react";
 import Head from "next/head";
 import { ReactNode, useState } from "react";
 import { MdLocationPin, MdFacebook } from "react-icons/md";
-import axios from "axios";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
